@@ -1,0 +1,6 @@
+@Ticketron_HostAddress = http://localhost:5106
+
+GET {{Ticketron_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
