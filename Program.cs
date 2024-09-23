@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Ticketron.Data;
+using Ticketron.Interfaces;
 using Ticketron.Repository;
 
 
@@ -16,7 +17,8 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

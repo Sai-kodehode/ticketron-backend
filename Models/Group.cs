@@ -7,9 +7,12 @@ namespace Ticketron.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public User User { get; set; }
+        public int CreatedBy { get; set; }
 
-        public ICollection<Groupmember> Groupmembers { get; set; }
+        public ICollection<User> Users { get; set; }
+
+        public ICollection<UnregUser> UnregUsers { get; set; }
+
 
    
     }

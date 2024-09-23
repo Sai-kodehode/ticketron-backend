@@ -5,7 +5,7 @@ namespace Ticketron.Models
     public class Image
     {
         public int Id { get; set; }
-        public byte[] Imageurl { get; set; }
-        public Ticket Ticket { get; set; }
+        public string Imageurl { get; set; }
+        public User Ticket { get; set; }
     }
 }

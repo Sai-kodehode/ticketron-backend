@@ -3,12 +3,16 @@
     public class Participant
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string AddedBy { get; set; }
 
-        public Group Group { get; set; }
-        public ICollection<BookingParticipant> BookingParticipants { get; set; }
+        public Booking Booking { get; set; }
 
-        public ICollection<TicketParticipant> TicketParticipants { get; set; }
+        public int UserId {  get; set; }
+
+
+
+
+   
 
     }
 }
