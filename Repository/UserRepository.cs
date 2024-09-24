@@ -8,7 +8,8 @@ namespace Ticketron.Repository
     {
         private readonly DataContext _context;
 
-        public UserRepository(DataContext context) {
+        public UserRepository(DataContext context)
+        {
             _context = context;
         }
 
@@ -18,9 +19,9 @@ namespace Ticketron.Repository
             return Save();
         }
 
-        public bool DeleteUser(int userId)
+        public bool DeleteUser(User user)
         {
-            _context.Remove(userId);
+            _context.Remove(user);
             return Save();
         }
 

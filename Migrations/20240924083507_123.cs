@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ticketron.Migrations
 {
     /// <inheritdoc />
-    public partial class updatedwithnewtablesandremovedunwantedtables : Migration
+    public partial class _123 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +17,7 @@ namespace Ticketron.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedBy = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -26,7 +26,7 @@ namespace Ticketron.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "User",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -37,7 +37,7 @@ namespace Ticketron.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_User", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,17 +49,16 @@ namespace Ticketron.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Bookings_Users_UserId",
+                        name: "FK_Bookings_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "User",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -79,9 +78,9 @@ namespace Ticketron.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GroupUser_Users_UsersId",
+                        name: "FK_GroupUser_User_UsersId",
                         column: x => x.UsersId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -105,9 +104,9 @@ namespace Ticketron.Migrations
                         principalTable: "Groups",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Unregusers_Users_UserId",
+                        name: "FK_Unregusers_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -118,9 +117,11 @@ namespace Ticketron.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BookingId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BookingId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: true),
+                    UnregUserId = table.Column<int>(type: "int", nullable: true),
+                    IsUser = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,12 +130,21 @@ namespace Ticketron.Migrations
                         name: "FK_Participants_Bookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "Bookings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Participants_Unregusers_UnregUserId",
+                        column: x => x.UnregUserId,
+                        principalTable: "Unregusers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Participants_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tickets",
+                name: "Ticket",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -143,18 +153,19 @@ namespace Ticketron.Migrations
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ParticipantId = table.Column<int>(type: "int", nullable: false),
-                    BookingId = table.Column<int>(type: "int", nullable: true)
+                    BookingId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tickets", x => x.Id);
+                    table.PrimaryKey("PK_Ticket", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tickets_Bookings_BookingId",
+                        name: "FK_Ticket_Bookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "Bookings",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Tickets_Participants_ParticipantId",
+                        name: "FK_Ticket_Participants_ParticipantId",
                         column: x => x.ParticipantId,
                         principalTable: "Participants",
                         principalColumn: "Id",
@@ -167,16 +178,16 @@ namespace Ticketron.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Imageurl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TicketId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Images", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Images_Tickets_TicketId",
+                        name: "FK_Images_Ticket_TicketId",
                         column: x => x.TicketId,
-                        principalTable: "Tickets",
+                        principalTable: "Ticket",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -202,13 +213,23 @@ namespace Ticketron.Migrations
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_BookingId",
-                table: "Tickets",
+                name: "IX_Participants_UnregUserId",
+                table: "Participants",
+                column: "UnregUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Participants_UserId",
+                table: "Participants",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ticket_BookingId",
+                table: "Ticket",
                 column: "BookingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tickets_ParticipantId",
-                table: "Tickets",
+                name: "IX_Ticket_ParticipantId",
+                table: "Ticket",
                 column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
@@ -232,13 +253,7 @@ namespace Ticketron.Migrations
                 name: "Images");
 
             migrationBuilder.DropTable(
-                name: "Unregusers");
-
-            migrationBuilder.DropTable(
-                name: "Tickets");
-
-            migrationBuilder.DropTable(
-                name: "Groups");
+                name: "Ticket");
 
             migrationBuilder.DropTable(
                 name: "Participants");
@@ -247,7 +262,13 @@ namespace Ticketron.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Unregusers");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }

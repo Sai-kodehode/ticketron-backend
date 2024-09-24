@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Ticketron.Data;
 using Ticketron.Dto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
-using AutoMapper;
 
 namespace Ticketron.Controllers
 {
@@ -10,40 +12,42 @@ namespace Ticketron.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class UsersController:Controller
+    public class UsersController : Controller
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public UsersController(IUserRepository userRepository, IMapper imapper)
+        public UsersController(IUserRepository userRepository, IMapper imapper, DataContext context)
         {
             _userRepository = userRepository;
             _mapper = imapper;
+            _context = context;
 
         }
 
         [HttpGet]
 
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-            public IActionResult GetUsers()
+        public IActionResult GetUsers()
         {
             var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
-        
-            if(!ModelState.IsValid) 
-                return BadRequest ();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
             return Ok(users);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{userId}")]
 
-        public IActionResult GetUser(int id)
+        public IActionResult GetUser(int userId)
 
         {
-            if (!_userRepository.UserExists(id))
-                return NotFound ();
-                var user = _mapper.Map<UserDto>(_userRepository.GetUser(id));
-            if(!ModelState.IsValid)
-                return BadRequest ();
+            if (!_userRepository.UserExists(userId))
+                return NotFound();
+            var user = _mapper.Map<UserDto>(_userRepository.GetUser(userId));
+            if (!ModelState.IsValid)
+                return BadRequest();
             return Ok(user);
 
         }
@@ -52,35 +56,32 @@ namespace Ticketron.Controllers
 
         public IActionResult CreateUser([FromBody] UserDto newUser)
         {
-
-            if (CreateUser == null) 
+            if (CreateUser == null)
                 return BadRequest();
 
-            var userExisting = _userRepository.GetUsers().FirstOrDefault(c =>  c.Email == newUser.Email);
+            var userExisting = _userRepository.GetUsers().FirstOrDefault(c => c.Email == newUser.Email);
 
             if (userExisting != null)
                 return Conflict();
 
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest();
 
             var userMap = _mapper.Map<User>(newUser);
 
             if (!_userRepository.CreateUser(userMap))
             {
-               return StatusCode(500);
+                return StatusCode(500);
             }
             return StatusCode(201);
         }
 
-        [HttpPut]
-
+        [HttpPut("{userId}")]
         public IActionResult UpdateUser(int userId, [FromBody] UserDto updatedUser)
         {
-            if (updatedUser==null)
+            if (updatedUser == null)
                 return BadRequest();
-            if (userId!=updatedUser.Id)
-                return BadRequest();
+
             if (!_userRepository.UserExists(userId))
                 return NotFound();
 
@@ -91,16 +92,30 @@ namespace Ticketron.Controllers
                 return Conflict();
             }
 
+            _context.Entry(existingUser).State = EntityState.Detached;
 
-            var userMap= _mapper.Map<User>(updatedUser);
+            var userMap = _mapper.Map<User>(updatedUser);
+
+            userMap.Id = userId;
 
             if (!_userRepository.UpdateUser(userMap))
-                return StatusCode (500);
+                return StatusCode(500);
 
             return NoContent();
-           
+        }
 
+        [HttpDelete("{userId}")]
+        public IActionResult DeleteUser(int userId)
+        {
+            var existingUser = _userRepository.GetUser(userId);
 
+            if (existingUser == null)
+                return NotFound();
+
+            if (!_userRepository.DeleteUser(existingUser))
+                return StatusCode(500);
+
+            return NoContent();
         }
 
     }
