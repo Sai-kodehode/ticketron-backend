@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240924124427_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240924134121_initialMigration")]
+    partial class initialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,28 +88,6 @@ namespace Ticketron.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("Ticketron.Models.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TicketId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TicketId");
-
-                    b.ToTable("Images");
-                });
-
             modelBuilder.Entity("Ticketron.Models.Participant", b =>
                 {
                     b.Property<int>("Id")
@@ -157,6 +135,9 @@ namespace Ticketron.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ParticipantId")
                         .HasColumnType("int");
@@ -253,17 +234,6 @@ namespace Ticketron.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Ticketron.Models.Image", b =>
-                {
-                    b.HasOne("Ticketron.Models.Ticket", "Ticket")
-                        .WithMany("Images")
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ticket");
-                });
-
             modelBuilder.Entity("Ticketron.Models.Participant", b =>
                 {
                     b.HasOne("Ticketron.Models.Booking", "Booking")
@@ -329,11 +299,6 @@ namespace Ticketron.Migrations
             modelBuilder.Entity("Ticketron.Models.Group", b =>
                 {
                     b.Navigation("UnregUsers");
-                });
-
-            modelBuilder.Entity("Ticketron.Models.Ticket", b =>
-                {
-                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Ticketron.Models.User", b =>
