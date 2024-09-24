@@ -12,13 +12,13 @@ namespace Ticketron.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-    public class UsersController : Controller
+    public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly DataContext _context;
 
-        public UsersController(IUserRepository userRepository, IMapper imapper, DataContext context)
+        public UserController(IUserRepository userRepository, IMapper imapper, DataContext context)
         {
             _userRepository = userRepository;
             _mapper = imapper;
