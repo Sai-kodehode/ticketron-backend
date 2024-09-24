@@ -9,7 +9,5 @@
         public string? ImageUrl { get; set; }
         public Participant Participant { get; set; }
         public Booking Booking { get; set; }
-
-
     }
 }

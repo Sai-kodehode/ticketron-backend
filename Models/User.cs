@@ -9,6 +9,5 @@
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<Group> Groups { get; set; }
         public ICollection<UnregUser> UnregUsers { get; set; }
-
     }
 }
