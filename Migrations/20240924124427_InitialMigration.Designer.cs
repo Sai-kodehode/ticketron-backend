@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240924083507_123")]
-    partial class _123
+    [Migration("20240924124427_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -80,6 +80,7 @@ namespace Ticketron.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

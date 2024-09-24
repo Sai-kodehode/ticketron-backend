@@ -19,6 +19,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

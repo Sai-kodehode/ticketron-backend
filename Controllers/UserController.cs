@@ -56,7 +56,7 @@ namespace Ticketron.Controllers
 
         public IActionResult CreateUser([FromBody] UserDto newUser)
         {
-            if (CreateUser == null)
+            if (newUser == null)
                 return BadRequest();
 
             var userExisting = _userRepository.GetUsers().FirstOrDefault(c => c.Email == newUser.Email);
