@@ -8,10 +8,10 @@ namespace Ticketron.Helper
     {
         public MappingProfiles()
         {
-
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<Booking, BookingDto>().ReverseMap();
             CreateMap<Ticket, TicketDto>().ReverseMap();
+            CreateMap<UnregUser, UnregUserDto>().ReverseMap();
         }
     }
 }

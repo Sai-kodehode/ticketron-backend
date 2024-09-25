@@ -52,7 +52,7 @@ namespace Ticketron.Repository
             _context.Update(user);
             return Save();
         }
- public bool UserExists(int userId)
+        public bool UserExists(int userId)
         {
             return _context.Users.Any(x => x.Id == userId);
         }

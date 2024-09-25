@@ -20,6 +20,9 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IUnregUserRepository, UnregUserRepository>();
+
+
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 var app = builder.Build();
 
