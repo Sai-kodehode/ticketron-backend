@@ -23,6 +23,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IUnregUserRepository, UnregUserRepository>();
 
 
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

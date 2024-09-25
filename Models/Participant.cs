@@ -7,6 +7,6 @@
         public Booking? Booking { get; set; }
         public User? User { get; set; }
         public UnregUser? UnregUser { get; set; }
-        public bool IsUser { get; set; }
+        public bool? IsUser { get; set; }
     }
 }

@@ -16,13 +16,13 @@ namespace Ticketron.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly DataContext _context;
 
-        public UserController(IUserRepository userRepository, IMapper imapper, DataContext context)
+        public UserController(IUserRepository userRepository, IMapper imapper)
         {
             _userRepository = userRepository;
             _mapper = imapper;
             _context = context;
+
         }
 
         [HttpGet]
@@ -86,7 +86,6 @@ namespace Ticketron.Controllers
             if (existingUser.Email != updatedUser.Email)
                 return Conflict();
 
-            _context.Entry(existingUser).State = EntityState.Detached;
 
             var userMap = _mapper.Map<User>(updatedUser);
 
