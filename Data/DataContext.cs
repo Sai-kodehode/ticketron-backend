@@ -12,7 +12,7 @@ namespace Ticketron.Data
         public DbSet<Group> Groups { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Participant> Participants { get; set; }
-        public DbSet<User> Tickets { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
         public DbSet<UnregUser> Unregusers { get; set; }
         public DbSet<User> Users { get; set; }
     }

@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240924085901_456")]
-    partial class _456
+    [Migration("20240924123513_test")]
+    partial class test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,7 +157,7 @@ namespace Ticketron.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ParticipantId")
+                    b.Property<int?>("ParticipantId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -173,7 +173,7 @@ namespace Ticketron.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.ToTable("Ticket");
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Ticketron.Models.UnregUser", b =>
@@ -225,7 +225,7 @@ namespace Ticketron.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -294,9 +294,7 @@ namespace Ticketron.Migrations
 
                     b.HasOne("Ticketron.Models.Participant", "Participant")
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParticipantId");
 
                     b.Navigation("Booking");
 

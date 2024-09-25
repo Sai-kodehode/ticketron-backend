@@ -120,7 +120,7 @@ namespace Ticketron.Migrations
                     b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsUser")
+                    b.Property<bool?>("IsUser")
                         .HasColumnType("bit");
 
                     b.Property<int?>("UnregUserId")
@@ -148,13 +148,13 @@ namespace Ticketron.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookingId")
+                    b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ParticipantId")
+                    b.Property<int?>("ParticipantId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -170,7 +170,7 @@ namespace Ticketron.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.ToTable("Ticket");
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Ticketron.Models.UnregUser", b =>
@@ -222,7 +222,7 @@ namespace Ticketron.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -285,15 +285,11 @@ namespace Ticketron.Migrations
                 {
                     b.HasOne("Ticketron.Models.Booking", "Booking")
                         .WithMany("Tickets")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BookingId");
 
                     b.HasOne("Ticketron.Models.Participant", "Participant")
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParticipantId");
 
                     b.Navigation("Booking");
 
