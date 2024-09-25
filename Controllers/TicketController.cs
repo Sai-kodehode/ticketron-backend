@@ -19,7 +19,7 @@ namespace Ticketron.Controllers
         private readonly IBookingRepository _bookingRepository;
        
 
-       public TicketController(ITicketRepository ticketRepository, IMapper imapper, DataContext context, IBookingRepository bookingRepository)
+       public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = imapper;

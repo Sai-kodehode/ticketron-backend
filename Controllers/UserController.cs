@@ -21,7 +21,7 @@ namespace Ticketron.Controllers
         {
             _userRepository = userRepository;
             _mapper = imapper;
-            _context = context;
+          
 
         }
 
