@@ -10,5 +10,6 @@ namespace Ticketron.Interfaces
         bool UpdateBooking(Booking booking);
         bool DeleteBooking(Booking booking);
         bool Save();
+        bool BookingExists(int bookingId);
     }
 }

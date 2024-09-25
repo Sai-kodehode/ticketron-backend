@@ -12,7 +12,7 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240925074004_initialMigration")]
+    [Migration("20240925113826_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />
@@ -96,10 +96,13 @@ namespace Ticketron.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddedBy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("AddedBy")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("BookingId")
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsUser")
@@ -114,6 +117,8 @@ namespace Ticketron.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("UnregUserId");
 
@@ -139,7 +144,7 @@ namespace Ticketron.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ParticipantId")
+                    b.Property<int?>("ParticipantId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -155,7 +160,7 @@ namespace Ticketron.Migrations
 
                     b.HasIndex("ParticipantId");
 
-                    b.ToTable("Ticket");
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Ticketron.Models.UnregUser", b =>
@@ -207,7 +212,7 @@ namespace Ticketron.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("GroupUser", b =>
@@ -238,7 +243,13 @@ namespace Ticketron.Migrations
                 {
                     b.HasOne("Ticketron.Models.Booking", "Booking")
                         .WithMany("Participants")
-                        .HasForeignKey("BookingId");
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticketron.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId");
 
                     b.HasOne("Ticketron.Models.UnregUser", "UnregUser")
                         .WithMany()
@@ -249,6 +260,8 @@ namespace Ticketron.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Booking");
+
+                    b.Navigation("Group");
 
                     b.Navigation("UnregUser");
 
@@ -265,9 +278,7 @@ namespace Ticketron.Migrations
 
                     b.HasOne("Ticketron.Models.Participant", "Participant")
                         .WithMany()
-                        .HasForeignKey("ParticipantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParticipantId");
 
                     b.Navigation("Booking");
 

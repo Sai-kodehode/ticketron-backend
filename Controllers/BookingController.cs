@@ -62,7 +62,7 @@ namespace Ticketron.Controllers
             if (!_bookingRepository.CreateBooking(bookingMap))
                 return BadRequest();
 
-            return Ok();
+            return StatusCode(201);
         }
 
         [HttpPut("{bookingId}")]

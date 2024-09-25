@@ -12,6 +12,11 @@ namespace Ticketron.Repository
             _context = context;
         }
 
+        public bool BookingExists(int bookingId)
+        {
+            return _context.Bookings.Any(b => b.Id == bookingId);
+        }
+
         public bool CreateBooking(Booking booking)
         {
             _context.Add(booking);

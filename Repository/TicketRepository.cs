@@ -40,9 +40,6 @@ namespace Ticketron.Repository
         {
             return _context.Tickets.Where(x => x.Booking.Id == bookingId).ToList();
         }
-
-
-
         public bool Save()
         {
             var saved = _context.SaveChanges();
@@ -62,8 +59,8 @@ namespace Ticketron.Repository
 
             _context.Entry(existingTicket).State = EntityState.Detached;
             _context.Update(ticket);
-            return Save();    
-           
+            return Save();
+
         }
     }
 }
