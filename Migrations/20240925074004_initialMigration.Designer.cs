@@ -12,7 +12,7 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240924134121_initialMigration")]
+    [Migration("20240925074004_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />
@@ -182,7 +182,7 @@ namespace Ticketron.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Unregusers");
+                    b.ToTable("UnregUsers");
                 });
 
             modelBuilder.Entity("Ticketron.Models.User", b =>

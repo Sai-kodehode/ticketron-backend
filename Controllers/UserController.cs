@@ -23,11 +23,9 @@ namespace Ticketron.Controllers
             _userRepository = userRepository;
             _mapper = imapper;
             _context = context;
-
         }
 
         [HttpGet]
-
         [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
         public IActionResult GetUsers()
         {
@@ -39,21 +37,20 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{userId}")]
-
         public IActionResult GetUser(int userId)
-
         {
             if (!_userRepository.UserExists(userId))
                 return NotFound();
+
             var user = _mapper.Map<UserDto>(_userRepository.GetUser(userId));
+
             if (!ModelState.IsValid)
                 return BadRequest();
-            return Ok(user);
 
+            return Ok(user);
         }
 
         [HttpPost]
-
         public IActionResult CreateUser([FromBody] UserDto newUser)
         {
             if (newUser == null)
@@ -70,9 +67,8 @@ namespace Ticketron.Controllers
             var userMap = _mapper.Map<User>(newUser);
 
             if (!_userRepository.CreateUser(userMap))
-            {
                 return StatusCode(500);
-            }
+
             return StatusCode(201);
         }
 
@@ -88,9 +84,7 @@ namespace Ticketron.Controllers
             var existingUser = _userRepository.GetUser(userId);
 
             if (existingUser.Email != updatedUser.Email)
-            {
                 return Conflict();
-            }
 
             _context.Entry(existingUser).State = EntityState.Detached;
 

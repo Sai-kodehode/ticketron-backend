@@ -86,7 +86,7 @@ namespace Ticketron.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Unregusers",
+                name: "UnregUsers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -97,14 +97,14 @@ namespace Ticketron.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Unregusers", x => x.Id);
+                    table.PrimaryKey("PK_UnregUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Unregusers_Groups_GroupId",
+                        name: "FK_UnregUsers_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Unregusers_User_UserId",
+                        name: "FK_UnregUsers_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
@@ -132,9 +132,9 @@ namespace Ticketron.Migrations
                         principalTable: "Bookings",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Participants_Unregusers_UnregUserId",
+                        name: "FK_Participants_UnregUsers_UnregUserId",
                         column: x => x.UnregUserId,
-                        principalTable: "Unregusers",
+                        principalTable: "UnregUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Participants_User_UserId",
@@ -209,13 +209,13 @@ namespace Ticketron.Migrations
                 column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Unregusers_GroupId",
-                table: "Unregusers",
+                name: "IX_UnregUsers_GroupId",
+                table: "UnregUsers",
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Unregusers_UserId",
-                table: "Unregusers",
+                name: "IX_UnregUsers_UserId",
+                table: "UnregUsers",
                 column: "UserId");
         }
 
@@ -235,7 +235,7 @@ namespace Ticketron.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "Unregusers");
+                name: "UnregUsers");
 
             migrationBuilder.DropTable(
                 name: "Groups");

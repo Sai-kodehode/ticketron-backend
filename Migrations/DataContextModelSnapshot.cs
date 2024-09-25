@@ -179,7 +179,7 @@ namespace Ticketron.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Unregusers");
+                    b.ToTable("UnregUsers");
                 });
 
             modelBuilder.Entity("Ticketron.Models.User", b =>
