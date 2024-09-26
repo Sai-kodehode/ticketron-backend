@@ -31,11 +31,7 @@ namespace Ticketron.Repository
             return _context.Tickets.Where(x => x.Id == ticketId).FirstOrDefault();
         }
 
-        public ICollection<Ticket> GetTickets(User user)
-        {
-            throw new NotImplementedException();
-        }
-
+      
         public ICollection<Ticket> GetTickets(int bookingId)
         {
             return _context.Tickets.Where(x => x.Booking.Id == bookingId).ToList();

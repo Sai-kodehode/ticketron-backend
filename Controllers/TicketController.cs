@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Ticketron.Data;
 using Ticketron.Dto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ticketron.Controllers
 

@@ -14,5 +14,10 @@ namespace Ticketron.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<UnregUser> UnregUsers { get; set; }
         public DbSet<User> Users { get; set; }
+        //public DbSet<GroupMember> GroupMembers { get; set; }
+       
+
+       
+
     }
 }
