@@ -88,6 +88,9 @@ namespace Ticketron.Controllers
                 return StatusCode(500);
             return NoContent();
         }
+
+
+
         [HttpDelete("{ticketId}")]
         public IActionResult DeleteTicket(int ticketId)
         {

@@ -5,7 +5,6 @@ namespace Ticketron.Interfaces
     public interface IGroupRepository
     {
         ICollection<Group> GetGroups(int userId);
-        //Group GetGroup(string groupName);
         Group GetGroup(int groupId);
         bool GroupExists(int groupId);
         bool CreateGroup(Group group);

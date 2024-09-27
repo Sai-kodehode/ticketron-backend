@@ -24,7 +24,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IUnregUserRepository, UnregUserRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
-//builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,12 +1,14 @@
-﻿//using Ticketron.Models;
+﻿using Ticketron.Models;
 
-//namespace Ticketron.Dto
-//{
-//    public class GroupMemberDto
-//    {
+namespace Ticketron.Dto
+{
+    public class GroupMemberDto
+    {
 
-//        public int Id { get; set; }
-//        public ICollection<User>? Users { get; set; }
-//        public ICollection<UnregUser>? UnregUsers { get; set; }
-//    }
-//}
+        public int? UserId { get; set; }
+        public int? UnregUserId { get; set; }
+        //public User User { get; set; }
+        //public UnregUser UnregUser { get; set; }
+
+    }
+}

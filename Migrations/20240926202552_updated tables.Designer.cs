@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240926123955_add")]
-    partial class add
+    [Migration("20240926202552_updated tables")]
+    partial class updatedtables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,34 @@ namespace Ticketron.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("Ticketron.Models.GroupMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnregUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UnregUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupMembers");
                 });
 
             modelBuilder.Entity("Ticketron.Models.Participant", b =>
@@ -153,9 +181,6 @@ namespace Ticketron.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -164,8 +189,6 @@ namespace Ticketron.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
 
                     b.HasIndex("UserId");
 
@@ -217,6 +240,29 @@ namespace Ticketron.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Ticketron.Models.GroupMember", b =>
+                {
+                    b.HasOne("Ticketron.Models.Group", "Group")
+                        .WithMany("GroupMembers")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticketron.Models.UnregUser", "UnregUser")
+                        .WithMany()
+                        .HasForeignKey("UnregUserId");
+
+                    b.HasOne("Ticketron.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("UnregUser");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Ticketron.Models.Participant", b =>
                 {
                     b.HasOne("Ticketron.Models.Booking", "Booking")
@@ -257,10 +303,6 @@ namespace Ticketron.Migrations
 
             modelBuilder.Entity("Ticketron.Models.UnregUser", b =>
                 {
-                    b.HasOne("Ticketron.Models.Group", null)
-                        .WithMany("UnregUsers")
-                        .HasForeignKey("GroupId");
-
                     b.HasOne("Ticketron.Models.User", "User")
                         .WithMany("UnregUsers")
                         .HasForeignKey("UserId")
@@ -279,7 +321,7 @@ namespace Ticketron.Migrations
 
             modelBuilder.Entity("Ticketron.Models.Group", b =>
                 {
-                    b.Navigation("UnregUsers");
+                    b.Navigation("GroupMembers");
                 });
 
             modelBuilder.Entity("Ticketron.Models.User", b =>
