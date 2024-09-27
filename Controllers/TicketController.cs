@@ -16,12 +16,14 @@ namespace Ticketron.Controllers
         private readonly ITicketRepository _ticketRepository;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
+        private readonly IBookingRepository _bookingRepository;
        
 
-       public TicketController(ITicketRepository ticketRepository, IMapper imapper, DataContext context)
+       public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = imapper;
+            _bookingRepository= bookingRepository;
 
         }
         [HttpGet("{ticketId}")]
@@ -48,16 +50,19 @@ namespace Ticketron.Controllers
             return Ok(tickets);
         }
 
-        [HttpPost]
-        public IActionResult CreateTicket([FromBody] TicketDto newTicket)
+        [HttpPost("{bookingId}")]
+        public IActionResult CreateTicket(int bookingId, [FromBody] TicketDto newTicket)
         {
 
-            if(CreateTicket==null)
+            if(newTicket==null)
                 return BadRequest();
             
             if(!ModelState.IsValid)
                 return BadRequest();
+
             var ticketMap = _mapper.Map<Ticket>(newTicket);
+            ticketMap.Booking=_bookingRepository.GetBooking(bookingId);
+
             if (!_ticketRepository.CreateTicket(ticketMap))
             {
                 return StatusCode(500);
@@ -65,7 +70,7 @@ namespace Ticketron.Controllers
             return StatusCode(201);
         }
 
-        [HttpPut]
+        [HttpPut("{ticketId}")]
         public IActionResult UpdateTicket(int ticketId, [FromBody] TicketDto updateTicket)
         {
 
@@ -85,7 +90,7 @@ namespace Ticketron.Controllers
                 return StatusCode(500);
             return NoContent();
         }
-        [HttpDelete]
+        [HttpDelete("{ticketId}")]
         public IActionResult DeleteTicket(int ticketId)
         {
 
