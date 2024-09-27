@@ -31,16 +31,7 @@ namespace Ticketron.Controllers
             if (!_participantRepository.ParticipantExists(participantId))
                 return NotFound();
 
-            var participant = _participantRepository.GetParticipant(participantId);
-
-            var participantDto = new Participant
-            {
-                AddedBy = participant.AddedBy,
-                Booking = _bookingRepository.GetBooking(participant.Booking.Id),
-                UserId = ,
-            };
-
-
+            var participant = _mapper.Map<ParticipantDto>(_participantRepository.GetParticipant(participantId));
 
             if (!ModelState.IsValid)
                 return BadRequest();

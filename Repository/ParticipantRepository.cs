@@ -1,4 +1,5 @@
-﻿using Ticketron.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Models;
 
@@ -25,12 +26,21 @@ namespace Ticketron.Repository
 
         public Participant? GetParticipant(int participantId)
         {
-            return _context.Participants.Where(p => p.Id == participantId).FirstOrDefault();
+            return _context.Participants
+                .Include(p => p.Booking)
+                .Include(p => p.User)
+                .Include(p => p.UnregUser)
+                .FirstOrDefault(p => p.Id == participantId);
         }
 
         public ICollection<Participant> GetParticipants(int bookingId)
         {
-            return _context.Participants.Where(p => p.Booking != null && p.Booking.Id == bookingId).ToList();
+            return _context.Participants
+                .Include(p => p.Booking)
+                .Include(p => p.User)
+                .Include(p => p.UnregUser)
+                .Where(p => p.Booking != null && p.Booking.Id == bookingId)
+                .ToList();
         }
 
         public bool ParticipantExists(int participantId)
