@@ -113,10 +113,13 @@ namespace Ticketron.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddedBy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("AddedBy")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("BookingId")
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsUser")
@@ -131,6 +134,8 @@ namespace Ticketron.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("UnregUserId");
 
@@ -220,6 +225,24 @@ namespace Ticketron.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+<<<<<<< HEAD
+=======
+                });
+
+            modelBuilder.Entity("GroupUser", b =>
+                {
+                    b.HasOne("Ticketron.Models.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticketron.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+>>>>>>> 1d89f3c5979d22dc4dc51ae3d6b4f9526caba346
                 });
 
             modelBuilder.Entity("Ticketron.Models.Booking", b =>
@@ -273,7 +296,13 @@ namespace Ticketron.Migrations
                 {
                     b.HasOne("Ticketron.Models.Booking", "Booking")
                         .WithMany("Participants")
-                        .HasForeignKey("BookingId");
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticketron.Models.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId");
 
                     b.HasOne("Ticketron.Models.UnregUser", "UnregUser")
                         .WithMany()
@@ -284,6 +313,8 @@ namespace Ticketron.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Booking");
+
+                    b.Navigation("Group");
 
                     b.Navigation("UnregUser");
 

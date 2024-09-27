@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Ticketron.Data;
 using Ticketron.Dto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
@@ -21,8 +19,6 @@ namespace Ticketron.Controllers
         {
             _userRepository = userRepository;
             _mapper = imapper;
-          
-
         }
 
         [HttpGet]
@@ -33,6 +29,7 @@ namespace Ticketron.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest();
+
             return Ok(users);
         }
 
