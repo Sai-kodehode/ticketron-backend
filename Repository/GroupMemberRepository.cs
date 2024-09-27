@@ -16,21 +16,64 @@ namespace Ticketron.Repository
 
         public bool CreateGroupMember(GroupMember groupMember)
         {
-            _context.Add(groupMember);
+            if (groupMember.User != null)
+            {
+                groupMember.UserId = groupMember.User.Id;
+                groupMember.User = null;
+            }
+
+            if (groupMember.UnregUser != null)
+            {
+                groupMember.UnregUserId = groupMember.UnregUser.Id; 
+                groupMember.UnregUser = null; 
+            }
+
+            _context.GroupMembers.Add(groupMember);
+
             return Save();
         }
 
         public bool DeleteGroupMember(GroupMember groupMember)
         {
-            _context.Remove(groupMember);
+            if (groupMember.User != null)
+            {
+                groupMember.User = null;
+            }
+
+            if (groupMember.UnregUser != null)
+            {
+                groupMember.UnregUser = null;
+            }
+
+            _context.GroupMembers.Remove(groupMember);
             return Save();
         }
 
-
         public GroupMember GetGroupMember(int groupmemberId)
         {
-            return _context.GroupMembers.Include(gm => gm.User).Include(gm => gm.UnregUser).FirstOrDefault(gm => gm.Id == groupmemberId);
+            var groupMember = _context.GroupMembers
+                .Include(gm => gm.User)        
+                .Include(gm => gm.UnregUser)    
+                .FirstOrDefault(gm => gm.Id == groupmemberId);
 
+            if (groupMember != null)
+            {
+         
+                if (groupMember.User != null)
+                {
+                    var userId = groupMember.User.Id;
+                    groupMember.User = new User { Id = userId };
+                }
+
+          
+                if (groupMember.UnregUser != null)
+                {
+                    var unregUserId = groupMember.UnregUser.Id;
+                    groupMember.UnregUser = new UnregUser { Id = unregUserId };
+                }
+            }
+
+            return groupMember;
         }
 
 
