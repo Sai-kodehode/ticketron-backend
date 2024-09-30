@@ -22,9 +22,7 @@ namespace Ticketron.Helper
                 .ForMember(dest => dest.UnregUser, opt => opt.Ignore());
             CreateMap<Group, GroupDto>().ReverseMap();
             CreateMap<GroupMemberDto, GroupMember>().ReverseMap();
-            //CreateMap<GroupMember, GroupMemberDto>()
-            //.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.User != null ? src.User.Id : (int?)null))
-            //.ForMember(dest => dest.UnregUserId, opt => opt.MapFrom(src => src.UnregUser != null ? src.UnregUser.Id : (int?)null));
+            
         }
     }
 }
