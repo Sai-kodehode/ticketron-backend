@@ -24,8 +24,8 @@ namespace Ticketron.Repository
 
             if (groupMember.UnregUser != null)
             {
-                groupMember.UnregUserId = groupMember.UnregUser.Id; 
-                groupMember.UnregUser = null; 
+                groupMember.UnregUserId = groupMember.UnregUser.Id;
+                groupMember.UnregUser = null;
             }
 
             _context.GroupMembers.Add(groupMember);
@@ -52,37 +52,33 @@ namespace Ticketron.Repository
         public GroupMember GetGroupMember(int groupmemberId)
         {
             var groupMember = _context.GroupMembers
-                .Include(gm => gm.User)        
-                .Include(gm => gm.UnregUser)    
+                .Include(gm => gm.User)
+                .Include(gm => gm.UnregUser)
                 .FirstOrDefault(gm => gm.Id == groupmemberId);
 
             if (groupMember != null)
             {
-         
+
                 if (groupMember.User != null)
                 {
                     var userId = groupMember.User.Id;
                     groupMember.User = new User { Id = userId };
                 }
 
-          
+
                 if (groupMember.UnregUser != null)
                 {
                     var unregUserId = groupMember.UnregUser.Id;
                     groupMember.UnregUser = new UnregUser { Id = unregUserId };
                 }
             }
-
             return groupMember;
         }
-
-
-
         public ICollection<GroupMember> GetGroupMembers(int groupId)
         {
-            return _context.GroupMembers.Include(gm=>gm.User).Include(gm=>gm.UnregUser).Where(x => x.Group.Id == groupId).ToList();
+            return _context.GroupMembers.Include(gm => gm.User).Include(gm => gm.UnregUser).Where(x => x.Group.Id == groupId).ToList();
         }
-  public bool Save()
+        public bool Save()
         {
             var saved = _context.SaveChanges();
             return saved > 0;

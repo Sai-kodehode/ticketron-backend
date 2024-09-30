@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240927121126_updated tables 4")]
-    partial class updatedtables4
+    [Migration("20240930120345_updated groupmember table")]
+    partial class updatedgroupmembertable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,15 +65,10 @@ namespace Ticketron.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UnregUserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UnregUserId");
 
                     b.HasIndex("UserId");
 
@@ -90,6 +85,9 @@ namespace Ticketron.Migrations
 
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsUser")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("UnregUserId")
                         .HasColumnType("int");
@@ -241,10 +239,6 @@ namespace Ticketron.Migrations
 
             modelBuilder.Entity("Ticketron.Models.Group", b =>
                 {
-                    b.HasOne("Ticketron.Models.UnregUser", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("UnregUserId");
-
                     b.HasOne("Ticketron.Models.User", "User")
                         .WithMany("Groups")
                         .HasForeignKey("UserId")
@@ -263,7 +257,7 @@ namespace Ticketron.Migrations
                         .IsRequired();
 
                     b.HasOne("Ticketron.Models.UnregUser", "UnregUser")
-                        .WithMany()
+                        .WithMany("GroupMembers")
                         .HasForeignKey("UnregUserId");
 
                     b.HasOne("Ticketron.Models.User", "User")
@@ -348,7 +342,7 @@ namespace Ticketron.Migrations
 
             modelBuilder.Entity("Ticketron.Models.UnregUser", b =>
                 {
-                    b.Navigation("Groups");
+                    b.Navigation("GroupMembers");
                 });
 
             modelBuilder.Entity("Ticketron.Models.User", b =>

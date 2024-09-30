@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240927120743_updated tables 3")]
-    partial class updatedtables3
+    [Migration("20240930121426_updated groupmember tabless")]
+    partial class updatedgroupmembertabless
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

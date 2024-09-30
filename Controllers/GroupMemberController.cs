@@ -29,6 +29,8 @@ namespace Ticketron.Controllers
             if (!_groupMemberRepository.GroupMemberExists(groupMemberId))
                 return NotFound();
             var groupMember = _mapper.Map<GroupMemberDto>(_groupMemberRepository.GetGroupMember(groupMemberId));
+            if (groupMember == null)
+                return NotFound();
 
             if (!ModelState.IsValid)
 
@@ -42,7 +44,7 @@ namespace Ticketron.Controllers
         public IActionResult GetGroupMembers(int groupId)
         {
 
-            var groupMembers=_mapper.Map<List<GroupMemberDto>>(_groupMemberRepository.GetGroupMembers(groupId));
+            var groupMembers = _mapper.Map<List<GroupMemberDto>>(_groupMemberRepository.GetGroupMembers(groupId));
 
             if (!ModelState.IsValid)
                 return BadRequest();

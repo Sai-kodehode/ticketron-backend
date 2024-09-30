@@ -11,7 +11,7 @@ namespace Ticketron.Interfaces
         bool CreateGroupMember(GroupMember groupMember);
         bool DeleteGroupMember(GroupMember groupMember);
         bool Save();
-      
+
     }
 }
 

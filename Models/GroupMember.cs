@@ -10,5 +10,6 @@
         public UnregUser UnregUser { get; set; }
 
         public Group Group { get; set; }
+        //public bool IsUser { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ticketron.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class updatedgroupmembertable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,26 @@ namespace Ticketron.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Groups_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UnregUsers",
                 columns: table => new
                 {
@@ -68,32 +88,6 @@ namespace Ticketron.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Groups",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UnregUserId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Groups", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Groups_UnregUsers_UnregUserId",
-                        column: x => x.UnregUserId,
-                        principalTable: "UnregUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Groups_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GroupMembers",
                 columns: table => new
                 {
@@ -101,7 +95,8 @@ namespace Ticketron.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     UnregUserId = table.Column<int>(type: "int", nullable: true),
-                    GroupId = table.Column<int>(type: "int", nullable: false)
+                    GroupId = table.Column<int>(type: "int", nullable: false),
+                    IsUser = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,11 +206,6 @@ namespace Ticketron.Migrations
                 name: "IX_GroupMembers_UserId",
                 table: "GroupMembers",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Groups_UnregUserId",
-                table: "Groups",
-                column: "UnregUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_UserId",

@@ -12,8 +12,8 @@ using Ticketron.Data;
 namespace Ticketron.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240927113955_updated tables 2")]
-    partial class updatedtables2
+    [Migration("20240930121002_updated groupmember tables")]
+    partial class updatedgroupmembertables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,15 +65,10 @@ namespace Ticketron.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UnregUserId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UnregUserId");
 
                     b.HasIndex("UserId");
 
@@ -241,10 +236,6 @@ namespace Ticketron.Migrations
 
             modelBuilder.Entity("Ticketron.Models.Group", b =>
                 {
-                    b.HasOne("Ticketron.Models.UnregUser", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("UnregUserId");
-
                     b.HasOne("Ticketron.Models.User", "User")
                         .WithMany("Groups")
                         .HasForeignKey("UserId")
@@ -263,7 +254,7 @@ namespace Ticketron.Migrations
                         .IsRequired();
 
                     b.HasOne("Ticketron.Models.UnregUser", "UnregUser")
-                        .WithMany()
+                        .WithMany("GroupMembers")
                         .HasForeignKey("UnregUserId");
 
                     b.HasOne("Ticketron.Models.User", "User")
@@ -348,7 +339,7 @@ namespace Ticketron.Migrations
 
             modelBuilder.Entity("Ticketron.Models.UnregUser", b =>
                 {
-                    b.Navigation("Groups");
+                    b.Navigation("GroupMembers");
                 });
 
             modelBuilder.Entity("Ticketron.Models.User", b =>
