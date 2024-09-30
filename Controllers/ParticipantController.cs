@@ -65,27 +65,31 @@ namespace Ticketron.Controllers
             if (!_bookingRepository.BookingExists(bookingId))
                 return NotFound();
 
-            var participantMap = new Participant
-            {
-                AddedBy = newParticipant.AddedBy,
-                Booking = _bookingRepository.GetBooking(bookingId),
-                IsUser = newParticipant.IsUser
-            };
+            var participant = _mapper.Map<Participant>(newParticipant);
+            participant.Booking = _bookingRepository.GetBooking(bookingId);
 
-            if (newParticipant.IsUser == true && newParticipant.UserId != null)
+            if (newParticipant.IsUser && newParticipant.UserId.HasValue)
             {
-                participantMap.User = _userRepository.GetUser((int)newParticipant.UserId);
+                var user = _userRepository.GetUser(newParticipant.UserId.Value);
+                if (user == null)
+                    return NotFound();
+
+                participant.User = user;
             }
             else if (newParticipant.IsUser == false && newParticipant.UnregUserId != null)
             {
-                participantMap.UnregUser = _unregUserRepository.GetUnregUser((int)newParticipant.UnregUserId);
+                var unregUser = _unregUserRepository.GetUnregUser(newParticipant.UnregUserId.Value);
+                if (unregUser == null)
+                    return NotFound();
+
+                participant.UnregUser = unregUser;
             }
             else return BadRequest();
 
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            if (!_participantRepository.CreateParticipant(participantMap))
+            if (!_participantRepository.CreateParticipant(participant))
                 return BadRequest();
 
             return Ok();
