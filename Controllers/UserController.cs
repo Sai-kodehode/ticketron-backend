@@ -22,7 +22,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
+        //[ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
+        //[ProducesResponseType(400)]
+
         public IActionResult GetUsers()
         {
             var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
@@ -34,6 +36,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{userId}")]
+        //[ProducesResponseType(200, Type = typeof(User))]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+
         public IActionResult GetUser(int userId)
         {
             if (!_userRepository.UserExists(userId))
@@ -48,6 +54,13 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost]
+
+        //[ProducesResponseType(201)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        //[ProducesResponseType(409)]
+        //[ProducesResponseType(500)]
+
         public IActionResult CreateUser([FromBody] UserDto newUser)
         {
             if (newUser == null)
@@ -70,6 +83,11 @@ namespace Ticketron.Controllers
         }
 
         [HttpPut("{userId}")]
+        //[ProducesResponseType(204)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        //[ProducesResponseType(409)]
+        //[ProducesResponseType(500)]
         public IActionResult UpdateUser(int userId, [FromBody] UserDto updatedUser)
         {
             if (updatedUser == null)
@@ -95,6 +113,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpDelete("{userId}")]
+        //[ProducesResponseType(204)]
+        //[ProducesResponseType(404)]
+        //[ProducesResponseType(500)]
         public IActionResult DeleteUser(int userId)
         {
             var existingUser = _userRepository.GetUser(userId);

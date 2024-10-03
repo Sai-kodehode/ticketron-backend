@@ -25,6 +25,10 @@ namespace Ticketron.Controllers
 
         }
         [HttpGet("{ticketId}")]
+        [ProducesResponseType(200, Type = typeof(Ticket))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+
         public IActionResult GetTicket(int ticketId)
         {
             if(!_ticketRepository.TicketExists(ticketId)) 
@@ -39,6 +43,8 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("booking/{bookingId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Ticket>))]
+        [ProducesResponseType(400)]
         public IActionResult GetTickets(int bookingId)
         {
             var tickets=_mapper.Map<List<TicketDto>>(_ticketRepository.GetTickets(bookingId));
@@ -49,6 +55,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost("{bookingId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IActionResult CreateTicket(int bookingId, [FromBody] TicketDto newTicket)
         {
 
@@ -69,6 +78,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpPut("{ticketId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult UpdateTicket(int ticketId, [FromBody] TicketDto updateTicket)
         {
 
@@ -79,7 +92,6 @@ namespace Ticketron.Controllers
 
             var existingTicket= _ticketRepository.GetTicket(ticketId);
            
-
             var ticketMap= _mapper.Map<Ticket>(updateTicket);
 
             ticketMap.Id = ticketId;
@@ -92,6 +104,9 @@ namespace Ticketron.Controllers
 
 
         [HttpDelete("{ticketId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult DeleteTicket(int ticketId)
         {
 

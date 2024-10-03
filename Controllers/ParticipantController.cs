@@ -26,6 +26,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{participantId}")]
+        [ProducesResponseType(200, Type = typeof(Participant))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+
         public IActionResult GetParticipant(int participantId)
         {
             if (!_participantRepository.ParticipantExists(participantId))
@@ -40,6 +44,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("booking/{bookingId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Participant>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+
         public IActionResult GetParticipants(int bookingId)
         {
             if (!_bookingRepository.BookingExists(bookingId))
@@ -54,6 +62,11 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost("{bookingId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+
         public IActionResult CreateParticipant(int bookingId, [FromBody] ParticipantDto newParticipant)
         {
             if (newParticipant == null)
@@ -76,7 +89,7 @@ namespace Ticketron.Controllers
 
                 participant.User = user;
             }
-            else if (newParticipant.IsUser == false && newParticipant.UnregUserId != null)
+            else if (newParticipant.IsUser == false && newParticipant.UnregUserId.HasValue)
             {
                 var unregUser = _unregUserRepository.GetUnregUser(newParticipant.UnregUserId.Value);
                 if (unregUser == null)
@@ -92,10 +105,13 @@ namespace Ticketron.Controllers
             if (!_participantRepository.CreateParticipant(participant))
                 return BadRequest();
 
-            return Ok();
+            return StatusCode(201);
         }
 
         [HttpDelete("{participantId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult DeleteParticipant(int participantId)
         {
             if (!_participantRepository.ParticipantExists(participantId))
@@ -106,7 +122,7 @@ namespace Ticketron.Controllers
             if (!_participantRepository.DeleteParticipant(participant))
                 return BadRequest();
 
-            return Ok();
+            return NoContent();
         }
     }
 }

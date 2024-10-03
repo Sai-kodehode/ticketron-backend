@@ -3,8 +3,7 @@
     public class GroupDto
     {
    
-        public string Name { get; set; }
-    
+        public string Name { get; set; } 
 
    
     }

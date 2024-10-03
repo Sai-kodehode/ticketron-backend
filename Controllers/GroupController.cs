@@ -23,6 +23,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{groupId}")]
+        [ProducesResponseType(200, Type = typeof(Group))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult GetGroup(int groupId)
         {
             if (!_groupRepository.GroupExists(groupId))
@@ -36,7 +39,8 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("user/{userId}")]
-
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Group>))]
+        [ProducesResponseType(400)]
         public IActionResult GetGroups(int userId)
         {
             var groups = _mapper.Map<List<GroupDto>>(_groupRepository.GetGroups(userId));
@@ -47,7 +51,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost("{userId}")]
-
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IActionResult CreateGroup(int userId, [FromBody] GroupDto newGroup)
         {
             if (newGroup == null)
@@ -68,7 +74,10 @@ namespace Ticketron.Controllers
 
 
         [HttpPut("{groupId}")]
-
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult UpdateGroup(int groupId, [FromBody] GroupDto updateGroup)
         {
             if(updateGroup==null)
@@ -87,6 +96,9 @@ namespace Ticketron.Controllers
        
 
         [HttpDelete("{groupId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult DeleteGroup(int groupId)
         {
 
@@ -98,8 +110,5 @@ namespace Ticketron.Controllers
                 return StatusCode(500);
             return NoContent();
         }
-
-
-
     }
 }

@@ -24,6 +24,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{groupMemberId}")]
+        [ProducesResponseType(200, Type = typeof(GroupMember))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult GetGroupMember(int groupMemberId)
         {
             if (!_groupMemberRepository.GroupMemberExists(groupMemberId))
@@ -40,7 +43,8 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("group/{groupId}")]
-
+        [ProducesResponseType(200, Type = typeof(IEnumerable<GroupMember>))]
+        [ProducesResponseType(400)]
         public IActionResult GetGroupMembers(int groupId)
         {
 
@@ -52,6 +56,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost("group/{groupId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+
         public IActionResult CreateGroupMember(int groupId, [FromBody] GroupMemberDto newGroupMember)
         {
 
@@ -74,6 +82,9 @@ namespace Ticketron.Controllers
 
 
         [HttpDelete("{groupMemberId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult DeleteGroupmember(int groupMemberId)
         {
 

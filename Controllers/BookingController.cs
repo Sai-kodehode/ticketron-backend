@@ -26,6 +26,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{bookingId}")]
+        [ProducesResponseType(200, Type = typeof(Booking))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+
         public IActionResult GetBooking(int bookingId)
         {
             var booking = _mapper.Map<BookingDto>(_bookingRepository.GetBooking(bookingId));
@@ -40,6 +44,8 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Booking>))]
+        [ProducesResponseType(400)]
         public IActionResult GetBookings(int userId)
         {
             var bookings = _mapper.Map<List<BookingDto>>(_bookingRepository.GetBookings(userId));
@@ -51,6 +57,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost("{userId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         public IActionResult CreateBooking(int userId, [FromBody] BookingDto newBooking)
         {
             if (newBooking == null)
@@ -60,12 +69,16 @@ namespace Ticketron.Controllers
             bookingMap.User = _userRepository.GetUser(userId);
 
             if (!_bookingRepository.CreateBooking(bookingMap))
-                return BadRequest();
+                return StatusCode(500);
 
             return StatusCode(201);
         }
 
         [HttpPut("{bookingId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult UpdateBooking(int bookingId, [FromBody] BookingDto updateBooking)
         {
             if (updateBooking == null)
@@ -82,12 +95,15 @@ namespace Ticketron.Controllers
             bookingMap.Id = bookingId;
 
             if (!_bookingRepository.UpdateBooking(bookingMap))
-                return BadRequest();
+                return StatusCode(500);
 
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{bookingId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteBooking(int bookingId)
         {
             var booking = _bookingRepository.GetBooking(bookingId);
@@ -98,7 +114,7 @@ namespace Ticketron.Controllers
             if (!_bookingRepository.DeleteBooking(booking))
                 return BadRequest();
 
-            return Ok();
+            return NoContent();
         }
     }
 }

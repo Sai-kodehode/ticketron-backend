@@ -6,6 +6,6 @@ namespace Ticketron.Dto
     {
         public int? UserId { get; set; }
         public int? UnregUserId { get; set; }   
-        //public bool IsUser { get; set; }      
+        //public bool IsUser { get; set; }
     }
 }

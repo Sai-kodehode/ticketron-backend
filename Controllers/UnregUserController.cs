@@ -22,6 +22,10 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{unregUserId}")]
+        [ProducesResponseType(200, Type = typeof(UnregUser))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+
         public IActionResult GetUnregUser(int unregUserId)
         {
             if (!_unregUserRepository.UnregUserExists(unregUserId))
@@ -36,6 +40,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UnregUser>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult GetUnregUsersByUserId(int userId)
         {
             if (!_userRepository.UserExists(userId))
@@ -51,6 +58,11 @@ namespace Ticketron.Controllers
         }
 
         [HttpPost("{userId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+
         public IActionResult CreateUnregUser(int userId, [FromBody] UnregUserDto newUnregUser)
         {
             if (!_userRepository.UserExists(userId))
@@ -73,6 +85,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpDelete("{unregUserId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
         public IActionResult DeleteUnregUser(int unregUserId)
         {
             var existingUnregUser = _unregUserRepository.GetUnregUser(unregUserId);
