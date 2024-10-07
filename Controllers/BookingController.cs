@@ -26,9 +26,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{bookingId}")]
-        [ProducesResponseType(200, Type = typeof(Booking))]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        //[ProducesResponseType(200, Type = typeof(Booking))]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
 
         public IActionResult GetBooking(int bookingId)
         {
@@ -56,10 +56,25 @@ namespace Ticketron.Controllers
             return Ok(bookings);
         }
 
+        //[HttpPost("{userId}")]
+        ////[ProducesResponseType(201)]
+        ////[ProducesResponseType(400)]
+        ////[ProducesResponseType(500)]
+        //public IActionResult CreateBooking(int userId, [FromBody] BookingDto newBooking)
+        //{
+        //    if (newBooking == null)
+        //        return BadRequest();
+
+        //    var bookingMap = _mapper.Map<Booking>(newBooking);
+        //    bookingMap.User = _userRepository.GetUser(userId);
+
+        //    if (!_bookingRepository.CreateBooking(bookingMap))
+        //        return StatusCode(500);
+
+        //    return StatusCode(201);
+        //}
+
         [HttpPost("{userId}")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(500)]
         public IActionResult CreateBooking(int userId, [FromBody] BookingDto newBooking)
         {
             if (newBooking == null)
@@ -71,14 +86,17 @@ namespace Ticketron.Controllers
             if (!_bookingRepository.CreateBooking(bookingMap))
                 return StatusCode(500);
 
-            return StatusCode(201);
+            // Assuming bookingMap now contains the created ID (e.g., from a database that generates the ID)
+            var createdBookingDto = _mapper.Map<BookingDto>(bookingMap);
+            return Ok(createdBookingDto);
         }
 
+
         [HttpPut("{bookingId}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        [ProducesResponseType(500)]
+        //[ProducesResponseType(204)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
+        //[ProducesResponseType(500)]
         public IActionResult UpdateBooking(int bookingId, [FromBody] BookingDto updateBooking)
         {
             if (updateBooking == null)
@@ -101,9 +119,9 @@ namespace Ticketron.Controllers
         }
 
         [HttpDelete("{bookingId}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        //[ProducesResponseType(204)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(404)]
         public IActionResult DeleteBooking(int bookingId)
         {
             var booking = _bookingRepository.GetBooking(bookingId);
