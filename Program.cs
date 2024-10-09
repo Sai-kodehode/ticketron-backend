@@ -15,11 +15,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// Configure DbContext to use Azure SQL Database connection string
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultMyConnection"));
-});
+
 // Add CORS to allow requests from the React frontend
 builder.Services.AddCors(options =>
 {
@@ -31,6 +27,23 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
+// Configure DbContext to use Azure SQL Database connection string
+
+var connection = String.Empty;
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
+    connection = builder.Configuration.GetConnectionString("DefaultMyConnection");
+}
+else
+{
+    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
+    connection = builder.Configuration.GetConnectionString("AZURE_SQL_Connection");
+}
+
+builder.Services.AddDbContext<DataContext>(options =>
+options.UseSqlServer(connection));
 // Add AutoMapper for object mapping
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Register repositories for Dependency Injection
@@ -43,11 +56,20 @@ builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
+app.UseSwagger();
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
     app.UseSwaggerUI();
 }
+if (!app.Environment.IsDevelopment())
+{
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty;
+    });
+}
+
 app.UseHttpsRedirection();
 // Enable CORS for the frontend
 app.UseCors("AllowFrontend");
