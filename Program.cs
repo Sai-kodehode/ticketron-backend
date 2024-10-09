@@ -1,5 +1,3 @@
-
-
 using Microsoft.EntityFrameworkCore;
 using Ticketron.Data;
 using Ticketron.Interfaces;
@@ -20,7 +18,7 @@ builder.Services.AddSwaggerGen();
 // Configure DbContext to use Azure SQL Database connection string
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SaiConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultMyConnection"));
 });
 // Add CORS to allow requests from the React frontend
 builder.Services.AddCors(options =>
