@@ -17,16 +17,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add CORS to allow requests from the React frontend
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend",
+//        builder =>
+//        {
+//            builder.WithOrigins("http://localhost:5173", "https://localhost:5173") // Allow both HTTP and HTTPS
+//                   .AllowAnyMethod()
+//                   .AllowAnyHeader();
+//        });
+//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5173", "https://localhost:5173") // Allow both HTTP and HTTPS
+            builder.WithOrigins("http://localhost:5173", "https://localhost:5173",
+                "https://white-cliff-06c7dbb03.5.azurestaticapps.net") // Allow Azure-hosted frontend
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
 });
+
+
 // Configure DbContext to use Azure SQL Database connection string
 
 var connection = String.Empty;
