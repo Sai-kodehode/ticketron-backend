@@ -56,10 +56,8 @@ namespace Ticketron.Controllers
             return Ok(bookings);
         }
 
+
         //[HttpPost("{userId}")]
-        ////[ProducesResponseType(201)]
-        ////[ProducesResponseType(400)]
-        ////[ProducesResponseType(500)]
         //public IActionResult CreateBooking(int userId, [FromBody] BookingDto newBooking)
         //{
         //    if (newBooking == null)
@@ -71,52 +69,35 @@ namespace Ticketron.Controllers
         //    if (!_bookingRepository.CreateBooking(bookingMap))
         //        return StatusCode(500);
 
-        //    return StatusCode(201);
-        //}
-
-        [HttpPost("{userId}")]
-        public IActionResult CreateBooking(int userId, [FromBody] BookingDto newBooking)
-        {
-            if (newBooking == null)
-                return BadRequest();
-
-            var bookingMap = _mapper.Map<Booking>(newBooking);
-            bookingMap.User = _userRepository.GetUser(userId);
-
-            if (!_bookingRepository.CreateBooking(bookingMap))
-                return StatusCode(500);
-
-            // Assuming bookingMap now contains the created ID (e.g., from a database that generates the ID)
-            var createdBookingDto = _mapper.Map<BookingDto>(bookingMap);
-            return Ok(createdBookingDto);
-        }
-
-        //[HttpPost("create")]
-        //public IActionResult CreateBooking([FromBody] BookingDto newBooking)
-        //{
-        //    if (newBooking == null)
-        //        return BadRequest("Booking data is null.");
-
-        //    // Dynamically use the userId from the request body
-        //    var userId = newBooking.UserId;
-
-        //    // Find the user from the repository or database
-        //    var user = _userRepository.GetUser(userId);
-        //    if (user == null)
-        //        return NotFound($"User with ID {userId} not found.");
-
-        //    // Map the DTO to the Booking entity
-        //    var booking = _mapper.Map<Booking>(newBooking);
-        //    booking.User = user;  // Assign the user to the booking
-
-        //    // Create the booking in the repository
-        //    if (!_bookingRepository.CreateBooking(booking))
-        //        return StatusCode(500, "Error creating the booking.");
-
-        //    // Return the newly created booking
-        //    var createdBookingDto = _mapper.Map<BookingDto>(booking);
+        //    // Assuming bookingMap now contains the created ID (e.g., from a database that generates the ID)
+        //    var createdBookingDto = _mapper.Map<BookingDto>(bookingMap);
         //    return Ok(createdBookingDto);
         //}
+
+        [HttpPost("create")]
+        public IActionResult CreateBooking([FromBody] BookingDto newBooking)
+        {
+            if (newBooking == null)
+                return BadRequest("Booking data is null.");
+
+  
+            var userId = newBooking.UserId;
+
+            var user = _userRepository.GetUser(userId);
+            if (user == null)
+                return NotFound($"User with ID {userId} not found.");
+
+            var booking = _mapper.Map<Booking>(newBooking);
+            booking.User = user; 
+
+            // Create the booking in the repository
+            if (!_bookingRepository.CreateBooking(booking))
+                return StatusCode(500, "Error creating the booking.");
+
+            // Return the newly created booking
+            var createdBookingDto = _mapper.Map<BookingDto>(booking);
+            return Ok(createdBookingDto);
+        }
 
 
 
