@@ -1,4 +1,5 @@
-﻿using Ticketron.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Models;
 
@@ -44,11 +45,18 @@ namespace Ticketron.Repository
             var saved = _context.SaveChanges();
             return saved > 0;
         }
-
         public bool UpdateBooking(Booking booking)
         {
+
+            var existingBooking = _context.Bookings.Find(booking.Id);
+            if (existingBooking == null)
+                return false;
+
+            _context.Entry(existingBooking).State = EntityState.Detached;
             _context.Update(booking);
             return Save();
+
         }
+
     }
 }

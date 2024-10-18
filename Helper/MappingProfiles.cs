@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Ticketron.Dto;
+using Ticketron.Dto.BookingDto.BookingDto;
+using Ticketron.Dto.TicketDto;
 using Ticketron.Models;
 
 namespace Ticketron.Helper
@@ -9,8 +11,15 @@ namespace Ticketron.Helper
         public MappingProfiles()
         {
             CreateMap<User, UserDto>().ReverseMap();
+
             CreateMap<Booking, BookingDto>().ReverseMap();
+            CreateMap<BookingCreateDto, Booking>();                
+            CreateMap<BookingUpdateDto, Booking>();
+
             CreateMap<Ticket, TicketDto>().ReverseMap();
+            CreateMap<TicketCreateDto, Ticket>().ReverseMap();
+            CreateMap<TicketUpdateDto, Ticket>().ReverseMap();
+
             CreateMap<UnregUser, UnregUserDto>().ReverseMap();
             CreateMap<Participant, ParticipantDto>()
                 .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.Id))

@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ticketron.Data;
 using Ticketron.Dto;
+using Ticketron.Dto.BookingDto.BookingDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
+using Ticketron.Repository;
 
 namespace Ticketron.Controllers
 {
@@ -15,20 +17,18 @@ namespace Ticketron.Controllers
         private readonly IBookingRepository _bookingRepository;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-        private readonly DataContext _context;
-
-        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, DataContext context)
+       public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, DataContext context)
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
             _userRepository = userRepository;
-            _context = context;
+
         }
 
         [HttpGet("{bookingId}")]
-        //[ProducesResponseType(200, Type = typeof(Booking))]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
+        [ProducesResponseType(200, Type = typeof(BookingDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
 
         public IActionResult GetBooking(int bookingId)
         {
@@ -44,7 +44,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Booking>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<BookingDto>))]
         [ProducesResponseType(400)]
         public IActionResult GetBookings(int userId)
         {
@@ -56,31 +56,15 @@ namespace Ticketron.Controllers
             return Ok(bookings);
         }
 
-
-        //[HttpPost("{userId}")]
-        //public IActionResult CreateBooking(int userId, [FromBody] BookingDto newBooking)
-        //{
-        //    if (newBooking == null)
-        //        return BadRequest();
-
-        //    var bookingMap = _mapper.Map<Booking>(newBooking);
-        //    bookingMap.User = _userRepository.GetUser(userId);
-
-        //    if (!_bookingRepository.CreateBooking(bookingMap))
-        //        return StatusCode(500);
-
-        //    // Assuming bookingMap now contains the created ID (e.g., from a database that generates the ID)
-        //    var createdBookingDto = _mapper.Map<BookingDto>(bookingMap);
-        //    return Ok(createdBookingDto);
-        //}
-
         [HttpPost("create")]
-        public IActionResult CreateBooking([FromBody] BookingDto newBooking)
+        [ProducesResponseType(200, Type = typeof(BookingDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult CreateBooking([FromBody] BookingCreateDto newBooking)
         {
             if (newBooking == null)
                 return BadRequest("Booking data is null.");
 
-  
             var userId = newBooking.UserId;
 
             var user = _userRepository.GetUser(userId);
@@ -90,47 +74,41 @@ namespace Ticketron.Controllers
             var booking = _mapper.Map<Booking>(newBooking);
             booking.User = user; 
 
-            // Create the booking in the repository
             if (!_bookingRepository.CreateBooking(booking))
                 return StatusCode(500, "Error creating the booking.");
 
-            // Return the newly created booking
             var createdBookingDto = _mapper.Map<BookingDto>(booking);
             return Ok(createdBookingDto);
         }
-
-
-
+ 
         [HttpPut("{bookingId}")]
-        //[ProducesResponseType(204)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(500)]
-        public IActionResult UpdateBooking(int bookingId, [FromBody] BookingDto updateBooking)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult UpdateBooking(int bookingId, [FromBody] BookingUpdateDto updateBooking)
         {
-            if (updateBooking == null)
-                return BadRequest();
+            if (updateBooking == null || bookingId != updateBooking.Id)
+                return BadRequest("Invalid data.");
 
             var existingBooking = _bookingRepository.GetBooking(bookingId);
 
             if (existingBooking == null)
-                return NotFound();
-
-            _context.Entry(existingBooking).State = EntityState.Detached;
+                return NotFound("Booking not found.");
 
             var bookingMap = _mapper.Map<Booking>(updateBooking);
             bookingMap.Id = bookingId;
 
             if (!_bookingRepository.UpdateBooking(bookingMap))
-                return StatusCode(500);
+                return StatusCode(500, "Error updating the booking.");
 
             return NoContent();
         }
 
         [HttpDelete("{bookingId}")]
-        //[ProducesResponseType(204)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public IActionResult DeleteBooking(int bookingId)
         {
             var booking = _bookingRepository.GetBooking(bookingId);

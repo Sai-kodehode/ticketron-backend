@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Ticketron.Dto;
+using Ticketron.Dto.TicketDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
 
@@ -25,9 +25,9 @@ namespace Ticketron.Controllers
 
         }
         [HttpGet("{ticketId}")]
-        [ProducesResponseType(200, Type = typeof(Ticket))]
+        [ProducesResponseType(200, Type = typeof(TicketDto))]
         [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
+        [ProducesResponseType(404)] 
 
         public IActionResult GetTicket(int ticketId)
         {
@@ -43,7 +43,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("booking/{bookingId}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Ticket>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<TicketDto>))]
         [ProducesResponseType(400)]
         public IActionResult GetTickets(int bookingId)
         {
@@ -54,27 +54,28 @@ namespace Ticketron.Controllers
             return Ok(tickets);
         }
 
-        [HttpPost("{bookingId}")]
-        [ProducesResponseType(201)]
+
+        [HttpPost("create")]
+        [ProducesResponseType(201, Type = typeof(TicketDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public IActionResult CreateTicket(int bookingId, [FromBody] TicketDto newTicket)
+        public IActionResult CreateTicket([FromBody] TicketCreateDto newTicket)
         {
+            if (newTicket == null)
+                return BadRequest("Ticket data is null.");
 
-            if(newTicket==null)
-                return BadRequest();
-            
-            if(!ModelState.IsValid)
-                return BadRequest();
+            var booking = _bookingRepository.GetBooking(newTicket.BookingId);
+            if (booking == null)
+                return NotFound($"Booking with ID {newTicket.BookingId} not found.");
 
-            var ticketMap = _mapper.Map<Ticket>(newTicket);
-            ticketMap.Booking=_bookingRepository.GetBooking(bookingId);
+            var ticket = _mapper.Map<Ticket>(newTicket);
+            ticket.Booking = booking;
 
-            if (!_ticketRepository.CreateTicket(ticketMap))
-            {
-                return StatusCode(500);
-            }
-            return StatusCode(201);
+            if (!_ticketRepository.CreateTicket(ticket))
+                return StatusCode(500, "Error creating the ticket.");
+
+            var createdTicketDto = _mapper.Map<TicketDto>(ticket);
+            return Ok(createdTicketDto); 
         }
 
         [HttpPut("{ticketId}")]
@@ -82,15 +83,18 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public IActionResult UpdateTicket(int ticketId, [FromBody] TicketDto updateTicket)
+        public IActionResult UpdateTicket(int ticketId, [FromBody] TicketUpdateDto updateTicket)
         {
 
-            if(UpdateTicket==null)
+            if(UpdateTicket==null || ticketId!=updateTicket.Id)
                 return BadRequest();
-            if (!_ticketRepository.TicketExists(ticketId))
-                return NotFound();
-
+            
             var existingTicket= _ticketRepository.GetTicket(ticketId);
+
+
+            if (existingTicket==null)
+                return NotFound("Booking not found");
+
            
             var ticketMap= _mapper.Map<Ticket>(updateTicket);
 
@@ -101,8 +105,6 @@ namespace Ticketron.Controllers
             return NoContent();
         }
 
-
-
         [HttpDelete("{ticketId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -110,18 +112,13 @@ namespace Ticketron.Controllers
         public IActionResult DeleteTicket(int ticketId)
         {
 
-            var existingUser=_ticketRepository.GetTicket(ticketId);
+            var ticket=_ticketRepository.GetTicket(ticketId);
 
-            if (existingUser == null)
+            if (ticket == null)
                 return NotFound();
-            if (!_ticketRepository.DeleteTicket(existingUser))
+            if (!_ticketRepository.DeleteTicket(ticket))
                 return StatusCode(500);
             return NoContent();
         }
-
-
-
-
-
     }
 }
