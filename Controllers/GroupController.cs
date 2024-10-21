@@ -50,28 +50,6 @@ namespace Ticketron.Controllers
             return Ok(groups);
         }
 
-        //[HttpPost("{userId}")]
-        //[ProducesResponseType(201)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(500)]
-        //public IActionResult CreateGroup(int userId, [FromBody] GroupDto newGroup)
-        //{
-        //    if (newGroup == null)
-        //        return BadRequest();
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
-        //    var groupMap = _mapper.Map<Group>(newGroup);
-        //    groupMap.User = _userRepository.GetUser(userId);
-        //    if (!_groupRepository.CreateGroup(groupMap))
-        //    {
-
-        //        return StatusCode(500);
-        //    }
-        //    return StatusCode(201);
-
-
-        //}
-
 
         [HttpPost("create")]
         [ProducesResponseType(201)]
