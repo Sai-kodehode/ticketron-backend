@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Ticketron.Dto;
 using Ticketron.Dto.BookingDto.BookingDto;
+using Ticketron.Dto.GroupDto.GroupDto;
 using Ticketron.Dto.TicketDto;
 using Ticketron.Models;
 
@@ -30,6 +31,9 @@ namespace Ticketron.Helper
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.UnregUser, opt => opt.Ignore());
             CreateMap<Group, GroupDto>().ReverseMap();
+            CreateMap<GroupCreateDto, Group>();
+            CreateMap<GroupUpdateDto, Group>();
+
             CreateMap<GroupMemberDto, GroupMember>().ReverseMap();
             
         }

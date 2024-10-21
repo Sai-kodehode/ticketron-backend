@@ -86,7 +86,7 @@ namespace Ticketron.Controllers
         public IActionResult UpdateTicket(int ticketId, [FromBody] TicketUpdateDto updateTicket)
         {
 
-            if(UpdateTicket==null || ticketId!=updateTicket.Id)
+            if(UpdateTicket==null)
                 return BadRequest();
             
             var existingTicket= _ticketRepository.GetTicket(ticketId);
@@ -96,7 +96,7 @@ namespace Ticketron.Controllers
                 return NotFound("Booking not found");
 
            
-            var ticketMap= _mapper.Map<Ticket>(updateTicket);
+            var ticketMap= _mapper.Map(updateTicket, existingTicket);
 
             ticketMap.Id = ticketId;
 

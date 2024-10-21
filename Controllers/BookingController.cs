@@ -88,7 +88,7 @@ namespace Ticketron.Controllers
         [ProducesResponseType(500)]
         public IActionResult UpdateBooking(int bookingId, [FromBody] BookingUpdateDto updateBooking)
         {
-            if (updateBooking == null || bookingId != updateBooking.Id)
+            if (updateBooking == null)
                 return BadRequest("Invalid data.");
 
             var existingBooking = _bookingRepository.GetBooking(bookingId);
@@ -96,7 +96,7 @@ namespace Ticketron.Controllers
             if (existingBooking == null)
                 return NotFound("Booking not found.");
 
-            var bookingMap = _mapper.Map<Booking>(updateBooking);
+            var bookingMap = _mapper.Map(updateBooking, existingBooking);
             bookingMap.Id = bookingId;
 
             if (!_bookingRepository.UpdateBooking(bookingMap))

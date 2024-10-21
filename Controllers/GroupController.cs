@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Ticketron.Dto;
+using Ticketron.Dto.GroupDto.GroupDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
 using Ticketron.Repository;
@@ -50,50 +50,79 @@ namespace Ticketron.Controllers
             return Ok(groups);
         }
 
-        [HttpPost("{userId}")]
+        //[HttpPost("{userId}")]
+        //[ProducesResponseType(201)]
+        //[ProducesResponseType(400)]
+        //[ProducesResponseType(500)]
+        //public IActionResult CreateGroup(int userId, [FromBody] GroupDto newGroup)
+        //{
+        //    if (newGroup == null)
+        //        return BadRequest();
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
+        //    var groupMap = _mapper.Map<Group>(newGroup);
+        //    groupMap.User = _userRepository.GetUser(userId);
+        //    if (!_groupRepository.CreateGroup(groupMap))
+        //    {
+
+        //        return StatusCode(500);
+        //    }
+        //    return StatusCode(201);
+
+
+        //}
+
+
+        [HttpPost("create")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public IActionResult CreateGroup(int userId, [FromBody] GroupDto newGroup)
+        public IActionResult CreateGroup([FromBody] GroupCreateDto newGroup)
         {
             if (newGroup == null)
-                return BadRequest();
-            if (!ModelState.IsValid)
-                return BadRequest();
-            var groupMap = _mapper.Map<Group>(newGroup);
-            groupMap.User = _userRepository.GetUser(userId);
-            if (!_groupRepository.CreateGroup(groupMap))
-            {
+                return BadRequest("Group data is null.");
 
-                return StatusCode(500);
-            }
-            return StatusCode(201);
+            var userId = newGroup.UserId;
 
+            var user = _userRepository.GetUser(userId);
+            if (user == null)
+                return NotFound($"User with ID {userId} not found.");
 
+            var group = _mapper.Map<Group>(newGroup);
+            group.User = user;
+
+            if (!_groupRepository.CreateGroup(group))
+                return StatusCode(500, "Error creating the group.");
+
+            var createdGroupDto = _mapper.Map<GroupDto>(group);
+            return Ok(createdGroupDto);
         }
-
 
         [HttpPut("{groupId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public IActionResult UpdateGroup(int groupId, [FromBody] GroupDto updateGroup)
+        public IActionResult UpdateGroup(int groupId, [FromBody] GroupUpdateDto updateGroup)
         {
-            if(updateGroup==null)
+            if (updateGroup == null)
                 return BadRequest();
-            if (!_groupRepository.GroupExists(groupId))
-                return NotFound();
-            var existingGroup=_groupRepository.GetGroup(groupId);
-            var groupMap = _mapper.Map<Group>(updateGroup);
+
+            var existingGroup = _groupRepository.GetGroup(groupId);
+            if (existingGroup == null)
+                return NotFound($"Group with ID {groupId} not found.");
+
+            var groupMap = _mapper.Map(updateGroup, existingGroup);
 
             groupMap.Id = groupId;
+
             if (!_groupRepository.UpdateGroup(groupMap))
-                return StatusCode(500);
+                return StatusCode(500, "Error updating the group.");
+
             return NoContent();
         }
 
-       
+
 
         [HttpDelete("{groupId}")]
         [ProducesResponseType(204)]
