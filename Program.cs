@@ -11,8 +11,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(options =>
-options.UseSqlServer(connection));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
@@ -36,6 +34,7 @@ builder.Services.AddCors(options =>
 });
 
 var connection = String.Empty;
+
 connection = builder.Configuration.GetConnectionString("AZURE_SQL_Connection");
 
 if (builder.Environment.IsDevelopment())
@@ -46,6 +45,9 @@ else
 {
     builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
 }
+
+builder.Services.AddDbContext<DataContext>(options =>
+options.UseSqlServer(connection));
 
 var app = builder.Build();
 app.UseSwagger();
