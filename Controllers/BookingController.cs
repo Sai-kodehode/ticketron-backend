@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Ticketron.Data;
-using Ticketron.Dto;
 using Ticketron.Dto.BookingDto.BookingDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
-using Ticketron.Repository;
 
 namespace Ticketron.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BookingController : ControllerBase
@@ -17,7 +16,7 @@ namespace Ticketron.Controllers
         private readonly IBookingRepository _bookingRepository;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-       public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, DataContext context)
+        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, DataContext context)
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
@@ -72,7 +71,7 @@ namespace Ticketron.Controllers
                 return NotFound($"User with ID {userId} not found.");
 
             var booking = _mapper.Map<Booking>(newBooking);
-            booking.User = user; 
+            booking.User = user;
 
             if (!_bookingRepository.CreateBooking(booking))
                 return StatusCode(500, "Error creating the booking.");
@@ -80,7 +79,7 @@ namespace Ticketron.Controllers
             var createdBookingDto = _mapper.Map<BookingDto>(booking);
             return Ok(createdBookingDto);
         }
- 
+
         [HttpPut("{bookingId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]

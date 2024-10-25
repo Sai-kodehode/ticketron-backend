@@ -26,8 +26,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5173", "https://localhost:5173",
-                "https://white-cliff-06c7dbb03.5.azurestaticapps.net")
+            builder.WithOrigins("https://white-cliff-06c7dbb03.5.azurestaticapps.net")
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });
