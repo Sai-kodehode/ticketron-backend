@@ -9,5 +9,4 @@
         public int ParticipantId { get; set; }
         public int BookingId { get; set; }
     }
-
 }
