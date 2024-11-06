@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -33,17 +35,23 @@ builder.Services.AddCors(options =>
 });
 
 var connection = String.Empty;
+var storageConnectionString = String.Empty;
+
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
+//}
+//else
+//{
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
+//}
+
+builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
 
 connection = builder.Configuration.GetConnectionString("AZURE_SQL_Connection");
+storageConnectionString = builder.Configuration.GetConnectionString("AZURE_STORAGE_Connection");
 
-if (builder.Environment.IsDevelopment())
-{
-    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
-}
-else
-{
-    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
-}
+var blobServiceClient = new BlobServiceClient(storageConnectionString);
 
 builder.Services.AddDbContext<DataContext>(options =>
 options.UseSqlServer(connection));

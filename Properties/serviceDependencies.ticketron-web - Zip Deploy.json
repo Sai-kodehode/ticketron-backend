@@ -6,6 +6,10 @@
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/ticketron-web-server/databases/ticketron-db",
       "type": "mssql.azure",
       "connectionId": "ConnectionStrings:AZURE_SQL_Connection"
+    },
+    "identityapp1": {
+      "connectionInfo": "App registration: ticketron-backend, Tenant: ticketron (ticketron.onmicrosoft.com - Microsoft Entra External ID)",
+      "type": "identityapp.default"
     }
   }
 }
