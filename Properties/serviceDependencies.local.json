@@ -12,7 +12,10 @@
     },
     "identityapp1": {
       "connectionInfo": "App registration: ticketron-backend, Tenant: ticketron (ticketron.onmicrosoft.com - Microsoft Entra External ID)",
-      "type": "identityapp.default"
+      "secretStore": null,
+      "resourceId": null,
+      "type": "identityapp.secretStore",
+      "connectionId": "AzureAD:ClientSecret"
     }
   }
 }

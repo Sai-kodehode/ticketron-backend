@@ -10,7 +10,10 @@ using Ticketron.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi()
+            .AddMicrosoftGraph(builder.Configuration.GetSection("MicrosoftGraph"))
+            .AddInMemoryTokenCaches();
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

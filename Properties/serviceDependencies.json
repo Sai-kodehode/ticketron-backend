@@ -8,7 +8,8 @@
       "connectionId": "ConnectionStrings:AZURE_SQL_Connection"
     },
     "identityapp1": {
-      "type": "identityapp"
+      "type": "identityapp",
+      "connectionId": "AzureAD:ClientSecret"
     }
   }
 }
