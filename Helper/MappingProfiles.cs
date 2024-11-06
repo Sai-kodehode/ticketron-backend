@@ -14,7 +14,7 @@ namespace Ticketron.Helper
             CreateMap<User, UserDto>().ReverseMap();
 
             CreateMap<Booking, BookingDto>().ReverseMap();
-            CreateMap<BookingCreateDto, Booking>();                
+            CreateMap<BookingCreateDto, Booking>();
             CreateMap<BookingUpdateDto, Booking>();
 
             CreateMap<Ticket, TicketDto>().ReverseMap();
@@ -35,7 +35,7 @@ namespace Ticketron.Helper
             CreateMap<GroupUpdateDto, Group>();
 
             CreateMap<GroupMemberDto, GroupMember>().ReverseMap();
-            
+
         }
     }
 }

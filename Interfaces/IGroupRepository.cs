@@ -11,10 +11,5 @@ namespace Ticketron.Interfaces
         bool UpdateGroup(Group group);
         bool DeleteGroup(Group group);
         bool Save();
-
-
-
-
-
     }
 }

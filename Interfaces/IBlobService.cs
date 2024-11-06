@@ -1,4 +1,7 @@
-﻿public interface IBlobService
+﻿namespace Ticketron.Interfaces;
+
+
+public interface IBlobService
 {
     Task<string?> UploadImageAsync(IFormFile image, int ticketId);
     Task<bool> DeleteImageAsync(string blobName);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Ticketron.Interfaces;
 
 namespace Ticketron.Controllers
 {
@@ -7,6 +8,7 @@ namespace Ticketron.Controllers
     public class BlobController : ControllerBase
     {
         private readonly IBlobService _blobService;
+
 
         public BlobController(IBlobService blobService)
         {

@@ -75,6 +75,7 @@ namespace Ticketron.Controllers
 
             var ticket = _mapper.Map<Ticket>(newTicket);
             ticket.Booking = booking;
+            ticket.BlobName = blobName;
 
             if (!_ticketRepository.CreateTicket(ticket))
                 return StatusCode(500);

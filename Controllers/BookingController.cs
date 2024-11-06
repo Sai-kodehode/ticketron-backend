@@ -62,19 +62,19 @@ namespace Ticketron.Controllers
         public IActionResult CreateBooking([FromBody] BookingCreateDto newBooking)
         {
             if (newBooking == null)
-                return BadRequest("Booking data is null.");
+                return BadRequest();
 
             var userId = newBooking.UserId;
 
             var user = _userRepository.GetUser(userId);
             if (user == null)
-                return NotFound($"User with ID {userId} not found.");
+                return NotFound();
 
             var booking = _mapper.Map<Booking>(newBooking);
             booking.User = user;
 
             if (!_bookingRepository.CreateBooking(booking))
-                return StatusCode(500, "Error creating the booking.");
+                return StatusCode(500);
 
             var createdBookingDto = _mapper.Map<BookingDto>(booking);
             return Ok(createdBookingDto);

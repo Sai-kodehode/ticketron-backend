@@ -5,12 +5,12 @@ using Microsoft.Identity.Web;
 using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Repository;
+using Ticketron.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -51,7 +51,9 @@ builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
 connection = builder.Configuration.GetConnectionString("AZURE_SQL_Connection");
 storageConnectionString = builder.Configuration.GetConnectionString("AZURE_STORAGE_Connection");
 
-var blobServiceClient = new BlobServiceClient(storageConnectionString);
+builder.Services.AddSingleton(new BlobServiceClient(storageConnectionString));
+
+builder.Services.AddScoped<IBlobService, BlobService>();
 
 builder.Services.AddDbContext<DataContext>(options =>
 options.UseSqlServer(connection));
