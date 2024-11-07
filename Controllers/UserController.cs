@@ -63,6 +63,8 @@ namespace Ticketron.Controllers
 
         public IActionResult CreateUser([FromBody] UserDto newUser)
         {
+
+
             if (newUser == null)
                 return BadRequest();
 

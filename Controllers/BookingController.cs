@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Ticketron.Data;
 using Ticketron.Dto.BookingDto.BookingDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
@@ -16,12 +15,13 @@ namespace Ticketron.Controllers
         private readonly IBookingRepository _bookingRepository;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, DataContext context)
+        private readonly IUserContextService _userContextService;
+        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService)
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
             _userRepository = userRepository;
-
+            _userContextService = userContextService;
         }
 
         [HttpGet("{bookingId}")]
@@ -61,31 +61,33 @@ namespace Ticketron.Controllers
         [ProducesResponseType(500)]
         public IActionResult CreateBooking([FromBody] BookingCreateDto newBooking)
         {
-            var objectIdString = User.FindFirst("oid")?.Value;
-
-            if (!Guid.TryParse(objectIdString, out var objectId))
-            {
-                return Unauthorized("Can't convert string objectId to guid");
-            }
-
             if (newBooking == null)
-                return BadRequest("Could not find new booking");
+                return BadRequest();
 
-            var user = _userRepository.GetUser(objectId);
+            try
+            {
+                var objectId = _userContextService.GetUserObjectId();
+                var user = _userRepository.GetUser(objectId);
 
-            if (user == null)
-                return NotFound("User not found");
+                if (user == null)
+                    return NotFound("User not found");
 
-            var booking = _mapper.Map<Booking>(newBooking);
+                var booking = _mapper.Map<Booking>(newBooking);
 
-            booking.User = user;
+                booking.User = user;
 
-            if (!_bookingRepository.CreateBooking(booking))
-                return StatusCode(500, "Could not create new booking");
+                if (!_bookingRepository.CreateBooking(booking))
+                    return StatusCode(500, "Could not create new booking");
 
-            var createdBookingDto = _mapper.Map<BookingDto>(booking);
+                var createdBookingDto = _mapper.Map<BookingDto>(booking);
 
-            return Ok(createdBookingDto);
+                return Ok(createdBookingDto);
+
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpPut("{bookingId}")]

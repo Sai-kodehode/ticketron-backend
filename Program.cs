@@ -6,7 +6,6 @@ using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Repository;
 using Ticketron.Services;
-using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +24,7 @@ builder.Services.AddScoped<IParticipantRepository, ParticipantRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
@@ -58,6 +58,9 @@ storageConnectionString = builder.Configuration.GetConnectionString("AZURE_STORA
 builder.Services.AddSingleton(new BlobServiceClient(storageConnectionString));
 
 builder.Services.AddScoped<IBlobService, BlobService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 builder.Services.AddDbContext<DataContext>(options =>
 options.UseSqlServer(connection));
