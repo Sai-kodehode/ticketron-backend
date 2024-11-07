@@ -5,8 +5,8 @@ namespace Ticketron.Interfaces
     public interface IUserRepository
     {
         ICollection<User> GetUsers();
-        User GetUser(int userId);
-        bool UserExists(int userId);
+        User GetUser(Guid azureObjectId);
+        bool UserExists(Guid azureObjectId);
         bool CreateUser(User user);
         bool UpdateUser(User user);
         bool DeleteUser(User user);

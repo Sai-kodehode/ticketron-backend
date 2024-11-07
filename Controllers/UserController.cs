@@ -35,17 +35,17 @@ namespace Ticketron.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{azureObjectId}")]
         //[ProducesResponseType(200, Type = typeof(User))]
         //[ProducesResponseType(400)]
         //[ProducesResponseType(404)]
 
-        public IActionResult GetUser(int userId)
+        public IActionResult GetUser(Guid azureObjectId)
         {
-            if (!_userRepository.UserExists(userId))
+            if (!_userRepository.UserExists(azureObjectId))
                 return NotFound();
 
-            var user = _mapper.Map<UserDto>(_userRepository.GetUser(userId));
+            var user = _mapper.Map<UserDto>(_userRepository.GetUser(azureObjectId));
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -90,13 +90,20 @@ namespace Ticketron.Controllers
         //[ProducesResponseType(500)]
         public IActionResult UpdateUser(int userId, [FromBody] UserDto updatedUser)
         {
+            var objectIdString = User.FindFirst("oid")?.Value;
+
+            if (!Guid.TryParse(objectIdString, out var objectId))
+            {
+                return Unauthorized("Can't convert string objectId to guid");
+            }
+
             if (updatedUser == null)
                 return BadRequest();
 
-            if (!_userRepository.UserExists(userId))
+            if (!_userRepository.UserExists(objectId))
                 return NotFound();
 
-            var existingUser = _userRepository.GetUser(userId);
+            var existingUser = _userRepository.GetUser(objectId);
 
             if (existingUser.Email != updatedUser.Email)
                 return Conflict();
@@ -118,7 +125,14 @@ namespace Ticketron.Controllers
         //[ProducesResponseType(500)]
         public IActionResult DeleteUser(int userId)
         {
-            var existingUser = _userRepository.GetUser(userId);
+            var objectIdString = User.FindFirst("oid")?.Value;
+
+            if (!Guid.TryParse(objectIdString, out var objectId))
+            {
+                return Unauthorized("Can't convert string objectId to guid");
+            }
+
+            var existingUser = _userRepository.GetUser(objectId);
 
             if (existingUser == null)
                 return NotFound();

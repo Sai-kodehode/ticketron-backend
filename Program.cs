@@ -6,6 +6,7 @@ using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Repository;
 using Ticketron.Services;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         builder =>
         {
-            builder.WithOrigins("https://white-cliff-06c7dbb03.5.azurestaticapps.net")
+            builder.WithOrigins("https://white-cliff-06c7dbb03.5.azurestaticapps.net", "http://localhost:5173/", "https://localhost:7197")
                    .AllowAnyMethod()
                    .AllowAnyHeader();
         });

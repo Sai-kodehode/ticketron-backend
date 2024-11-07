@@ -26,9 +26,9 @@ namespace Ticketron.Repository
             return Save();
         }
 
-        public User GetUser(int userId)
+        public User GetUser(Guid azureObjectId)
         {
-            return _context.Users.Where(x => x.Id == userId).FirstOrDefault();
+            return _context.Users.Where(x => x.AzureObjectId == azureObjectId).FirstOrDefault();
         }
 
         public ICollection<User> GetUsers()
@@ -44,7 +44,7 @@ namespace Ticketron.Repository
 
         public bool UpdateUser(User user)
         {
-            var existingUser = _context.Users.Find(user.Id);
+            var existingUser = _context.Users.Find(user.AzureObjectId);
             if (existingUser == null)
                 return false;
 
@@ -52,9 +52,9 @@ namespace Ticketron.Repository
             _context.Update(user);
             return Save();
         }
-        public bool UserExists(int userId)
+        public bool UserExists(Guid azureObjectId)
         {
-            return _context.Users.Any(x => x.Id == userId);
+            return _context.Users.Any(x => x.AzureObjectId == azureObjectId);
         }
     }
 }

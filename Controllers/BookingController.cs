@@ -55,28 +55,36 @@ namespace Ticketron.Controllers
             return Ok(bookings);
         }
 
-        [HttpPost("create")]
+        [HttpPost()]
         [ProducesResponseType(200, Type = typeof(BookingDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public IActionResult CreateBooking([FromBody] BookingCreateDto newBooking)
         {
+            var objectIdString = User.FindFirst("oid")?.Value;
+
+            if (!Guid.TryParse(objectIdString, out var objectId))
+            {
+                return Unauthorized("Can't convert string objectId to guid");
+            }
+
             if (newBooking == null)
-                return BadRequest();
+                return BadRequest("Could not find new booking");
 
-            var userId = newBooking.UserId;
+            var user = _userRepository.GetUser(objectId);
 
-            var user = _userRepository.GetUser(userId);
             if (user == null)
-                return NotFound();
+                return NotFound("User not found");
 
             var booking = _mapper.Map<Booking>(newBooking);
+
             booking.User = user;
 
             if (!_bookingRepository.CreateBooking(booking))
-                return StatusCode(500);
+                return StatusCode(500, "Could not create new booking");
 
             var createdBookingDto = _mapper.Map<BookingDto>(booking);
+
             return Ok(createdBookingDto);
         }
 
