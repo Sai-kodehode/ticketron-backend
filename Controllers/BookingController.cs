@@ -64,30 +64,31 @@ namespace Ticketron.Controllers
             if (newBooking == null)
                 return BadRequest();
 
+            Guid objectId;
             try
             {
-                var objectId = _userContextService.GetUserObjectId();
-                var user = _userRepository.GetUser(objectId);
-
-                if (user == null)
-                    return NotFound("User not found");
-
-                var booking = _mapper.Map<Booking>(newBooking);
-
-                booking.User = user;
-
-                if (!_bookingRepository.CreateBooking(booking))
-                    return StatusCode(500, "Could not create new booking");
-
-                var createdBookingDto = _mapper.Map<BookingDto>(booking);
-
-                return Ok(createdBookingDto);
-
+                objectId = _userContextService.GetUserObjectId();
             }
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(ex.Message);
             }
+
+            var user = _userRepository.GetUser(objectId);
+
+            if (user == null)
+                return NotFound("User not found");
+
+            var booking = _mapper.Map<Booking>(newBooking);
+
+            booking.User = user;
+
+            if (!_bookingRepository.CreateBooking(booking))
+                return StatusCode(500, "Could not create new booking");
+
+            var createdBookingDto = _mapper.Map<BookingDto>(booking);
+
+            return Ok(createdBookingDto);
         }
 
         [HttpPut("{bookingId}")]
