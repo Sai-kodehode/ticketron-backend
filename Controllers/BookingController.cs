@@ -55,7 +55,7 @@ namespace Ticketron.Controllers
             return Ok(bookings);
         }
 
-        [HttpPost()]
+        [HttpPost("create")]
         [ProducesResponseType(200, Type = typeof(BookingDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
