@@ -1,4 +1,3 @@
-using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
@@ -24,8 +23,6 @@ builder.Services.AddScoped<IParticipantRepository, ParticipantRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
-
-builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -57,9 +54,9 @@ builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
 connection = builder.Configuration.GetConnectionString("AZURE_SQL_Connection");
 storageConnectionString = builder.Configuration.GetConnectionString("AZURE_STORAGE_Connection");
 
-builder.Services.AddSingleton(new BlobServiceClient(storageConnectionString));
+//builder.Services.AddSingleton(new BlobServiceClient(storageConnectionString));
 
-builder.Services.AddScoped<IBlobService, BlobService>();
+//builder.Services.AddScoped<IBlobService, BlobService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
