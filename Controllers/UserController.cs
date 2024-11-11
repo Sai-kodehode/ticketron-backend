@@ -9,7 +9,6 @@ namespace Ticketron.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-
     public class UserController : Controller
     {
         private readonly IUserRepository _userRepository;
