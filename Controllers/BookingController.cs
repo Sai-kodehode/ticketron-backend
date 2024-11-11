@@ -16,12 +16,15 @@ namespace Ticketron.Controllers
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly IUserContextService _userContextService;
-        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService)
+        private readonly ILogger<BookingController> _logger;
+        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService, ILogger<BookingController> logger
+            )
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _userContextService = userContextService;
+            _logger = logger;
         }
 
         [HttpGet("{bookingId}")]
@@ -31,14 +34,19 @@ namespace Ticketron.Controllers
 
         public IActionResult GetBooking(int bookingId)
         {
+            _logger.LogInformation("Getting booking with id: {bookingId}", bookingId);
             var booking = _mapper.Map<BookingDto>(_bookingRepository.GetBooking(bookingId));
 
             if (booking == null)
+            {
+                _logger.LogWarning("Booking with id: {bookingId} not found", bookingId);
                 return NotFound();
+            }
 
             if (!ModelState.IsValid)
                 return BadRequest();
 
+            _logger.LogTrace("Returning booking with id: {bookingId}", bookingId);
             return Ok(booking);
         }
 
