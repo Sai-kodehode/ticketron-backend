@@ -1,12 +1,5 @@
 {
   "dependencies": {
-    "mssql1": {
-      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/ticketron-web/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsAZURE_SQL_Connection_9585DB36AC",
-      "secretStore": "AzureAppSettings",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/ticketron-web-server/databases/ticketron-db",
-      "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:AZURE_SQL_Connection"
-    },
     "identityapp1": {
       "connectionInfo": "App registration: ticketron-backend, Tenant: ticketron (ticketron.onmicrosoft.com - Microsoft Entra External ID)",
       "type": "identityapp.default"

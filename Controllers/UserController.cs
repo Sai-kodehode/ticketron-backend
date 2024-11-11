@@ -13,20 +13,21 @@ namespace Ticketron.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IUserContextService _userContextService;
 
-        public UserController(IUserRepository userRepository, IMapper imapper)
+        public UserController(IUserRepository userRepository, IMapper imapper, IUserContextService userContextService)
         {
             _userRepository = userRepository;
             _mapper = imapper;
+            _userContextService = userContextService;
         }
 
         [HttpGet]
-        //[ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
-        //[ProducesResponseType(400)]
-
-        public IActionResult GetUsers()
+        [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> GetUsers()
         {
-            var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
+            var users = _mapper.Map<List<UserDto>>(await _userRepository.GetUsersAsync());
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -34,115 +35,116 @@ namespace Ticketron.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{azureObjectId}")]
-        //[ProducesResponseType(200, Type = typeof(User))]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-
-        public IActionResult GetUser(Guid azureObjectId)
+        [HttpGet("{userId}")]
+        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetUser(Guid userId)
         {
-            if (!_userRepository.UserExists(azureObjectId))
+            var user = await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
                 return NotFound();
 
-            var user = _mapper.Map<UserDto>(_userRepository.GetUser(azureObjectId));
+            var userMap = _mapper.Map<UserDto>(user);
 
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            return Ok(user);
+            return Ok(userMap);
         }
 
-        [HttpPost]
-
+        //[HttpPost]
         //[ProducesResponseType(201)]
         //[ProducesResponseType(400)]
         //[ProducesResponseType(404)]
         //[ProducesResponseType(409)]
         //[ProducesResponseType(500)]
 
-        public IActionResult CreateUser([FromBody] UserDto newUser)
-        {
+        //public IActionResult CreateUser([FromBody] UserDto newUser)
+        //{
+        //    if (newUser == null)
+        //        return BadRequest();
 
+        //    var userExisting = _userRepository.GetUsers().FirstOrDefault(c => c.Email == newUser.Email);
 
-            if (newUser == null)
-                return BadRequest();
+        //    if (userExisting != null)
+        //        return Conflict();
 
-            var userExisting = _userRepository.GetUsers().FirstOrDefault(c => c.Email == newUser.Email);
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
 
-            if (userExisting != null)
-                return Conflict();
+        //    var userMap = _mapper.Map<User>(newUser);
 
-            if (!ModelState.IsValid)
-                return BadRequest();
+        //    if (!_userRepository.CreateUser(userMap))
+        //        return StatusCode(500);
 
-            var userMap = _mapper.Map<User>(newUser);
+        //    return StatusCode(201);
+        //}
 
-            if (!_userRepository.CreateUser(userMap))
-                return StatusCode(500);
-
-            return StatusCode(201);
-        }
-
-        [HttpPut("{userId}")]
+        //[HttpPut("{userId}")]
         //[ProducesResponseType(204)]
         //[ProducesResponseType(400)]
         //[ProducesResponseType(404)]
         //[ProducesResponseType(409)]
         //[ProducesResponseType(500)]
-        public IActionResult UpdateUser(int userId, [FromBody] UserDto updatedUser)
-        {
-            var objectIdString = User.FindFirst("oid")?.Value;
+        //public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto updatedUser)
+        //{
+        //    Guid userId;
+        //    try
+        //    {
+        //        userId = _userContextService.GetUserObjectId();
+        //    }
+        //    catch (UnauthorizedAccessException ex)
+        //    {
+        //        return Unauthorized(ex.Message);
+        //    }
 
-            if (!Guid.TryParse(objectIdString, out var objectId))
-            {
-                return Unauthorized("Can't convert string objectId to guid");
-            }
+        //    if (updatedUser == null)
+        //        return BadRequest();
 
-            if (updatedUser == null)
-                return BadRequest();
+        //    if (await !_userRepository.UserExistsAsync(objectId))
+        //        return NotFound();
 
-            if (!_userRepository.UserExists(objectId))
-                return NotFound();
+        //    var existingUser = _userRepository.GetUser(objectId);
 
-            var existingUser = _userRepository.GetUser(objectId);
-
-            if (existingUser.Email != updatedUser.Email)
-                return Conflict();
+        //    if (existingUser.Email != updatedUser.Email)
+        //        return Conflict();
 
 
-            var userMap = _mapper.Map<User>(updatedUser);
+        //    var userMap = _mapper.Map<User>(updatedUser);
 
-            userMap.Id = userId;
+        //    userMap.Id = userId;
 
-            if (!_userRepository.UpdateUser(userMap))
-                return StatusCode(500);
+        //    if (!_userRepository.UpdateUser(userMap))
+        //        return StatusCode(500);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
-        [HttpDelete("{userId}")]
+        //[HttpDelete("{userId}")]
         //[ProducesResponseType(204)]
         //[ProducesResponseType(404)]
         //[ProducesResponseType(500)]
-        public IActionResult DeleteUser(int userId)
-        {
-            var objectIdString = User.FindFirst("oid")?.Value;
+        //public IActionResult DeleteUser(int userId)
+        //{
+        //    var objectIdString = User.FindFirst("oid")?.Value;
 
-            if (!Guid.TryParse(objectIdString, out var objectId))
-            {
-                return Unauthorized("Can't convert string objectId to guid");
-            }
+        //    if (!Guid.TryParse(objectIdString, out var objectId))
+        //    {
+        //        return Unauthorized("Can't convert string objectId to guid");
+        //    }
 
-            var existingUser = _userRepository.GetUser(objectId);
+        //    var existingUser = _userRepository.GetUser(objectId);
 
-            if (existingUser == null)
-                return NotFound();
+        //    if (existingUser == null)
+        //        return NotFound();
 
-            if (!_userRepository.DeleteUser(existingUser))
-                return StatusCode(500);
+        //    if (!_userRepository.DeleteUser(existingUser))
+        //        return StatusCode(500);
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
     }
 }

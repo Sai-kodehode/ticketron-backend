@@ -14,47 +14,53 @@ namespace Ticketron.Repository
             _context = context;
         }
 
-        public bool CreateUser(User user)
+        public async Task<bool> CreateUserAsync(User user)
         {
-            _context.Add(user);
-            return Save();
+            await _context.AddAsync(user);
+            return await SaveAsync();
         }
 
-        public bool DeleteUser(User user)
+        //public async Task<bool> DeleteUserAsync(User user)
+        //{
+        //    _context.Remove(user);
+        //    return await SaveAsync();
+        //}
+
+        public async Task<User?> GetUserByIdAsync(Guid userId)
         {
-            _context.Remove(user);
-            return Save();
+            return await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
         }
 
-        public User GetUser(Guid azureObjectId)
+
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return _context.Users.Where(x => x.AzureObjectId == azureObjectId).FirstOrDefault();
+            return await _context.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
         }
 
-        public ICollection<User> GetUsers()
+        public async Task<ICollection<User>> GetUsersAsync()
         {
-            return _context.Users.OrderBy(x => x.Id).ToList();
+            return await _context.Users.OrderBy(u => u.Id).ToListAsync();
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0;
         }
 
-        public bool UpdateUser(User user)
-        {
-            var existingUser = _context.Users.Find(user.AzureObjectId);
-            if (existingUser == null)
-                return false;
+        //public async Task<bool> UpdateUserAsync(User user)
+        //{
+        //    var existingUser = await _context.Users.FindAsync(user.Id);
+        //    if (existingUser == null)
+        //        return false;
 
-            _context.Entry(existingUser).State = EntityState.Detached;
-            _context.Update(user);
-            return Save();
-        }
-        public bool UserExists(Guid azureObjectId)
+        //    _context.Entry(existingUser).State = EntityState.Detached;
+        //    _context.Update(user);
+        //    return await SaveAsync();
+        //}
+        public async Task<bool> UserExistsAsync(string email)
         {
-            return _context.Users.Any(x => x.AzureObjectId == azureObjectId);
+            return await _context.Users.AnyAsync(x => x.Email == email);
         }
     }
 }
