@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Ticketron.Dto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
-using Ticketron.Repository;
 
 namespace Ticketron.Controllers
 {
