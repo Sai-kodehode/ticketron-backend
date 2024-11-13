@@ -16,15 +16,17 @@ namespace Ticketron.Controllers
         private readonly IBookingRepository _bookingRepository;
         private readonly IUserContextService _userContextService;
         private readonly IParticipantRepository _participantRepository;
+        private readonly IUserRepository _userRepository;
 
 
-        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository)
+        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository, IUserRepository userRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = imapper;
             _bookingRepository = bookingRepository;
             _userContextService = userContextService;
             _participantRepository = participantRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet("{ticketId}")]
@@ -67,7 +69,7 @@ namespace Ticketron.Controllers
 
             var booking = await _bookingRepository.GetBookingAsync(newTicket.BookingId);
             if (booking == null)
-                return NotFound();
+                return NotFound("Booking not found");
 
             if (newTicket.ParticipantId == null)
             {
@@ -84,10 +86,23 @@ namespace Ticketron.Controllers
                 newTicket.ParticipantId = currentUserId;
             }
 
+            // Create participant of user if not exists
+
             var participant = await _participantRepository.GetParticipantAsync(newTicket.ParticipantId.Value);
 
             if (participant == null)
-                return NotFound();
+            {
+                participant = new Participant
+                {
+                    Id = newTicket.ParticipantId.Value,
+                    CreatedBy = newTicket.ParticipantId.Value,
+                    Booking = booking,
+                    User = await _userRepository.GetUserByIdAsync(newTicket.ParticipantId.Value),
+                    IsUser = true
+                };
+                if (!await _participantRepository.CreateParticipantAsync(participant))
+                    return Problem();
+            }
 
             string? imageUrl = null;
             //if (newTicket.Image != null)
