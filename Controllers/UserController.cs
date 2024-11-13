@@ -93,45 +93,48 @@ namespace Ticketron.Controllers
             return Created();
         }
 
-        //[HttpPut("{userId}")]
-        //[ProducesResponseType(204)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(409)]
-        //[ProducesResponseType(500)]
-        //public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto updatedUser)
-        //{
-        //    Guid userId;
-        //    try
-        //    {
-        //        userId = _userContextService.GetUserObjectId();
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        return Unauthorized(ex.Message);
-        //    }
+        [HttpPut("update")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDto updatedUser)
+        {
 
-        //    if (updatedUser == null)
-        //        return BadRequest();
+            if (updatedUser == null)
+                return BadRequest();
 
-        //    if (await !_userRepository.UserExistsAsync(objectId))
-        //        return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-        //    var existingUser = _userRepository.GetUser(objectId);
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
 
-        //    if (existingUser.Email != updatedUser.Email)
-        //        return Conflict();
+            var existingUser = await _userRepository.GetUserByIdAsync(currentUserId);
+            if (existingUser == null)
+                return NotFound();
 
+            if (existingUser.Email != null)
+            {
+                if (existingUser.Email != updatedUser.Email)
+                    return Conflict();
+            }
 
-        //    var userMap = _mapper.Map<User>(updatedUser);
+            var userMap = _mapper.Map<User>(updatedUser);
 
-        //    userMap.Id = userId;
+            if (!await _userRepository.UpdateUserAsync(userMap))
+                return Problem();
 
-        //    if (!_userRepository.UpdateUser(userMap))
-        //        return StatusCode(500);
-
-        //    return NoContent();
-        //}
+            return Ok(_mapper.Map<UserResponseDto>(userMap));
+        }
 
         //[HttpDelete("{userId}")]
         //[ProducesResponseType(204)]

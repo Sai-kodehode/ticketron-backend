@@ -41,16 +41,16 @@ namespace Ticketron.Repository
             return saved > 0;
         }
 
-        //public async Task<bool> UpdateUserAsync(User user)
-        //{
-        //    var existingUser = await _context.Users.FindAsync(user.Id);
-        //    if (existingUser == null)
-        //        return false;
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            var existingUser = await _context.Users.FindAsync(user.Id);
+            if (existingUser == null)
+                return false;
 
-        //    _context.Entry(existingUser).State = EntityState.Detached;
-        //    _context.Update(user);
-        //    return await SaveAsync();
-        //}
+            _context.Entry(existingUser).State = EntityState.Detached;
+            _context.Update(user);
+            return await SaveAsync();
+        }
         public async Task<bool> UserExistsAsync(Guid userId)
         {
             return await _context.Users.AnyAsync(x => x.Id == userId);

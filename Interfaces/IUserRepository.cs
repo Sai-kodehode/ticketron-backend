@@ -9,7 +9,7 @@ namespace Ticketron.Interfaces
         Task<User?> GetUserByEmailAsync(string email);
         Task<bool> UserExistsAsync(Guid userId);
         Task<bool> CreateUserAsync(User user);
-        //Task<bool> UpdateUserAsync(User user);
+        Task<bool> UpdateUserAsync(User user);
         Task<bool> SaveAsync();
     }
 }

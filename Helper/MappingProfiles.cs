@@ -14,7 +14,10 @@ namespace Ticketron.Helper
     {
         public MappingProfiles()
         {
-            CreateMap<User, UserCreateDto>().ReverseMap();
+            CreateMap<UserCreateDto, User>();
+            CreateMap<User, UserResponseDto>();
+            CreateMap<UserUpdateDto, User>()
+              .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<Booking, BookingDto>().ReverseMap();
             CreateMap<BookingCreateDto, Booking>();
@@ -26,6 +29,7 @@ namespace Ticketron.Helper
 
             CreateMap<UnregUserCreateDto, UnregUser>();
             CreateMap<UnregUser, UnregUserResponseDto>();
+
             CreateMap<Participant, ParticipantResponseDto>()
                 .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.Id))
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.User != null ? src.User.Id : (Guid?)null))
@@ -35,6 +39,7 @@ namespace Ticketron.Helper
                 .ForMember(dest => dest.Booking, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.UnregUser, opt => opt.Ignore());
+
             CreateMap<Group, GroupResponseDto>()
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User.Id))
                 .ForMember(dest => dest.GroupMemberIds, opt => opt.MapFrom(src => src.GroupMembers.Select(gm => gm.Id)));
