@@ -14,80 +14,46 @@ namespace Ticketron.Repository
             _context = context;
         }
 
-        public bool CreateGroupMember(GroupMember groupMember)
+        public async Task<bool> CreateGroupMemberAsync(GroupMember groupMember)
         {
-            if (groupMember.User != null)
-            {
-                groupMember.UserId = groupMember.User.Id;
-                groupMember.User = null;
-            }
-
-            if (groupMember.UnregUser != null)
-            {
-                groupMember.UnregUserId = groupMember.UnregUser.Id;
-                groupMember.UnregUser = null;
-            }
-
-            _context.GroupMembers.Add(groupMember);
-
-            return Save();
+            await _context.GroupMembers.AddAsync(groupMember);
+            return await SaveAsync();
         }
 
-        public bool DeleteGroupMember(GroupMember groupMember)
+        public async Task<bool> DeleteGroupMemberAsync(GroupMember groupMember)
         {
-            if (groupMember.User != null)
-            {
-                groupMember.User = null;
-            }
-
-            if (groupMember.UnregUser != null)
-            {
-                groupMember.UnregUser = null;
-            }
-
             _context.GroupMembers.Remove(groupMember);
-            return Save();
+            return await SaveAsync();
         }
 
-        public GroupMember GetGroupMember(int groupmemberId)
+        public async Task<GroupMember?> GetGroupMemberAsync(Guid groupMemberId)
         {
-            var groupMember = _context.GroupMembers
+            var groupMember = await _context.GroupMembers
                 .Include(gm => gm.User)
                 .Include(gm => gm.UnregUser)
-                .FirstOrDefault(gm => gm.Id == groupmemberId);
+                .FirstOrDefaultAsync(gm => gm.Id == groupMemberId);
 
-            if (groupMember != null)
-            {
-
-                if (groupMember.User != null)
-                {
-                    var userId = groupMember.User.Id;
-                    groupMember.User = new User { Id = userId };
-                }
-
-
-                if (groupMember.UnregUser != null)
-                {
-                    var unregUserId = groupMember.UnregUser.Id;
-                    groupMember.UnregUser = new UnregUser { Id = unregUserId };
-                }
-            }
             return groupMember;
         }
-        public ICollection<GroupMember> GetGroupMembers(int groupId)
+
+        public async Task<ICollection<GroupMember>> GetGroupMembersAsync(Guid groupId)
         {
-            return _context.GroupMembers.Include(gm => gm.User).Include(gm => gm.UnregUser).Where(x => x.Group.Id == groupId).ToList();
+            return await _context.GroupMembers
+                .Include(gm => gm.User)
+                .Include(gm => gm.UnregUser)
+                .Where(x => x.Group.Id == groupId)
+                .ToListAsync();
         }
-        public bool Save()
+
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0;
         }
-        public bool GroupMemberExists(int groupMemeberId)
+
+        public async Task<bool> GroupMemberExistsAsync(Guid groupMemberId)
         {
-            return _context.GroupMembers.Any(x => x.Id == groupMemeberId);
+            return await _context.GroupMembers.AnyAsync(x => x.Id == groupMemberId);
         }
-
-
     }
 }

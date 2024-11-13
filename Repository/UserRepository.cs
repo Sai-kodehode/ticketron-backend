@@ -20,17 +20,10 @@ namespace Ticketron.Repository
             return await SaveAsync();
         }
 
-        //public async Task<bool> DeleteUserAsync(User user)
-        //{
-        //    _context.Remove(user);
-        //    return await SaveAsync();
-        //}
-
         public async Task<User?> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
         }
-
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
@@ -58,9 +51,9 @@ namespace Ticketron.Repository
         //    _context.Update(user);
         //    return await SaveAsync();
         //}
-        public async Task<bool> UserExistsAsync(string email)
+        public async Task<bool> UserExistsAsync(Guid userId)
         {
-            return await _context.Users.AnyAsync(x => x.Email == email);
+            return await _context.Users.AnyAsync(x => x.Id == userId);
         }
     }
 }

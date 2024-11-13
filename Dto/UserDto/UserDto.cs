@@ -1,4 +1,4 @@
-﻿namespace Ticketron.Dto
+﻿namespace Ticketron.Dto.UserDto
 {
     public class UserDto
     {

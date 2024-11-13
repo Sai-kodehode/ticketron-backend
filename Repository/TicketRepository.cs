@@ -14,48 +14,49 @@ namespace Ticketron.Repository
             _context = context;
         }
 
-        public bool CreateTicket(Ticket ticket)
+        public async Task<bool> CreateTicketAsync(Ticket ticket)
         {
-            _context.Add(ticket);
-            return Save();
+            await _context.AddAsync(ticket);
+
+            return await SaveAsync();
         }
 
-        public bool DeleteTicket(Ticket ticket)
+        public async Task<bool> DeleteTicketAsync(Ticket ticket)
         {
             _context.Remove(ticket);
-            return Save();
+
+            return await SaveAsync();
         }
 
-        public Ticket GetTicket(int ticketId)
+        public async Task<Ticket?> GetTicketAsync(Guid ticketId)
         {
-            return _context.Tickets.Where(x => x.Id == ticketId).FirstOrDefault();
+            return await _context.Tickets.Where(x => x.Id == ticketId).FirstOrDefaultAsync();
         }
 
-      
-        public ICollection<Ticket> GetTickets(int bookingId)
+
+        public async Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId)
         {
-            return _context.Tickets.Where(x => x.Booking.Id == bookingId).ToList();
+            return await _context.Tickets.Where(x => x.Booking.Id == bookingId).ToListAsync();
         }
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0;
         }
-        public bool TicketExists(int ticketId)
+        public async Task<bool> TicketExistsAsync(Guid ticketId)
         {
-            return _context.Tickets.Any(x => x.Id == ticketId);
+            return await _context.Tickets.AnyAsync(x => x.Id == ticketId);
         }
 
-        public bool UpdateTicket(Ticket ticket)
+        public async Task<bool> UpdateTicketAsync(Ticket ticket)
         {
-
-            var existingTicket = _context.Tickets.Find(ticket.Id);
+            var existingTicket = await _context.Tickets.FindAsync(ticket.Id);
             if (existingTicket == null)
                 return false;
 
             _context.Entry(existingTicket).State = EntityState.Detached;
             _context.Update(ticket);
-            return Save();
+            return await SaveAsync();
 
         }
     }

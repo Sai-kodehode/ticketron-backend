@@ -6,7 +6,7 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public IFormFile? Image { get; set; }
-        public int ParticipantId { get; set; }
-        public int BookingId { get; set; }
+        public Guid? ParticipantId { get; set; }
+        public Guid BookingId { get; set; }
     }
 }

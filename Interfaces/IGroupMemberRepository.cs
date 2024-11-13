@@ -4,11 +4,11 @@ namespace Ticketron.Interfaces
 {
     public interface IGroupMemberRepository
     {
-        ICollection<GroupMember> GetGroupMembers(int groupId);
-        GroupMember GetGroupMember(int groupMemberId);
-        bool GroupMemberExists(int groupMemberId);
-        bool CreateGroupMember(GroupMember groupMember);
-        bool DeleteGroupMember(GroupMember groupMember);
-        bool Save();
+        Task<ICollection<GroupMember>> GetGroupMembersAsync(Guid groupId);
+        Task<GroupMember?> GetGroupMemberAsync(Guid groupMemberId);
+        Task<bool> GroupMemberExistsAsync(Guid groupMemberId);
+        Task<bool> CreateGroupMemberAsync(GroupMember groupMember);
+        Task<bool> DeleteGroupMemberAsync(GroupMember groupMember);
+        Task<bool> SaveAsync();
     }
 }

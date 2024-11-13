@@ -1,128 +1,132 @@
-﻿//using AutoMapper;
-//using Microsoft.AspNetCore.Mvc;
-//using Ticketron.Dto;
-//using Ticketron.Interfaces;
-//using Ticketron.Models;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Ticketron.Dto.ParticipantDto;
+using Ticketron.Interfaces;
+using Ticketron.Models;
 
-//namespace Ticketron.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class ParticipantController : ControllerBase
-//    {
-//        private readonly IParticipantRepository _participantRepository;
-//        private readonly IMapper _mapper;
-//        private readonly IBookingRepository _bookingRepository;
-//        private readonly IUserRepository _userRepository;
-//        private readonly IUnregUserRepository _unregUserRepository;
+namespace Ticketron.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ParticipantController : ControllerBase
+    {
+        private readonly IParticipantRepository _participantRepository;
+        private readonly IMapper _mapper;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUnregUserRepository _unregUserRepository;
 
-//        public ParticipantController(IParticipantRepository participantRepository, IMapper mapper, IBookingRepository bookingRepository, IUserRepository userRepository, IUnregUserRepository unregUserRepository)
-//        {
-//            _participantRepository = participantRepository;
-//            _mapper = mapper;
-//            _bookingRepository = bookingRepository;
-//            _userRepository = userRepository;
-//            _unregUserRepository = unregUserRepository;
-//        }
+        public ParticipantController(IParticipantRepository participantRepository, IMapper mapper, IBookingRepository bookingRepository, IUserRepository userRepository, IUnregUserRepository unregUserRepository)
+        {
+            _participantRepository = participantRepository;
+            _mapper = mapper;
+            _bookingRepository = bookingRepository;
+            _userRepository = userRepository;
+            _unregUserRepository = unregUserRepository;
+        }
 
-//        [HttpGet("{participantId}")]
-//        [ProducesResponseType(200, Type = typeof(Participant))]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
+        [HttpGet("{participantId}")]
+        [ProducesResponseType(200, Type = typeof(ParticipantResponseDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetParticipantAsync(Guid participantId)
+        {
+            var participant = await _participantRepository.GetParticipantAsync(participantId);
 
-//        public IActionResult GetParticipant(int participantId)
-//        {
-//            if (!_participantRepository.ParticipantExists(participantId))
-//                return NotFound();
+            if (participant == null)
+                return NotFound();
 
-//            var participant = _mapper.Map<ParticipantDto>(_participantRepository.GetParticipant(participantId));
+            var participantMap = _mapper.Map<ParticipantResponseDto>(participant);
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+            return Ok(participantMap);
+        }
 
-//            return Ok(participant);
-//        }
+        [HttpGet("booking/{bookingId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ParticipantResponseDto>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetParticipantsAsync(Guid bookingId)
+        {
+            if (!await _bookingRepository.BookingExistsAsync(bookingId))
+                return NotFound();
 
-//        [HttpGet("booking/{bookingId}")]
-//        [ProducesResponseType(200, Type = typeof(IEnumerable<Participant>))]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
+            var participantsMap = _mapper.Map<List<ParticipantResponseDto>>(await _participantRepository.GetParticipantsAsync(bookingId));
 
-//        public IActionResult GetParticipants(int bookingId)
-//        {
-//            if (!_bookingRepository.BookingExists(bookingId))
-//                return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-//            var participants = _mapper.Map<List<ParticipantDto>>(_participantRepository.GetParticipants(bookingId));
+            return Ok(participantsMap);
+        }
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+        [HttpPost("create")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateParticipantAsync(Guid bookingId, [FromBody] ParticipantCreateDto newParticipant)
+        {
+            if (newParticipant == null)
+                return BadRequest();
 
-//            return Ok(participants);
-//        }
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-//        [HttpPost("{bookingId}")]
-//        [ProducesResponseType(201)]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
+            if (newParticipant.UserId == null && newParticipant.UnregUserId == null)
+                return BadRequest("Either UserId or UnregUserId must be included");
 
-//        public IActionResult CreateParticipant(int bookingId, [FromBody] ParticipantDto newParticipant)
-//        {
-//            if (newParticipant == null)
-//                return BadRequest();
+            if (newParticipant.UserId != null && newParticipant.UnregUserId != null)
+                return BadRequest("Only one of UserId or UnregUserId can be included");
 
-//            if (newParticipant.UserId == null && newParticipant.UnregUserId == null)
-//                return BadRequest();
+            if (!await _bookingRepository.BookingExistsAsync(bookingId))
+                return NotFound();
 
-//            if (!_bookingRepository.BookingExists(bookingId))
-//                return NotFound();
+            var participantMap = _mapper.Map<Participant>(newParticipant);
 
-//            var participant = _mapper.Map<Participant>(newParticipant);
-//            participant.Booking = _bookingRepository.GetBooking(bookingId);
+            var booking = await _bookingRepository.GetBookingAsync(bookingId);
+            if (booking == null)
+                return NotFound("Booking not found");
 
-//            if (newParticipant.IsUser && newParticipant.UserId.HasValue)
-//            {
-//                var user = _userRepository.GetUser(newParticipant.UserId.Value);
-//                if (user == null)
-//                    return NotFound();
+            participantMap.Booking = booking;
 
-//                participant.User = user;
-//            }
-//            else if (newParticipant.IsUser == false && newParticipant.UnregUserId.HasValue)
-//            {
-//                var unregUser = _unregUserRepository.GetUnregUser(newParticipant.UnregUserId.Value);
-//                if (unregUser == null)
-//                    return NotFound();
+            if (newParticipant.UserId != null)
+            {
+                var user = await _userRepository.GetUserByIdAsync(newParticipant.UserId.Value);
+                if (user == null)
+                    return NotFound();
 
-//                participant.UnregUser = unregUser;
-//            }
-//            else return BadRequest();
+                participantMap.User = user;
+            }
+            else if (newParticipant.UnregUserId != null)
+            {
+                var unregUser = await _unregUserRepository.GetUnregUserAsync(newParticipant.UnregUserId.Value);
+                if (unregUser == null)
+                    return NotFound();
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+                participantMap.UnregUser = unregUser;
+            }
+            else return StatusCode(500);
 
-//            if (!_participantRepository.CreateParticipant(participant))
-//                return BadRequest();
+            if (!await _participantRepository.CreateParticipantAsync(participantMap))
+                return BadRequest();
 
-//            return StatusCode(201);
-//        }
+            return StatusCode(201);
+        }
 
-//        [HttpDelete("{participantId}")]
-//        [ProducesResponseType(204)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
-//        public IActionResult DeleteParticipant(int participantId)
-//        {
-//            if (!_participantRepository.ParticipantExists(participantId))
-//                return NotFound();
+        [HttpDelete("{participantId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> DeleteParticipant(Guid participantId)
+        {
+            var participant = await _participantRepository.GetParticipantAsync(participantId);
 
-//            var participant = _participantRepository.GetParticipant(participantId);
+            if (participant == null)
+                return NotFound();
 
-//            if (!_participantRepository.DeleteParticipant(participant))
-//                return BadRequest();
+            if (!await _participantRepository.DeleteParticipantAsync(participant))
+                return BadRequest();
 
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}

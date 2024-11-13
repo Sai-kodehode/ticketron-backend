@@ -1,105 +1,107 @@
-﻿//using AutoMapper;
-//using Microsoft.AspNetCore.Mvc;
-//using Ticketron.Dto;
-//using Ticketron.Interfaces;
-//using Ticketron.Models;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Ticketron.Dto.UnregUserDto;
+using Ticketron.Interfaces;
+using Ticketron.Models;
 
-//namespace Ticketron.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class UnregUserController : ControllerBase
-//    {
-//        private readonly IUnregUserRepository _unregUserRepository;
-//        private readonly IUserRepository _userRepository;
-//        private readonly IMapper _mapper;
+namespace Ticketron.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UnregUserController : ControllerBase
+    {
+        private readonly IUnregUserRepository _unregUserRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+        private readonly IUserContextService _userContextService;
 
-//        public UnregUserController(IUnregUserRepository unregUserRepository, IUserRepository userRepository, IMapper imapper)
-//        {
-//            _unregUserRepository = unregUserRepository;
-//            _userRepository = userRepository;
-//            _mapper = imapper;
-//        }
+        public UnregUserController(IUnregUserRepository unregUserRepository, IUserRepository userRepository, IMapper imapper, IUserContextService userContextService)
+        {
+            _unregUserRepository = unregUserRepository;
+            _userRepository = userRepository;
+            _mapper = imapper;
+            _userContextService = userContextService;
+        }
 
-//        [HttpGet("{unregUserId}")]
-//        [ProducesResponseType(200, Type = typeof(UnregUser))]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
+        [HttpGet("{unregUserId}")]
+        [ProducesResponseType(200, Type = typeof(UnregUserResponseDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
 
-//        public IActionResult GetUnregUser(int unregUserId)
-//        {
-//            if (!_unregUserRepository.UnregUserExists(unregUserId))
-//                return NotFound();
+        public async Task<IActionResult> GetUnregUser(Guid unregUserId)
+        {
+            var unregUser = await _unregUserRepository.GetUnregUserAsync(unregUserId);
+            if (unregUser == null)
+                return NotFound();
 
-//            var unregUser = _mapper.Map<UnregUserDto>(_unregUserRepository.GetUnregUser(unregUserId));
+            var unregUserMap = _mapper.Map<UnregUserResponseDto>(unregUser);
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+            return Ok(unregUserMap);
+        }
 
-//            return Ok(unregUser);
-//        }
+        [HttpGet("user/{userId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UnregUserResponseDto>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetUnregUsersByUserId(Guid userId)
+        {
+            if (!await _userRepository.UserExistsAsync(userId))
+                return NotFound("User not found");
 
-//        [HttpGet("user/{userId}")]
-//        [ProducesResponseType(200, Type = typeof(IEnumerable<UnregUser>))]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        public IActionResult GetUnregUsersByUserId(int userId)
-//        {
-//            if (!_userRepository.UserExists(userId))
-//                return NotFound();
+            var unregUsersMap = _mapper.Map<List<UnregUserResponseDto>>(_unregUserRepository.GetUnregUsersByUserIdAsync(userId));
 
-//            var unregUsers = _mapper.Map<List<UnregUserDto>>(_unregUserRepository.GetUnregUsersByUserId(userId));
+            return Ok(unregUsersMap);
+        }
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+        [HttpPost("{userId}")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateUnregUser(Guid userId, [FromBody] UnregUserCreateDto newUnregUser)
+        {
+            if (!await _userRepository.UserExistsAsync(userId))
+                return NotFound();
 
-//            return Ok(unregUsers);
+            if (newUnregUser == null)
+                return BadRequest();
 
-//        }
+            var unregUserMap = _mapper.Map<UnregUser>(newUnregUser);
 
-//        [HttpPost("{userId}")]
-//        [ProducesResponseType(201)]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
 
-//        public IActionResult CreateUnregUser(int userId, [FromBody] UnregUserDto newUnregUser)
-//        {
-//            if (!_userRepository.UserExists(userId))
-//                return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-//            if (newUnregUser == null)
-//                return BadRequest();
+            if (!await _unregUserRepository.CreateUnregUserAsync(unregUserMap))
+                return Problem();
 
-//            var unregUserMap = _mapper.Map<UnregUser>(newUnregUser);
+            return Created();
+        }
 
-//            unregUserMap.User = _userRepository.GetUser(userId);
+        [HttpDelete("{unregUserId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> DeleteUnregUser(Guid unregUserId)
+        {
+            var existingUnregUser = await _unregUserRepository.GetUnregUserAsync(unregUserId);
+            if (existingUnregUser == null)
+                return NotFound();
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+            if (!await _unregUserRepository.DeleteUnregUserAsync(existingUnregUser))
+                return Problem();
 
-//            if (!_unregUserRepository.CreateUnregUser(unregUserMap))
-//                return StatusCode(500);
+            return NoContent();
+        }
 
-//            return StatusCode(201);
-//        }
-
-//        [HttpDelete("{unregUserId}")]
-//        [ProducesResponseType(204)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
-//        public IActionResult DeleteUnregUser(int unregUserId)
-//        {
-//            var existingUnregUser = _unregUserRepository.GetUnregUser(unregUserId);
-
-//            if (existingUnregUser == null)
-//                return NotFound();
-
-//            if (!_unregUserRepository.DeleteUnregUser(existingUnregUser))
-//                return StatusCode(500);
-
-//            return NoContent();
-//        }
-
-//    }
-//}
+    }
+}

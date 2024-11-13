@@ -4,11 +4,11 @@ namespace Ticketron.Interfaces
 {
     public interface IUnregUserRepository
     {
-        UnregUser GetUnregUser(int unregUserId);
-        ICollection<UnregUser> GetUnregUsersByUserId(int userId);
-        bool UnregUserExists(int unregUserId);
-        bool CreateUnregUser(UnregUser unregUser);
-        bool DeleteUnregUser(UnregUser unregUser);
-        bool Save();
+        Task<UnregUser?> GetUnregUserAsync(Guid unregUserId);
+        Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync(Guid userId);
+        Task<bool> UnregUserExistsAsync(Guid unregUserId);
+        Task<bool> CreateUnregUserAsync(UnregUser unregUser);
+        Task<bool> DeleteUnregUserAsync(UnregUser unregUser);
+        Task<bool> SaveAsync();
     }
 }

@@ -12,45 +12,47 @@ namespace Ticketron.Repository
         {
             _context = context;
         }
-        public bool CreateParticipant(Participant participant)
+        public async Task<bool> CreateParticipantAsync(Participant participant)
         {
-            _context.Add(participant);
-            return Save();
+            await _context.AddAsync(participant);
+            return await SaveAsync();
         }
 
-        public bool DeleteParticipant(Participant participant)
+        public async Task<bool> DeleteParticipantAsync(Participant participant)
         {
             _context.Remove(participant);
-            return Save();
+            return await SaveAsync();
         }
 
-        public Participant? GetParticipant(int participantId)
+        public async Task<Participant?> GetParticipantAsync(Guid participantId)
         {
-            return _context.Participants
+            return await _context.Participants
                 .Include(p => p.Booking)
                 .Include(p => p.User)
                 .Include(p => p.UnregUser)
-                .FirstOrDefault(p => p.Id == participantId);
+                .Include(p => p.Group)
+                .FirstOrDefaultAsync(p => p.Id == participantId);
         }
 
-        public ICollection<Participant> GetParticipants(int bookingId)
+        public async Task<ICollection<Participant>> GetParticipantsAsync(Guid bookingId)
         {
-            return _context.Participants
+            return await _context.Participants
                 .Include(p => p.Booking)
                 .Include(p => p.User)
                 .Include(p => p.UnregUser)
+                .Include(p => p.Group)
                 .Where(p => p.Booking != null && p.Booking.Id == bookingId)
-                .ToList();
+                .ToListAsync();
         }
 
-        public bool ParticipantExists(int participantId)
+        public async Task<bool> ParticipantExistsAsync(Guid participantId)
         {
-            return _context.Participants.Any(p => p.Id == participantId);
+            return await _context.Participants.AnyAsync(p => p.Id == participantId);
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0;
         }
     }

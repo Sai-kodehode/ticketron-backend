@@ -13,48 +13,51 @@ namespace Ticketron.Repository
             _context = context;
         }
 
-        public bool BookingExists(int bookingId)
+        public async Task<bool> BookingExistsAsync(Guid bookingId)
         {
-            return _context.Bookings.Any(b => b.Id == bookingId);
+            return await _context.Bookings.AnyAsync(b => b.Id == bookingId);
         }
 
-        public bool CreateBooking(Booking booking)
+        public async Task<bool> CreateBookingAsync(Booking booking)
         {
             _context.Add(booking);
-            return Save();
+
+            return await SaveAsync();
         }
 
-        public bool DeleteBooking(Booking booking)
+        public async Task<bool> DeleteBookingAsync(Booking booking)
         {
             _context.Remove(booking);
-            return Save();
+
+            return await SaveAsync();
         }
 
-        public Booking GetBooking(int bookingId)
+        public async Task<Booking?> GetBookingAsync(Guid bookingId)
         {
-            return _context.Bookings.Where(b => b.Id == bookingId).FirstOrDefault();
+            return await _context.Bookings.Where(b => b.Id == bookingId).FirstOrDefaultAsync();
         }
 
-        public ICollection<Booking> GetBookings(int userId)
+        public async Task<ICollection<Booking>> GetBookingsAsync(Guid userId)
         {
-            return _context.Bookings.Where(b => b.User != null && b.User.Id == userId).ToList();
+            return await _context.Bookings.Where(b => b.User != null && b.User.Id == userId).ToListAsync();
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
+
             return saved > 0;
         }
-        public bool UpdateBooking(Booking booking)
+        public async Task<bool> UpdateBookingAsync(Booking booking)
         {
-
-            var existingBooking = _context.Bookings.Find(booking.Id);
+            var existingBooking = await _context.Bookings.FindAsync(booking.Id);
             if (existingBooking == null)
                 return false;
 
             _context.Entry(existingBooking).State = EntityState.Detached;
             _context.Update(booking);
-            return Save();
+
+            return await SaveAsync();
 
         }
 

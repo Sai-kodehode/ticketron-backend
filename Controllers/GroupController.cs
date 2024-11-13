@@ -1,121 +1,129 @@
-﻿//using AutoMapper;
-//using Microsoft.AspNetCore.Mvc;
-//using Ticketron.Dto.GroupDto.GroupDto;
-//using Ticketron.Interfaces;
-//using Ticketron.Models;
-//using Ticketron.Repository;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Ticketron.Dto.GroupDto.GroupDto;
+using Ticketron.Interfaces;
+using Ticketron.Models;
 
-//namespace Ticketron.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class GroupController : Controller
-//    {
-//        private readonly IGroupRepository _groupRepository;
-//        private readonly IMapper _mapper;
-//        private readonly IUserRepository _userRepository;
+namespace Ticketron.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GroupController : Controller
+    {
+        private readonly IGroupRepository _groupRepository;
+        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserContextService _userContextService;
 
-//        public GroupController(IGroupRepository groupRepository, IMapper mapper, IUserRepository userRepository)
-//        {
-//            _groupRepository = groupRepository;
-//            _mapper = mapper;
-//            _userRepository = userRepository;
-//        }
+        public GroupController(IGroupRepository groupRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService)
+        {
+            _groupRepository = groupRepository;
+            _mapper = mapper;
+            _userRepository = userRepository;
+            _userContextService = userContextService;
+        }
 
-//        [HttpGet("{groupId}")]
-//        [ProducesResponseType(200, Type = typeof(Group))]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        public IActionResult GetGroup(int groupId)
-//        {
-//            if (!_groupRepository.GroupExists(groupId))
-//                return NotFound();
+        [HttpGet("{groupId}")]
+        [ProducesResponseType(200, Type = typeof(GroupResponseDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetGroup(Guid groupId)
+        {
+            var group = await _groupRepository.GetGroupAsync(groupId);
 
-//            var group = _mapper.Map<GroupDto>(_groupRepository.GetGroup(groupId));
+            if (group == null)
+                return NotFound();
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
-//            return Ok(group);
-//        }
+            var groupMap = _mapper.Map<GroupResponseDto>(group);
 
-//        [HttpGet("user/{userId}")]
-//        [ProducesResponseType(200, Type = typeof(IEnumerable<Group>))]
-//        [ProducesResponseType(400)]
-//        public IActionResult GetGroups(int userId)
-//        {
-//            var groups = _mapper.Map<List<GroupDto>>(_groupRepository.GetGroups(userId));
+            return Ok(group);
+        }
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
-//            return Ok(groups);
-//        }
+        [HttpGet("user/{userId}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Group>))]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> GetGroups(Guid userId)
+        {
+            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsAsync(userId));
+
+            return Ok(groupsMap);
+        }
+
+        [HttpPost("create")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateGroup([FromBody] GroupCreateDto newGroup)
+        {
+            if (newGroup == null)
+                return BadRequest("Missing data");
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            };
+
+            var user = await _userRepository.GetUserByIdAsync(currentUserId);
+            if (user == null)
+                return NotFound("User not found");
+
+            var groupMap = _mapper.Map<Group>(newGroup);
+            groupMap.User = user;
+
+            if (!await _groupRepository.CreateGroupAsync(groupMap))
+                return StatusCode(500, "Error creating the group");
+
+            return NoContent();
+        }
+
+        [HttpPut("update")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateGroup([FromBody] GroupUpdateDto updatedGroup)
+        {
+            if (updatedGroup == null)
+                return BadRequest();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var existingGroup = await _groupRepository.GetGroupAsync(updatedGroup.Id);
+            if (existingGroup == null)
+                return NotFound();
+
+            var groupMap = _mapper.Map(updatedGroup, existingGroup);
+
+            if (!await _groupRepository.UpdateGroupAsync(groupMap))
+                return StatusCode(500, "Error updating the group.");
+
+            return NoContent();
+        }
 
 
-//        [HttpPost("create")]
-//        [ProducesResponseType(201)]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(500)]
-//        public IActionResult CreateGroup([FromBody] GroupCreateDto newGroup)
-//        {
-//            if (newGroup == null)
-//                return BadRequest("Group data is null.");
+        [HttpDelete("{groupId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> DeleteGroup(Guid groupId)
+        {
+            var existingGroup = await _groupRepository.GetGroupAsync(groupId);
+            if (existingGroup == null)
+                return NotFound();
 
-//            var userId = newGroup.UserId;
+            if (!await _groupRepository.DeleteGroupAsync(existingGroup))
+                return StatusCode(500);
 
-//            var user = _userRepository.GetUser(userId);
-//            if (user == null)
-//                return NotFound($"User with ID {userId} not found.");
-
-//            var group = _mapper.Map<Group>(newGroup);
-//            group.User = user;
-
-//            if (!_groupRepository.CreateGroup(group))
-//                return StatusCode(500, "Error creating the group.");
-
-//            var createdGroupDto = _mapper.Map<GroupDto>(group);
-//            return Ok(createdGroupDto);
-//        }
-
-//        [HttpPut("{groupId}")]
-//        [ProducesResponseType(204)]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
-//        public IActionResult UpdateGroup(int groupId, [FromBody] GroupUpdateDto updateGroup)
-//        {
-//            if (updateGroup == null)
-//                return BadRequest();
-
-//            var existingGroup = _groupRepository.GetGroup(groupId);
-//            if (existingGroup == null)
-//                return NotFound($"Group with ID {groupId} not found.");
-
-//            var groupMap = _mapper.Map(updateGroup, existingGroup);
-
-//            groupMap.Id = groupId;
-
-//            if (!_groupRepository.UpdateGroup(groupMap))
-//                return StatusCode(500, "Error updating the group.");
-
-//            return NoContent();
-//        }
-
-
-
-//        [HttpDelete("{groupId}")]
-//        [ProducesResponseType(204)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
-//        public IActionResult DeleteGroup(int groupId)
-//        {
-
-//            var existingGroup= _groupRepository.GetGroup(groupId);
-
-//            if(existingGroup==null)
-//                return NotFound();
-//            if (!_groupRepository.DeleteGroup(existingGroup))
-//                return StatusCode(500);
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}

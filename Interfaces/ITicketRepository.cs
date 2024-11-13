@@ -4,12 +4,12 @@ namespace Ticketron.Interfaces
 {
     public interface ITicketRepository
     {
-        ICollection<Ticket> GetTickets(int bookingId);
-        Ticket GetTicket(int ticketId);
-        bool TicketExists(int ticketId);
-        bool CreateTicket(Ticket ticket);
-        bool UpdateTicket(Ticket ticket);
-        bool DeleteTicket(Ticket ticket);
-        bool Save();
+        Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId);
+        Task<Ticket?> GetTicketAsync(Guid ticketId);
+        Task<bool> TicketExistsAsync(Guid ticketId);
+        Task<bool> CreateTicketAsync(Ticket ticket);
+        Task<bool> UpdateTicketAsync(Ticket ticket);
+        Task<bool> DeleteTicketAsync(Ticket ticket);
+        Task<bool> SaveAsync();
     }
 }

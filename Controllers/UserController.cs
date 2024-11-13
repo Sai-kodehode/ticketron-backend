@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Ticketron.Dto;
+using Ticketron.Dto.UserDto;
 using Ticketron.Interfaces;
-using Ticketron.Models;
 
 namespace Ticketron.Controllers
 {
@@ -23,7 +22,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<User>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UserDto>))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetUsers()
         {
@@ -36,7 +35,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{userId}")]
-        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetUser(Guid userId)

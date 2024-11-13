@@ -1,4 +1,5 @@
-﻿using Ticketron.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Models;
 
@@ -12,37 +13,42 @@ namespace Ticketron.Repository
         {
             _context = context;
         }
-        public bool CreateUnregUser(UnregUser unregUser)
+
+        public async Task<bool> CreateUnregUserAsync(UnregUser unregUser)
         {
-            _context.Add(unregUser);
-            return Save();
+            await _context.AddAsync(unregUser);
+            return await SaveAsync();
         }
 
-        public bool DeleteUnregUser(UnregUser unregUser)
+        public async Task<bool> DeleteUnregUserAsync(UnregUser unregUser)
         {
             _context.Remove(unregUser);
-            return Save();
+            return await SaveAsync();
         }
 
-        public UnregUser GetUnregUser(int unregUserId)
+        public async Task<UnregUser?> GetUnregUserAsync(Guid unregUserId)
         {
-            return _context.UnregUsers.Where(x => x.Id == unregUserId).FirstOrDefault();
+            return await _context.UnregUsers
+                .FirstOrDefaultAsync(x => x.Id == unregUserId);
         }
 
-        public ICollection<UnregUser> GetUnregUsersByUserId(int userId)
+        public async Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync(Guid userId)
         {
-            return _context.UnregUsers.Where(x => x.User.Id == userId).ToList();
+            return await _context.UnregUsers
+                .Where(x => x.User.Id == userId)
+                .ToListAsync();
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0;
         }
 
-        public bool UnregUserExists(int unregUserId)
+        public async Task<bool> UnregUserExistsAsync(Guid unregUserId)
         {
-            return _context.UnregUsers.Any(x => x.Id == unregUserId);
+            return await _context.UnregUsers
+                .AnyAsync(x => x.Id == unregUserId);
         }
     }
 }

@@ -26,3 +26,15 @@ namespace Ticketron.Services
         }
     }
 }
+
+// Usage:
+
+//Guid currentUserId;
+//try
+//{
+//    currentUserId = _userContextService.GetUserObjectId();
+//}
+//catch (UnauthorizedAccessException ex)
+//{
+//    return Unauthorized(ex.Message);
+//}

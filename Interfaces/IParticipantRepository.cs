@@ -4,11 +4,11 @@ namespace Ticketron.Interfaces
 {
     public interface IParticipantRepository
     {
-        Participant? GetParticipant(int participantId);
-        ICollection<Participant> GetParticipants(int bookingId);
-        bool CreateParticipant(Participant participant);
-        bool DeleteParticipant(Participant participant);
-        bool Save();
-        bool ParticipantExists(int participantId);
+        Task<Participant?> GetParticipantAsync(Guid participantId);
+        Task<ICollection<Participant>> GetParticipantsAsync(Guid bookingId);
+        Task<bool> CreateParticipantAsync(Participant participant);
+        Task<bool> DeleteParticipantAsync(Participant participant);
+        Task<bool> SaveAsync();
+        Task<bool> ParticipantExistsAsync(Guid participantId);
     }
 }

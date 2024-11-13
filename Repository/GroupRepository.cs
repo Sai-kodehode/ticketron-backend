@@ -1,7 +1,7 @@
-﻿using Ticketron.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ticketron.Repository
 {
@@ -14,48 +14,54 @@ namespace Ticketron.Repository
             _context = context;
         }
 
-        public bool CreateGroup(Group group)
+        public async Task<bool> CreateGroupAsync(Group group)
         {
-           _context.Add(group);
-            return Save();
+            await _context.AddAsync(group);
+            return await SaveAsync();
         }
 
-        public bool DeleteGroup(Group group)
+        public async Task<bool> DeleteGroupAsync(Group group)
         {
             _context.Remove(group);
-            return Save();
+            return await SaveAsync();
         }
 
-        public Group GetGroup(int groupId)
+        public async Task<Group?> GetGroupAsync(Guid groupId)
         {
-            return _context.Groups.Where(x => x.Id == groupId).FirstOrDefault();
+            return await _context.Groups
+                .Include(x => x.User)
+                .Include(x => x.GroupMembers)
+                .Where(x => x.Id == groupId).FirstOrDefaultAsync();
         }
 
-
-        public ICollection<Group> GetGroups(int userId)
+        public async Task<ICollection<Group>> GetGroupsAsync(Guid userId)
         {
-            return _context.Groups.Where(x => x.User.Id == userId).ToList();
+            return await _context.Groups.Where(x => x.User.Id == userId).ToListAsync();
         }
 
-        public bool GroupExists(int groupId)
+        public async Task<bool> GroupExistsAsync(Guid groupId)
         {
-            return _context.Groups.Any(x => x.Id == groupId);
+            return await _context.Groups.AnyAsync(x => x.Id == groupId);
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var Saved=_context.SaveChanges();
+            var Saved = await _context.SaveChangesAsync();
             return Saved > 0;
         }
 
-        public bool UpdateGroup(Group group)
+        public async Task<bool> UpdateGroupAsync(Group group)
         {
-            var existingGroup=_context.Groups.Find(group.Id);
-            if (existingGroup == null) 
+            var existingGroup = await _context.Groups.FindAsync(group.Id);
+            if (existingGroup == null)
                 return false;
-            _context.Entry(existingGroup).State=EntityState.Detached;
-            _context.Update(group);
-            return Save();
+
+            _context.Entry(existingGroup).State = EntityState.Detached;
+
+            _context.Groups.Attach(group);
+            _context.Entry(group).State = EntityState.Modified;
+
+            return await SaveAsync();
 
         }
     }
