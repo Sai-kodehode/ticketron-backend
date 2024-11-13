@@ -14,17 +14,15 @@ namespace Ticketron.Controllers
         private readonly ITicketRepository _ticketRepository;
         private readonly IMapper _mapper;
         private readonly IBookingRepository _bookingRepository;
-        private readonly IBlobService _blobService;
         private readonly IUserContextService _userContextService;
         private readonly IParticipantRepository _participantRepository;
 
 
-        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IBlobService blobService, IUserContextService userContextService, IParticipantRepository participantRepository)
+        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = imapper;
             _bookingRepository = bookingRepository;
-            _blobService = blobService;
             _userContextService = userContextService;
             _participantRepository = participantRepository;
         }
