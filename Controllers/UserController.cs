@@ -75,6 +75,18 @@ namespace Ticketron.Controllers
 
             var userMap = _mapper.Map<User>(newUser);
 
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            userMap.Id = currentUserId;
+
             if (!await _userRepository.CreateUserAsync(userMap))
                 return Problem();
 
