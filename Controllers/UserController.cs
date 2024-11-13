@@ -23,11 +23,11 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<UserCreateDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UserResponseDto>))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetUsers()
         {
-            var users = _mapper.Map<List<UserCreateDto>>(await _userRepository.GetUsersAsync());
+            var users = _mapper.Map<List<UserResponseDto>>(await _userRepository.GetUsersAsync());
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -36,7 +36,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{userId}")]
-        [ProducesResponseType(200, Type = typeof(UserCreateDto))]
+        [ProducesResponseType(200, Type = typeof(UserResponseDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetUser(Guid userId)
@@ -46,7 +46,7 @@ namespace Ticketron.Controllers
             if (user == null)
                 return NotFound();
 
-            var userMap = _mapper.Map<UserCreateDto>(user);
+            var userMap = _mapper.Map<UserResponseDto>(user);
 
             if (!ModelState.IsValid)
                 return BadRequest();
