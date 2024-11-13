@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Ticketron.Dto.UserDto;
 using Ticketron.Interfaces;
+using Ticketron.Models;
 
 namespace Ticketron.Controllers
 {
@@ -22,11 +23,11 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<UserDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UserCreateDto>))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetUsers()
         {
-            var users = _mapper.Map<List<UserDto>>(await _userRepository.GetUsersAsync());
+            var users = _mapper.Map<List<UserCreateDto>>(await _userRepository.GetUsersAsync());
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -35,7 +36,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{userId}")]
-        [ProducesResponseType(200, Type = typeof(UserDto))]
+        [ProducesResponseType(200, Type = typeof(UserCreateDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetUser(Guid userId)
@@ -45,7 +46,7 @@ namespace Ticketron.Controllers
             if (user == null)
                 return NotFound();
 
-            var userMap = _mapper.Map<UserDto>(user);
+            var userMap = _mapper.Map<UserCreateDto>(user);
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -53,33 +54,32 @@ namespace Ticketron.Controllers
             return Ok(userMap);
         }
 
-        //[HttpPost]
-        //[ProducesResponseType(201)]
-        //[ProducesResponseType(400)]
-        //[ProducesResponseType(404)]
-        //[ProducesResponseType(409)]
-        //[ProducesResponseType(500)]
+        [HttpPost("create")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(409)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateUser([FromBody] UserCreateDto newUser)
+        {
+            if (newUser == null)
+                return BadRequest();
 
-        //public IActionResult CreateUser([FromBody] UserDto newUser)
-        //{
-        //    if (newUser == null)
-        //        return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-        //    var userExisting = _userRepository.GetUsers().FirstOrDefault(c => c.Email == newUser.Email);
+            var userExisting = await _userRepository.GetUserByEmailAsync(newUser.Email);
 
-        //    if (userExisting != null)
-        //        return Conflict();
+            if (userExisting != null)
+                return Conflict();
 
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
+            var userMap = _mapper.Map<User>(newUser);
 
-        //    var userMap = _mapper.Map<User>(newUser);
+            if (!await _userRepository.CreateUserAsync(userMap))
+                return Problem();
 
-        //    if (!_userRepository.CreateUser(userMap))
-        //        return StatusCode(500);
-
-        //    return StatusCode(201);
-        //}
+            return Created();
+        }
 
         //[HttpPut("{userId}")]
         //[ProducesResponseType(204)]

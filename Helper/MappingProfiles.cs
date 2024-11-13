@@ -14,7 +14,7 @@ namespace Ticketron.Helper
     {
         public MappingProfiles()
         {
-            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<User, UserCreateDto>().ReverseMap();
 
             CreateMap<Booking, BookingDto>().ReverseMap();
             CreateMap<BookingCreateDto, Booking>();
