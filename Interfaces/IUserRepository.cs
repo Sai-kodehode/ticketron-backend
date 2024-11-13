@@ -1,5 +1,4 @@
-﻿using Ticketron.Dto.UserDto;
-using Ticketron.Models;
+﻿using Ticketron.Models;
 
 namespace Ticketron.Interfaces
 {
@@ -10,7 +9,6 @@ namespace Ticketron.Interfaces
         Task<User?> GetUserByEmailAsync(string email);
         Task<bool> UserExistsAsync(Guid userId);
         Task<bool> CreateUserAsync(User user);
-        Task<bool> UpdateUserAsync(Guid currentUserId, UserUpdateDto user);
         Task<bool> SaveAsync();
     }
 }

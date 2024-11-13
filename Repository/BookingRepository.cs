@@ -48,18 +48,5 @@ namespace Ticketron.Repository
 
             return saved > 0;
         }
-        public async Task<bool> UpdateBookingAsync(Booking booking)
-        {
-            var existingBooking = await _context.Bookings.FindAsync(booking.Id);
-            if (existingBooking == null)
-                return false;
-
-            _context.Entry(existingBooking).State = EntityState.Detached;
-            _context.Update(booking);
-
-            return await SaveAsync();
-
-        }
-
     }
 }

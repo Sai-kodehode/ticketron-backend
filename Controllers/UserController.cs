@@ -121,7 +121,9 @@ namespace Ticketron.Controllers
             if (existingUser == null)
                 return NotFound();
 
-            if (!await _userRepository.UpdateUserAsync(currentUserId, updatedUser))
+            var userMap = _mapper.Map(updatedUser, existingUser);
+
+            if (!await _userRepository.SaveAsync())
                 return Problem("Error updating user");
 
             return Ok(_mapper.Map<UserResponseDto>(await _userRepository.GetUserByIdAsync(currentUserId)));

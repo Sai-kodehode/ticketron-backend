@@ -1,6 +1,6 @@
 ﻿namespace Ticketron.Dto.BookingDto.BookingDto
 {
-    public class BookingDto
+    public class BookingResponseDto
     {
         public Guid Id { get; set; }
         public required string Title { get; set; }

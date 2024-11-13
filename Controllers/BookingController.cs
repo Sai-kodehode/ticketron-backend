@@ -28,14 +28,14 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{bookingId}")]
-        [ProducesResponseType(200, Type = typeof(BookingDto))]
+        [ProducesResponseType(200, Type = typeof(BookingResponseDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
 
         public async Task<IActionResult> GetBooking(Guid bookingId)
         {
             _logger.LogInformation("Getting booking with id: {bookingId}", bookingId);
-            var booking = _mapper.Map<BookingDto>(await _bookingRepository.GetBookingAsync(bookingId));
+            var booking = _mapper.Map<BookingResponseDto>(await _bookingRepository.GetBookingAsync(bookingId));
 
             if (booking == null)
             {
@@ -48,17 +48,17 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<BookingDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<BookingResponseDto>))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetBookings(Guid userId)
         {
-            var bookings = _mapper.Map<List<BookingDto>>(await _bookingRepository.GetBookingsAsync(userId));
+            var bookings = _mapper.Map<List<BookingResponseDto>>(await _bookingRepository.GetBookingsAsync(userId));
 
             return Ok(bookings);
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(200, Type = typeof(BookingDto))]
+        [ProducesResponseType(200, Type = typeof(BookingResponseDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreateDto newBooking)
@@ -91,7 +91,7 @@ namespace Ticketron.Controllers
             if (!await _bookingRepository.CreateBookingAsync(booking))
                 return StatusCode(500, "Could not create new booking");
 
-            var createdBookingDto = _mapper.Map<BookingDto>(booking);
+            var createdBookingDto = _mapper.Map<BookingResponseDto>(booking);
 
             return Ok(createdBookingDto);
         }
@@ -110,16 +110,15 @@ namespace Ticketron.Controllers
                 return BadRequest("Invalid data.");
 
             var existingBooking = await _bookingRepository.GetBookingAsync(updateBooking.Id);
-
             if (existingBooking == null)
                 return NotFound("Booking not found.");
 
             var bookingMap = _mapper.Map(updateBooking, existingBooking);
 
-            if (!await _bookingRepository.UpdateBookingAsync(bookingMap))
-                return StatusCode(500, "Error updating the booking.");
+            if (!await _bookingRepository.SaveAsync())
+                return Problem("Error updating the booking.");
 
-            return Ok(bookingMap);
+            return Ok(_mapper.Map<BookingResponseDto>(await _bookingRepository.GetBookingAsync(existingBooking.Id)));
         }
 
         [HttpDelete("{bookingId}")]
