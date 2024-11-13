@@ -101,7 +101,6 @@ namespace Ticketron.Controllers
         [ProducesResponseType(500)]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDto updatedUser)
         {
-
             if (updatedUser == null)
                 return BadRequest();
 
@@ -121,12 +120,6 @@ namespace Ticketron.Controllers
             var existingUser = await _userRepository.GetUserByIdAsync(currentUserId);
             if (existingUser == null)
                 return NotFound();
-
-            if (existingUser.Email != null)
-            {
-                if (existingUser.Email != updatedUser.Email)
-                    return Conflict();
-            }
 
             var userMap = _mapper.Map<User>(updatedUser);
 
