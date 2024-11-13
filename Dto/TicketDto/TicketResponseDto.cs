@@ -1,6 +1,6 @@
 ﻿namespace Ticketron.Dto.TicketDto
 {
-    public class TicketDto
+    public class TicketResponseDto
     {
         public Guid Id { get; set; }
         public required string Title { get; set; }
@@ -8,7 +8,7 @@
         public DateTime EndDate { get; set; }
         public Guid ParticipantId { get; set; }
         public Guid BookingId { get; set; }
-        public string? BlobName { get; set; }
+        public string? imageUrl { get; set; }
 
     }
 

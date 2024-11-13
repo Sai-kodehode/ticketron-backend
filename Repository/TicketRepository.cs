@@ -30,13 +30,17 @@ namespace Ticketron.Repository
 
         public async Task<Ticket?> GetTicketAsync(Guid ticketId)
         {
-            return await _context.Tickets.Where(x => x.Id == ticketId).FirstOrDefaultAsync();
+            return await _context.Tickets
+                .Include(t => t.Participant)
+                .Include(t => t.Booking)
+                .FirstOrDefaultAsync(t => t.Id == ticketId); ;
         }
-
 
         public async Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId)
         {
-            return await _context.Tickets.Where(x => x.Booking.Id == bookingId).ToListAsync();
+            return await _context.Tickets
+                .Where(x => x.Booking.Id == bookingId)
+                .ToListAsync();
         }
         public async Task<bool> SaveAsync()
         {
@@ -46,18 +50,6 @@ namespace Ticketron.Repository
         public async Task<bool> TicketExistsAsync(Guid ticketId)
         {
             return await _context.Tickets.AnyAsync(x => x.Id == ticketId);
-        }
-
-        public async Task<bool> UpdateTicketAsync(Ticket ticket)
-        {
-            var existingTicket = await _context.Tickets.FindAsync(ticket.Id);
-            if (existingTicket == null)
-                return false;
-
-            _context.Entry(existingTicket).State = EntityState.Detached;
-            _context.Update(ticket);
-            return await SaveAsync();
-
         }
     }
 }

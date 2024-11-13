@@ -8,7 +8,6 @@ namespace Ticketron.Interfaces
         Task<Ticket?> GetTicketAsync(Guid ticketId);
         Task<bool> TicketExistsAsync(Guid ticketId);
         Task<bool> CreateTicketAsync(Ticket ticket);
-        Task<bool> UpdateTicketAsync(Ticket ticket);
         Task<bool> DeleteTicketAsync(Ticket ticket);
         Task<bool> SaveAsync();
     }

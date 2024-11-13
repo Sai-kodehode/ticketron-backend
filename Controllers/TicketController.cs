@@ -30,7 +30,7 @@ namespace Ticketron.Controllers
         }
 
         [HttpGet("{ticketId}")]
-        [ProducesResponseType(200, Type = typeof(TicketDto))]
+        [ProducesResponseType(200, Type = typeof(TicketResponseDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetTicket(Guid ticketId)
@@ -38,23 +38,23 @@ namespace Ticketron.Controllers
             if (!await _ticketRepository.TicketExistsAsync(ticketId))
                 return NotFound();
 
-            var ticket = _mapper.Map<TicketDto>(_ticketRepository.GetTicketAsync(ticketId));
+            var ticket = _mapper.Map<TicketResponseDto>(await _ticketRepository.GetTicketAsync(ticketId));
 
             return Ok(ticket);
         }
 
         [HttpGet("booking/{bookingId}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<TicketDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<TicketResponseDto>))]
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetTickets(Guid bookingId)
         {
-            var tickets = _mapper.Map<List<TicketDto>>(await _ticketRepository.GetTicketsAsync(bookingId));
+            var tickets = _mapper.Map<List<TicketResponseDto>>(await _ticketRepository.GetTicketsAsync(bookingId));
 
             return Ok(tickets);
         }
 
         [HttpPost("create")]
-        [ProducesResponseType(201, Type = typeof(TicketDto))]
+        [ProducesResponseType(201, Type = typeof(TicketResponseDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(404)]
@@ -118,7 +118,7 @@ namespace Ticketron.Controllers
             if (!await _ticketRepository.CreateTicketAsync(ticketMap))
                 return StatusCode(500);
 
-            var createdTicketDto = _mapper.Map<TicketDto>(ticketMap);
+            var createdTicketDto = _mapper.Map<TicketResponseDto>(ticketMap);
 
             return Ok(createdTicketDto);
         }
@@ -128,7 +128,7 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateTicket([FromBody] TicketUpdateDto updateTicket)
+        public async Task<IActionResult> UpdateTicket([FromBody] TicketUpdateDto updatedTicket)
         {
             if (UpdateTicket == null)
                 return BadRequest();
@@ -136,17 +136,16 @@ namespace Ticketron.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var existingTicket = await _ticketRepository.GetTicketAsync(updateTicket.Id);
-
+            var existingTicket = await _ticketRepository.GetTicketAsync(updatedTicket.Id);
             if (existingTicket == null)
-                return NotFound("Booking not found");
+                return NotFound("Ticket not found");
 
-            var ticketMap = _mapper.Map(updateTicket, existingTicket);
+            var ticketMap = _mapper.Map(updatedTicket, existingTicket);
 
-            if (!await _ticketRepository.UpdateTicketAsync(ticketMap))
-                return StatusCode(500);
+            if (!await _ticketRepository.SaveAsync())
+                return Problem("Error updating ticket");
 
-            return Ok(ticketMap);
+            return Ok(_mapper.Map<TicketResponseDto>(await _ticketRepository.GetTicketAsync(existingTicket.Id)));
         }
 
         [HttpDelete("{ticketId}")]
@@ -161,7 +160,7 @@ namespace Ticketron.Controllers
                 return NotFound();
 
             if (!await _ticketRepository.DeleteTicketAsync(ticket))
-                return StatusCode(500);
+                return Problem();
 
             return NoContent();
         }
