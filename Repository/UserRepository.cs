@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Ticketron.Data;
+using Ticketron.Dto.UserDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
 
@@ -8,10 +10,12 @@ namespace Ticketron.Repository
     public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
-        public UserRepository(DataContext context)
+        public UserRepository(DataContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<bool> CreateUserAsync(User user)
@@ -41,14 +45,14 @@ namespace Ticketron.Repository
             return saved > 0;
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task<bool> UpdateUserAsync(Guid currentUserId, UserUpdateDto user)
         {
-            var existingUser = await _context.Users.FindAsync(user.Id);
+            var existingUser = await _context.Users.FindAsync(currentUserId);
             if (existingUser == null)
                 return false;
 
-            _context.Entry(existingUser).State = EntityState.Detached;
-            _context.Update(user);
+            _mapper.Map(user, existingUser);
+
             return await SaveAsync();
         }
         public async Task<bool> UserExistsAsync(Guid userId)

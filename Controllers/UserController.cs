@@ -121,12 +121,10 @@ namespace Ticketron.Controllers
             if (existingUser == null)
                 return NotFound();
 
-            var userMap = _mapper.Map<User>(updatedUser);
+            if (!await _userRepository.UpdateUserAsync(currentUserId, updatedUser))
+                return Problem("Error updating user");
 
-            if (!await _userRepository.UpdateUserAsync(userMap))
-                return Problem();
-
-            return Ok(_mapper.Map<UserResponseDto>(userMap));
+            return Ok(_mapper.Map<UserResponseDto>(await _userRepository.GetUserByIdAsync(currentUserId)));
         }
 
         //[HttpDelete("{userId}")]
