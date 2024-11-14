@@ -8,10 +8,11 @@ namespace Ticketron.Dto.TicketDto
         public required string Title { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }
+        public int? Price { get; set; }
+        public DateTimeOffset? PurchaseDate { get; set; }
+        public required string Category { get; set; }
         public required ParticipantResponseDto Participant { get; set; }
         public Guid BookingId { get; set; }
         public string? imageUrl { get; set; }
-
     }
-
 }

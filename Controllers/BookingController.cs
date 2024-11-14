@@ -18,14 +18,18 @@ namespace Ticketron.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IUserContextService _userContextService;
         private readonly ILogger<BookingController> _logger;
-        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService, ILogger<BookingController> logger
-            )
+        private readonly IParticipantRepository _participantRepository;
+        private readonly IUnregUserRepository _unregUserRepository;
+
+        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService, ILogger<BookingController> logger, IParticipantRepository participantRepository, IUnregUserRepository unregUserRepository)
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _userContextService = userContextService;
             _logger = logger;
+            _participantRepository = participantRepository;
+            _unregUserRepository = unregUserRepository;
         }
 
         [HttpGet("{bookingId}")]
