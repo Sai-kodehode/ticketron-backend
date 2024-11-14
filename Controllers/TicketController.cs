@@ -35,12 +35,12 @@ namespace Ticketron.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetTicket(Guid ticketId)
         {
-            if (!await _ticketRepository.TicketExistsAsync(ticketId))
-                return NotFound();
+            var ticket = await _ticketRepository.GetTicketAsync(ticketId);
 
-            var ticket = _mapper.Map<TicketResponseDto>(await _ticketRepository.GetTicketAsync(ticketId));
+            if (ticket == null)
+                return NotFound("Ticket not found");
 
-            return Ok(ticket);
+            return Ok(_mapper.Map<TicketResponseDto>(ticket));
         }
 
         [HttpGet("booking/{bookingId}")]

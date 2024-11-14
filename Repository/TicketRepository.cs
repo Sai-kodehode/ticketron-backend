@@ -32,6 +32,11 @@ namespace Ticketron.Repository
         {
             return await _context.Tickets
                 .Include(t => t.Participant)
+                    .ThenInclude(p => p.User)
+                .Include(t => t.Participant)
+                    .ThenInclude(p => p.UnregUser)
+                .Include(t => t.Participant)
+                    .ThenInclude(p => p.Group)
                 .Include(t => t.Booking)
                 .FirstOrDefaultAsync(t => t.Id == ticketId); ;
         }
@@ -39,6 +44,13 @@ namespace Ticketron.Repository
         public async Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId)
         {
             return await _context.Tickets
+                .Include(t => t.Booking)
+                .Include(t => t.Participant)
+                    .ThenInclude(p => p.User)
+                .Include(t => t.Participant)
+                    .ThenInclude(p => p.UnregUser)
+                .Include(t => t.Participant)
+                    .ThenInclude(p => p.Group)
                 .Where(x => x.Booking.Id == bookingId)
                 .ToListAsync();
         }

@@ -29,12 +29,14 @@ namespace Ticketron.Repository
         public async Task<UnregUser?> GetUnregUserAsync(Guid unregUserId)
         {
             return await _context.UnregUsers
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(x => x.Id == unregUserId);
         }
 
         public async Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync(Guid userId)
         {
             return await _context.UnregUsers
+                .Include(u => u.User)
                 .Where(x => x.User.Id == userId)
                 .ToListAsync();
         }

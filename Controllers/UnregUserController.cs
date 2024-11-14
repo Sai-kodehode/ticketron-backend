@@ -48,20 +48,20 @@ namespace Ticketron.Controllers
             if (!await _userRepository.UserExistsAsync(userId))
                 return NotFound("User not found");
 
-            var unregUsersMap = _mapper.Map<List<UnregUserResponseDto>>(_unregUserRepository.GetUnregUsersByUserIdAsync(userId));
+            var unregUsers = await _unregUserRepository.GetUnregUsersByUserIdAsync(userId);
 
-            return Ok(unregUsersMap);
+            return Ok(_mapper.Map<List<UnregUserResponseDto>>(unregUsers));
         }
 
-        [HttpPost("{userId}")]
+        [HttpPost("create")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> CreateUnregUser(Guid userId, [FromBody] UnregUserCreateDto newUnregUser)
+        public async Task<IActionResult> CreateUnregUser([FromBody] UnregUserCreateDto newUnregUser)
         {
-            if (!await _userRepository.UserExistsAsync(userId))
-                return NotFound();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
             if (newUnregUser == null)
                 return BadRequest();
@@ -78,13 +78,16 @@ namespace Ticketron.Controllers
                 return Unauthorized(ex.Message);
             }
 
-            if (!ModelState.IsValid)
-                return BadRequest();
+            var user = await _userRepository.GetUserByIdAsync(currentUserId);
+            if (user == null)
+                return Problem();
+
+            unregUserMap.User = user;
 
             if (!await _unregUserRepository.CreateUnregUserAsync(unregUserMap))
                 return Problem();
 
-            return Created();
+            return Ok(_mapper.Map<UnregUserResponseDto>(unregUserMap));
         }
 
         [HttpDelete("{unregUserId}")]
@@ -102,6 +105,5 @@ namespace Ticketron.Controllers
 
             return NoContent();
         }
-
     }
 }

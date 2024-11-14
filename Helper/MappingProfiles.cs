@@ -23,12 +23,6 @@ namespace Ticketron.Helper
             CreateMap<Booking, BookingResponseDto>()
                 .ForMember(dest => dest.ParticipantIds, opt => opt.MapFrom(src => src.Participants.Select(p => p.Id)))
                 .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets));
-            //.ForMember(dest => dest.ParticipantIds, opt => opt.MapFrom(src => src.Participants != null
-            //        ? src.Participants.Select(p => p.Id)
-            //        : Enumerable.Empty<Guid>()))
-            //.ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets != null
-            //        ? src.Tickets
-            //        : Enumerable.Empty<Ticket>()));
             CreateMap<Booking, BookingSummaryResponseDto>();
             CreateMap<BookingCreateDto, Booking>();
             CreateMap<BookingUpdateDto, Booking>()
@@ -42,13 +36,14 @@ namespace Ticketron.Helper
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<UnregUserCreateDto, UnregUser>();
-            CreateMap<UnregUser, UnregUserResponseDto>();
+            CreateMap<UnregUser, UnregUserResponseDto>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User.Id));
 
             CreateMap<Participant, ParticipantResponseDto>()
                 .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.Id))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.User != null ? src.User.Id : (Guid?)null))
-                .ForMember(dest => dest.UnregUserId, opt => opt.MapFrom(src => src.UnregUser != null ? src.UnregUser.Id : (Guid?)null))
-                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src.Group != null ? src.Group.Id : (Guid?)null));
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.User.Id))
+                .ForMember(dest => dest.UnregUserId, opt => opt.MapFrom(src => src.UnregUser.Id))
+                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src.Group.Id));
             CreateMap<ParticipantCreateDto, Participant>()
                 .ForMember(dest => dest.Booking, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore())
