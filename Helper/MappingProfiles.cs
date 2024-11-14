@@ -19,7 +19,10 @@ namespace Ticketron.Helper
             CreateMap<UserUpdateDto, User>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-            CreateMap<Booking, BookingResponseDto>().ReverseMap();
+            CreateMap<Booking, BookingResponseDto>()
+                .ForMember(dest => dest.ParticipantIds, opt => opt.MapFrom(src => src.Participants != null
+                        ? src.Participants.Select(p => p.Id)
+                        : Enumerable.Empty<Guid>()));
             CreateMap<BookingCreateDto, Booking>();
             CreateMap<BookingUpdateDto, Booking>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));

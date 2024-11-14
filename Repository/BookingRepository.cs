@@ -34,7 +34,10 @@ namespace Ticketron.Repository
 
         public async Task<Booking?> GetBookingAsync(Guid bookingId)
         {
-            return await _context.Bookings.Where(b => b.Id == bookingId).FirstOrDefaultAsync();
+            return await _context.Bookings
+                .Include(b => b.Participants)
+                .Where(b => b.Id == bookingId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<ICollection<Booking>> GetBookingsAsync(Guid userId)

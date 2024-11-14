@@ -15,14 +15,16 @@ namespace Ticketron.Controllers
         private readonly IBookingRepository _bookingRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUnregUserRepository _unregUserRepository;
+        private readonly IUserContextService _userContextService;
 
-        public ParticipantController(IParticipantRepository participantRepository, IMapper mapper, IBookingRepository bookingRepository, IUserRepository userRepository, IUnregUserRepository unregUserRepository)
+        public ParticipantController(IParticipantRepository participantRepository, IMapper mapper, IBookingRepository bookingRepository, IUserRepository userRepository, IUnregUserRepository unregUserRepository, IUserContextService userContextService)
         {
             _participantRepository = participantRepository;
             _mapper = mapper;
             _bookingRepository = bookingRepository;
             _userRepository = userRepository;
             _unregUserRepository = unregUserRepository;
+            _userContextService = userContextService;
         }
 
         [HttpGet("{participantId}")]
@@ -63,7 +65,7 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> CreateParticipantAsync(Guid bookingId, [FromBody] ParticipantCreateDto newParticipant)
+        public async Task<IActionResult> CreateParticipantAsync([FromBody] ParticipantCreateDto newParticipant)
         {
             if (newParticipant == null)
                 return BadRequest();
@@ -77,12 +79,12 @@ namespace Ticketron.Controllers
             if (newParticipant.UserId != null && newParticipant.UnregUserId != null)
                 return BadRequest("Only one of UserId or UnregUserId can be included");
 
-            if (!await _bookingRepository.BookingExistsAsync(bookingId))
+            if (!await _bookingRepository.BookingExistsAsync(newParticipant.BookingId))
                 return NotFound();
 
             var participantMap = _mapper.Map<Participant>(newParticipant);
 
-            var booking = await _bookingRepository.GetBookingAsync(bookingId);
+            var booking = await _bookingRepository.GetBookingAsync(newParticipant.BookingId);
             if (booking == null)
                 return NotFound("Booking not found");
 
@@ -105,6 +107,17 @@ namespace Ticketron.Controllers
                 participantMap.UnregUser = unregUser;
             }
             else return StatusCode(500);
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            participantMap.CreatedBy = currentUserId;
 
             if (!await _participantRepository.CreateParticipantAsync(participantMap))
                 return BadRequest();
