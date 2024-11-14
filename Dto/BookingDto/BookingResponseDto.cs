@@ -1,4 +1,6 @@
-﻿namespace Ticketron.Dto.BookingDto.BookingDto
+﻿using Ticketron.Dto.TicketDto;
+
+namespace Ticketron.Dto.BookingDto.BookingDto
 {
     public class BookingResponseDto
     {
@@ -7,5 +9,6 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public IEnumerable<Guid>? ParticipantIds { get; set; }
+        public IEnumerable<TicketResponseDto>? Tickets { get; set; }
     }
 }

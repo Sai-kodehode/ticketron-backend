@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Ticketron.Dto.BookingDto;
 using Ticketron.Dto.BookingDto.BookingDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
@@ -35,16 +36,30 @@ namespace Ticketron.Controllers
         public async Task<IActionResult> GetBooking(Guid bookingId)
         {
             _logger.LogInformation("Getting booking with id: {bookingId}", bookingId);
-            var booking = _mapper.Map<BookingResponseDto>(await _bookingRepository.GetBookingAsync(bookingId));
-
+            var booking = await _bookingRepository.GetBookingAsync(bookingId);
             if (booking == null)
             {
                 _logger.LogWarning("Booking with id: {bookingId} not found", bookingId);
-                return NotFound();
+                return NotFound("Booking not found");
             }
 
             _logger.LogTrace("Returning booking with id: {bookingId}", bookingId);
-            return Ok(booking);
+            return Ok(_mapper.Map<BookingResponseDto>(booking));
+        }
+
+        [HttpGet("summary/{bookingId}")]
+        [ProducesResponseType(200, Type = typeof(BookingSummaryResponseDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetBookingSummary(Guid bookingId)
+        {
+            var booking = await _bookingRepository.GetBookingAsync(bookingId);
+            if (booking == null)
+                return NotFound("Booking not found");
+
+            var bookingMap = _mapper.Map<BookingSummaryResponseDto>(booking);
+
+            return Ok(bookingMap);
         }
 
         [HttpGet("user/{userId}")]
@@ -52,9 +67,12 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetBookings(Guid userId)
         {
-            var bookings = _mapper.Map<List<BookingResponseDto>>(await _bookingRepository.GetBookingsAsync(userId));
+            if (!await _userRepository.UserExistsAsync(userId))
+                return BadRequest("User not found.");
 
-            return Ok(bookings);
+            var bookings = await _bookingRepository.GetBookingsAsync(userId);
+
+            return Ok(_mapper.Map<List<BookingResponseDto>>(bookings));
         }
 
         [HttpPost("create")]
