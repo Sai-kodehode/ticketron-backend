@@ -145,6 +145,10 @@ namespace Ticketron.Migrations
                     b.Property<Guid>("BookingId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("EndDate")
                         .HasColumnType("datetimeoffset");
 
@@ -153,6 +157,12 @@ namespace Ticketron.Migrations
 
                     b.Property<Guid?>("ParticipantId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("PurchaseDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("datetimeoffset");

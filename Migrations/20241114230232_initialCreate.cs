@@ -166,6 +166,9 @@ namespace Ticketron.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     EndDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: true),
+                    PurchaseDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ParticipantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     BookingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
