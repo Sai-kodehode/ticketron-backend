@@ -8,7 +8,7 @@ namespace Ticketron.Dto.BookingDto.BookingDto
         public required string Title { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public IEnumerable<Guid>? ParticipantIds { get; set; }
-        public IEnumerable<TicketResponseDto>? Tickets { get; set; }
+        public ICollection<Guid>? ParticipantIds { get; set; }
+        public ICollection<TicketResponseDto>? Tickets { get; set; }
     }
 }

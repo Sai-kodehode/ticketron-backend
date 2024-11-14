@@ -35,8 +35,6 @@ namespace Ticketron.Repository
         public async Task<Booking?> GetBookingAsync(Guid bookingId)
         {
             return await _context.Bookings
-                //.Include(b => b.Tickets)
-                //.Include(b => b.Participants)
                 .Include(b => b.Participants)
                     .ThenInclude(p => p.User)
                 .Include(b => b.Participants)
@@ -45,10 +43,10 @@ namespace Ticketron.Repository
                     .ThenInclude(p => p.Group)
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.Participant)
-                        .ThenInclude(p => p.User) // Include User for ticket participants
+                        .ThenInclude(p => p.User)
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.Participant)
-                        .ThenInclude(p => p.UnregUser) // Include UnregUser for ticket participants
+                        .ThenInclude(p => p.UnregUser)
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.Participant)
                         .ThenInclude(p => p.Group)
@@ -67,13 +65,13 @@ namespace Ticketron.Repository
                     .ThenInclude(p => p.Group)
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.Participant)
-                        .ThenInclude(p => p.User) // Include User for ticket participants
+                        .ThenInclude(p => p.User)
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.Participant)
-                        .ThenInclude(p => p.UnregUser) // Include UnregUser for ticket participants
+                        .ThenInclude(p => p.UnregUser)
                 .Include(b => b.Tickets)
                     .ThenInclude(t => t.Participant)
-                        .ThenInclude(p => p.Group) // Include Group for ticket participants
+                        .ThenInclude(p => p.Group)
                 .Where(b => b.User != null && b.User.Id == userId)
                 .OrderBy(b => b.StartDate)
                 .ToListAsync();

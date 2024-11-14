@@ -7,7 +7,7 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public required User User { get; set; }
-        public ICollection<Ticket>? Tickets { get; set; }
-        public ICollection<Participant>? Participants { get; set; }
+        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public ICollection<Participant> Participants { get; set; } = new List<Participant>();
     }
 }
