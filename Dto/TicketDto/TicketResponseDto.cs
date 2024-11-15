@@ -13,6 +13,6 @@ namespace Ticketron.Dto.TicketDto
         public required string Category { get; set; }
         public required ParticipantResponseDto Participant { get; set; }
         public Guid BookingId { get; set; }
-        public string? imageUrl { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

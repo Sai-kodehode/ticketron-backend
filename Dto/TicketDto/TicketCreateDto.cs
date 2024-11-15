@@ -8,7 +8,7 @@
         public int? Price { get; set; }
         public DateTimeOffset? PurchaseDate { get; set; }
         public required string Category { get; set; }
-        public string? imageUrl { get; set; }
+        public string? ImageUrl { get; set; }
         public Guid? ParticipantId { get; set; }
         public required Guid BookingId { get; set; }
     }

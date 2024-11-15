@@ -1,66 +1,121 @@
-﻿//using Azure.Storage.Blobs;
-//using Ticketron.Interfaces;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Ticketron.Interfaces;
 
-//namespace Ticketron.Services;
-
-
-//public class BlobService : IBlobService
-//{
-//    private readonly BlobServiceClient _blobServiceClient;
+namespace Ticketron.Services;
 
 
-//    public BlobService(BlobServiceClient blobServiceClient)
-//    {
-//        _blobServiceClient = blobServiceClient;
-//    }
+public class BlobService : IBlobService
+{
+    private readonly BlobServiceClient _blobServiceClient;
 
-//    public async Task<string?> UploadImageAsync(IFormFile image, int ticketId)
-//    {
-//        var containerClient = _blobServiceClient.GetBlobContainerClient("images");
 
-//        var uniqueId = Guid.NewGuid().ToString();
-//        var blobName = $"{ticketId}-{uniqueId}-{image.FileName}";
+    public BlobService(BlobServiceClient blobServiceClient)
+    {
+        _blobServiceClient = blobServiceClient;
+    }
+    public async Task<string?> UploadImage(IFormFile image)
+    {
+        var containerClient = _blobServiceClient.GetBlobContainerClient("images");
 
-//        var blobClient = containerClient.GetBlobClient(blobName);
 
-//        await blobClient.UploadAsync(image.OpenReadStream(), true);
+        var uniqueId = Guid.NewGuid().ToString();
+        var blobName = $"{uniqueId}-{image.FileName}";
 
-//        return blobClient.Name;
-//    }
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
 
-//    public async Task<bool> DeleteImageAsync(string blobName)
-//    {
-//        var containerClient = _blobServiceClient.GetBlobContainerClient("images");
-//        var blobClient = containerClient.GetBlobClient(blobName);
+        string contentType;
+        switch (fileExtension)
+        {
+            case ".jpg":
+            case ".jpeg":
+                contentType = "image/jpeg";
+                break;
+            case ".png":
+                contentType = "image/png";
+                break;
+            case ".gif":
+                contentType = "image/gif";
+                break;
+            case ".bmp":
+                contentType = "image/bmp";
+                break;
+            case ".webp":
+                contentType = "image/webp";
+                break;
+            case ".tiff":
+                contentType = "image/tiff";
+                break;
+            case ".svg":
+                contentType = "image/svg+xml";
+                break;
+            case ".ico":
+                contentType = "image/x-icon";
+                break;
 
-//        return await blobClient.DeleteIfExistsAsync();
-//    }
+            case ".pdf":
+                contentType = "application/pdf";
+                break;
+            case ".pkpass":
+                contentType = "application/vnd.apple.pkpass";
+                break;
+            case ".txt":
+                contentType = "text/plain";
+                break;
+            case ".rtf":
+                contentType = "application/rtf";
+                break;
+            case ".html":
+                contentType = "text/html";
+                break;
 
-//    public string GetImageUriWithSasToken(string blobName, int validityInHours)
-//    {
-//        var containerClient = _blobServiceClient.GetBlobContainerClient("images");
-//        var blobClient = containerClient.GetBlobClient(blobName);
+            case ".doc":
+                contentType = "application/msword";
+                break;
+            case ".docx":
+                contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                break;
+            default:
+                throw new InvalidOperationException("Unsupported file type.");
+        }
 
-//        if (!blobClient.Exists())
-//            throw new InvalidOperationException("Blob not found.");
+        var blobClient = containerClient.GetBlobClient(blobName);
 
-//        var sasBuilder = new Azure.Storage.Sas.BlobSasBuilder
-//        {
-//            BlobContainerName = blobClient.BlobContainerName,
-//            BlobName = blobClient.Name,
-//            Resource = "b",
-//            StartsOn = DateTime.UtcNow,
-//            ExpiresOn = DateTime.UtcNow.AddHours(validityInHours)
-//        };
+        var uploadOptions = new BlobUploadOptions
+        {
+            HttpHeaders = new BlobHttpHeaders
+            {
+                ContentType = contentType
+            }
+        };
 
-//        sasBuilder.SetPermissions(Azure.Storage.Sas.BlobSasPermissions.Read);
+        await blobClient.UploadAsync(image.OpenReadStream(), uploadOptions);
 
-//        var sasToken = sasBuilder.ToSasQueryParameters(
-//            new Azure.Storage.StorageSharedKeyCredential(
-//                "your-storage-account-name",
-//                "your-storage-account-key"
-//            )).ToString();
+        return blobClient.Name;
+    }
 
-//        return $"{blobClient.Uri}?{sasToken}";
-//    }
-//}
+    public async Task<bool> DeleteImage(string imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl))
+        {
+            return false;
+        }
+
+        try
+        {
+
+            var uri = new Uri(imageUrl);
+            var blobName = uri.Segments.Last();
+            var containerClient = _blobServiceClient.GetBlobContainerClient("images");
+            var blobClient = containerClient.GetBlobClient(blobName);
+
+            return await blobClient.DeleteIfExistsAsync();
+        }
+        catch (Exception)
+        {
+
+            return false;
+        }
+    }
+
+}

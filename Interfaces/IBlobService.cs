@@ -1,9 +1,9 @@
-﻿namespace Ticketron.Interfaces;
-
-
-public interface IBlobService
+﻿
+namespace Ticketron.Interfaces
 {
-    Task<string?> UploadImageAsync(IFormFile image, int ticketId);
-    Task<bool> DeleteImageAsync(string blobName);
-    string GetImageUriWithSasToken(string blobName, int validityInHours);
+    public interface IBlobService
+    {
+        Task<string?> UploadImage(IFormFile image);
+        Task<bool> DeleteImage(string imageUrl);
+    }
 }

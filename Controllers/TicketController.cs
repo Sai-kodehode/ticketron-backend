@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ticketron.Dto.TicketDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
+using Ticketron.Services;
 
 namespace Ticketron.Controllers
 
@@ -19,6 +20,7 @@ namespace Ticketron.Controllers
         private readonly IUserRepository _userRepository;
 
 
+
         public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository, IUserRepository userRepository)
         {
             _ticketRepository = ticketRepository;
@@ -27,6 +29,8 @@ namespace Ticketron.Controllers
             _userContextService = userContextService;
             _participantRepository = participantRepository;
             _userRepository = userRepository;
+         
+
         }
 
         [HttpGet("{ticketId}")]
