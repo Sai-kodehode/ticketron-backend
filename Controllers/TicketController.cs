@@ -18,10 +18,9 @@ namespace Ticketron.Controllers
         private readonly IUserContextService _userContextService;
         private readonly IParticipantRepository _participantRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IBlobService _blobService;
 
-
-
-        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository, IUserRepository userRepository)
+        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository, IUserRepository userRepository, IBlobService blobService)
         {
             _ticketRepository = ticketRepository;
             _mapper = imapper;
@@ -29,7 +28,9 @@ namespace Ticketron.Controllers
             _userContextService = userContextService;
             _participantRepository = participantRepository;
             _userRepository = userRepository;
-         
+            _blobService = blobService;
+
+
 
         }
 
@@ -109,6 +110,12 @@ namespace Ticketron.Controllers
             }
 
             string? imageUrl = null;
+
+            if (!string.IsNullOrEmpty(newTicket.ImageUrl))
+            {
+
+                imageUrl = newTicket.ImageUrl;
+            }
             //if (newTicket.Image != null)
             //{
             //    blobName = await _blobService.UploadImageAsync(newTicket.Image, newTicket.BookingId);
@@ -163,8 +170,18 @@ namespace Ticketron.Controllers
             if (ticket == null)
                 return NotFound();
 
+            if (!string.IsNullOrEmpty(ticket.ImageUrl))
+            {
+        
+                var blobDeleted = await _blobService.DeleteImage(ticket.ImageUrl);
+                if (!blobDeleted)
+                {
+                    return StatusCode(500);
+                }
+            }
+
             if (!await _ticketRepository.DeleteTicketAsync(ticket))
-                return Problem();
+                return StatusCode(500);
 
             return NoContent();
         }
