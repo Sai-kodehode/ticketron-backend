@@ -424,5 +424,3 @@ Represents error information in a standardized format.
   - `instance` (string, nullable): A URI reference that identifies the specific occurrence of the problem.  
 
 ---
-
-This detailed documentation provides a clear and comprehensive view of each endpoint and model, ensuring frontend developers have all the necessary information for implementation.
