@@ -38,7 +38,7 @@ namespace Ticketron.Controllers
 
             var groupMap = _mapper.Map<GroupResponseDto>(group);
 
-            return Ok(group);
+            return Ok(groupMap);
         }
 
         [HttpGet("user/{userId}")]
@@ -127,7 +127,7 @@ namespace Ticketron.Controllers
                 return NotFound();
 
             if (!await _groupRepository.DeleteGroupAsync(existingGroup))
-                return StatusCode(500);
+                return Problem();
 
             return NoContent();
         }

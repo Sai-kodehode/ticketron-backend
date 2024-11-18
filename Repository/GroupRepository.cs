@@ -29,14 +29,18 @@ namespace Ticketron.Repository
         public async Task<Group?> GetGroupAsync(Guid groupId)
         {
             return await _context.Groups
-                .Include(x => x.Users)
-                .Include(x => x.UnregUsers)
+                .Include(g => g.CreatedBy)
+                .Include(g => g.Users)
+                .Include(g => g.UnregUsers)
                 .Where(x => x.Id == groupId).FirstOrDefaultAsync();
         }
 
         public async Task<ICollection<Group>> GetGroupsByIdsAsync(ICollection<Guid> groupIds)
         {
             return await _context.Groups
+                .Include(g => g.CreatedBy)
+                .Include(g => g.Users)
+                .Include(g => g.UnregUsers)
                 .Where(x => groupIds.Contains(x.Id))
                 .ToListAsync();
         }
@@ -44,6 +48,9 @@ namespace Ticketron.Repository
         public async Task<ICollection<Group>> GetGroupsByUserIdAsync(Guid userId)
         {
             return await _context.Groups
+                .Include(g => g.CreatedBy)
+                .Include(g => g.Users)
+                .Include(g => g.UnregUsers)
                 .Where(x => x.CreatedBy.Id == userId)
                 .ToListAsync();
         }
@@ -58,20 +65,5 @@ namespace Ticketron.Repository
             var Saved = await _context.SaveChangesAsync();
             return Saved > 0;
         }
-
-        //public async Task<bool> UpdateGroupAsync(Group group)
-        //{
-        //    var existingGroup = await _context.Groups.FindAsync(group.Id);
-        //    if (existingGroup == null)
-        //        return false;
-
-        //    _context.Entry(existingGroup).State = EntityState.Detached;
-
-        //    _context.Groups.Attach(group);
-        //    _context.Entry(group).State = EntityState.Modified;
-
-        //    return await SaveAsync();
-
-        //}
     }
 }
