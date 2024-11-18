@@ -31,7 +31,8 @@ namespace Ticketron.Helper
             CreateMap<Booking, BookingSummaryResponseDto>();
 
             CreateMap<TicketCreateDto, Ticket>()
-                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.AssignedUser, opt => opt.Ignore())
+                .ForMember(dest => dest.AssignedUnregUser, opt => opt.Ignore())
                 .ForMember(dest => dest.Booking, opt => opt.Ignore())
                 .ForMember(dest => dest.PurchasedBy, opt => opt.Ignore());
             CreateMap<Ticket, TicketResponseDto>()
@@ -42,7 +43,8 @@ namespace Ticketron.Helper
                 .ForMember(dest => dest.PurchasedBy, opt => opt.Ignore())
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-            CreateMap<UnregUserCreateDto, UnregUser>();
+            CreateMap<UnregUserCreateDto, UnregUser>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
             CreateMap<UnregUser, UnregUserResponseDto>()
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy.Id));
 

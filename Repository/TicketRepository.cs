@@ -31,17 +31,18 @@ namespace Ticketron.Repository
         public async Task<Ticket?> GetTicketAsync(Guid ticketId)
         {
             return await _context.Tickets
-                .Include(t => t.Users)
-                .Include(t => t.UnregUsers)
-                .Include(t => t.Booking)
+                .Include(t => t.PurchasedBy)
+                .Include(t => t.AssignedUser)
+                .Include(t => t.AssignedUnregUser)
                 .FirstOrDefaultAsync(t => t.Id == ticketId); ;
         }
 
         public async Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId)
         {
             return await _context.Tickets
-                .Include(t => t.Users)
-                .Include(t => t.UnregUsers)
+                .Include(t => t.PurchasedBy)
+                .Include(t => t.AssignedUser)
+                .Include(t => t.AssignedUnregUser)
                 .Include(t => t.Booking)
                 .Where(x => x.Booking.Id == bookingId)
                 .ToListAsync();

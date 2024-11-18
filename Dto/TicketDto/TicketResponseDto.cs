@@ -1,4 +1,5 @@
-﻿using Ticketron.Dto.UserDto;
+﻿using Ticketron.Dto.UnregUserDto;
+using Ticketron.Dto.UserDto;
 
 namespace Ticketron.Dto.TicketDto
 {
@@ -13,7 +14,8 @@ namespace Ticketron.Dto.TicketDto
         public int? Price { get; set; }
         public string? ImageUrl { get; set; }
         public UserResponseDto? PurchasedBy { get; set; }
-        public required UserResponseDto AssignedUser { get; set; }
+        public UserResponseDto? AssignedUser { get; set; }
+        public UnregUserResponseDto? AssignedUnregUser { get; set; }
         public Guid BookingId { get; set; }
     }
 }

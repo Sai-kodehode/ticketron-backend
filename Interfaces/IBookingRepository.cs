@@ -10,6 +10,5 @@ namespace Ticketron.Interfaces
         Task<bool> DeleteBookingAsync(Booking booking);
         Task<bool> SaveAsync();
         Task<bool> BookingExistsAsync(Guid bookingId);
-        Task<bool> UpdateBookingAsync(Booking booking);
     }
 }

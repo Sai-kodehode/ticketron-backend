@@ -71,15 +71,15 @@ namespace Ticketron.Controllers
                 return Unauthorized(ex.Message);
             };
 
-            var user = await _userRepository.GetUserByIdAsync(currentUserId);
-            if (user == null)
+            var currentUser = await _userRepository.GetUserByIdAsync(currentUserId);
+            if (currentUser == null)
                 return NotFound("User not found");
 
             var groupMap = _mapper.Map<Group>(newGroup);
-            groupMap.User = user;
+            groupMap.CreatedBy = currentUser;
 
             if (!await _groupRepository.CreateGroupAsync(groupMap))
-                return StatusCode(500, "Error creating the group");
+                return Problem();
 
             return NoContent();
         }
@@ -103,12 +103,11 @@ namespace Ticketron.Controllers
 
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
 
-            if (!await _groupRepository.UpdateGroupAsync(groupMap))
-                return StatusCode(500, "Error updating the group.");
+            if (!await _groupRepository.SaveAsync())
+                return Problem();
 
-            return NoContent();
+            return Ok(_mapper.Map<GroupResponseDto>(groupMap));
         }
-
 
         [HttpDelete("{groupId}")]
         [ProducesResponseType(204)]
