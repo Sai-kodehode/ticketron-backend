@@ -11,7 +11,8 @@
         public int? Price { get; set; }
         public string? ImageUrl { get; set; }
         public User? PurchasedBy { get; set; }
-        public required User AssignedUser { get; set; }
+        public User? AssignedUser { get; set; }
+        public UnregUser? AssignedUnregUser { get; set; }
         public required Booking Booking { get; set; }
     }
 }

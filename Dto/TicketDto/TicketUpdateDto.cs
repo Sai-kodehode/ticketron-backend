@@ -12,5 +12,6 @@
         public string? ImageUrl { get; set; }
         public Guid? PurchasedBy { get; set; }
         public Guid? AssignedUserId { get; set; }
+        public Guid? AssignedUnregUserId { get; set; }
     }
 }
