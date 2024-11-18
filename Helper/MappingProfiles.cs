@@ -50,8 +50,11 @@ namespace Ticketron.Helper
 
             CreateMap<Group, GroupResponseDto>()
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy.Id));
-            CreateMap<GroupCreateDto, Group>();
-            CreateMap<GroupUpdateDto, Group>();
+            CreateMap<GroupCreateDto, Group>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedById, opt => opt.Ignore());
+            CreateMap<GroupUpdateDto, Group>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

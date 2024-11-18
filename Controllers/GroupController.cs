@@ -14,13 +14,15 @@ namespace Ticketron.Controllers
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly IUserContextService _userContextService;
+        private readonly IUnregUserRepository _unregUserRepository;
 
-        public GroupController(IGroupRepository groupRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService)
+        public GroupController(IGroupRepository groupRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService, IUnregUserRepository unregUserRepository)
         {
             _groupRepository = groupRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _userContextService = userContextService;
+            _unregUserRepository = unregUserRepository;
         }
 
         [HttpGet("{groupId}")]
@@ -78,6 +80,8 @@ namespace Ticketron.Controllers
             var groupMap = _mapper.Map<Group>(newGroup);
             groupMap.CreatedBy = currentUser;
             groupMap.CreatedById = currentUser.Id;
+            groupMap.Users = await _userRepository.GetUsersByIdsAsync(newGroup.UserIds);
+            groupMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(newGroup.UnregUserIds);
 
             if (!await _groupRepository.CreateGroupAsync(groupMap))
                 return Problem();
@@ -103,6 +107,8 @@ namespace Ticketron.Controllers
                 return NotFound();
 
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
+            groupMap.Users = await _userRepository.GetUsersByIdsAsync(updatedGroup.UserIds);
+            groupMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(updatedGroup.UnregUserIds);
 
             if (!await _groupRepository.SaveAsync())
                 return Problem();
