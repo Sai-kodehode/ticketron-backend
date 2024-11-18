@@ -29,14 +29,23 @@ namespace Ticketron.Repository
         public async Task<Group?> GetGroupAsync(Guid groupId)
         {
             return await _context.Groups
-                .Include(x => x.User)
-                .Include(x => x.GroupMembers)
+                .Include(x => x.Users)
+                .Include(x => x.UnregUsers)
                 .Where(x => x.Id == groupId).FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<Group>> GetGroupsAsync(Guid userId)
+        public async Task<ICollection<Group>> GetGroupsByIdsAsync(ICollection<Guid> groupIds)
         {
-            return await _context.Groups.Where(x => x.User.Id == userId).ToListAsync();
+            return await _context.Groups
+                .Where(x => groupIds.Contains(x.Id))
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<Group>> GetGroupsByUserIdAsync(Guid userId)
+        {
+            return await _context.Groups
+                .Where(x => x.CreatedBy.Id == userId)
+                .ToListAsync();
         }
 
         public async Task<bool> GroupExistsAsync(Guid groupId)
@@ -50,19 +59,19 @@ namespace Ticketron.Repository
             return Saved > 0;
         }
 
-        public async Task<bool> UpdateGroupAsync(Group group)
-        {
-            var existingGroup = await _context.Groups.FindAsync(group.Id);
-            if (existingGroup == null)
-                return false;
+        //public async Task<bool> UpdateGroupAsync(Group group)
+        //{
+        //    var existingGroup = await _context.Groups.FindAsync(group.Id);
+        //    if (existingGroup == null)
+        //        return false;
 
-            _context.Entry(existingGroup).State = EntityState.Detached;
+        //    _context.Entry(existingGroup).State = EntityState.Detached;
 
-            _context.Groups.Attach(group);
-            _context.Entry(group).State = EntityState.Modified;
+        //    _context.Groups.Attach(group);
+        //    _context.Entry(group).State = EntityState.Modified;
 
-            return await SaveAsync();
+        //    return await SaveAsync();
 
-        }
+        //}
     }
 }

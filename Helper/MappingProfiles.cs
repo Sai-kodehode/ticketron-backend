@@ -2,8 +2,6 @@
 using Ticketron.Dto.BookingDto;
 using Ticketron.Dto.BookingDto.BookingDto;
 using Ticketron.Dto.GroupDto.GroupDto;
-using Ticketron.Dto.GroupMemberDto;
-using Ticketron.Dto.ParticipantDto;
 using Ticketron.Dto.TicketDto;
 using Ticketron.Dto.UnregUserDto;
 using Ticketron.Dto.UserDto;
@@ -20,43 +18,37 @@ namespace Ticketron.Helper
             CreateMap<UserUpdateDto, User>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-            CreateMap<Booking, BookingResponseDto>()
-                .ForMember(dest => dest.ParticipantIds, opt => opt.MapFrom(src => src.Participants.Select(p => p.Id)))
-                .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets));
-            CreateMap<Booking, BookingSummaryResponseDto>();
-            CreateMap<BookingCreateDto, Booking>();
+            CreateMap<BookingCreateDto, Booking>()
+                .ForMember(dest => dest.Groups, opt => opt.Ignore())
+                .ForMember(dest => dest.Users, opt => opt.Ignore())
+                .ForMember(dest => dest.UnregUsers, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.Tickets, opt => opt.Ignore());
+            CreateMap<Booking, BookingResponseDto>();
             CreateMap<BookingUpdateDto, Booking>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<Booking, BookingSummaryResponseDto>();
 
+            CreateMap<TicketCreateDto, Ticket>()
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.Booking, opt => opt.Ignore())
+                .ForMember(dest => dest.PurchasedBy, opt => opt.Ignore());
             CreateMap<Ticket, TicketResponseDto>()
-                .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.Id))
-                .ForMember(dest => dest.Participant, opt => opt.MapFrom(src => src.Participant));
-            CreateMap<TicketCreateDto, Ticket>();
+                .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.Id));
             CreateMap<TicketUpdateDto, Ticket>()
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.PurchasedBy, opt => opt.Ignore())
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<UnregUserCreateDto, UnregUser>();
             CreateMap<UnregUser, UnregUserResponseDto>()
-                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User.Id));
-
-            CreateMap<Participant, ParticipantResponseDto>()
-                .ForMember(dest => dest.BookingId, opt => opt.MapFrom(src => src.Booking.Id))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.User.Id))
-                .ForMember(dest => dest.UnregUserId, opt => opt.MapFrom(src => src.UnregUser.Id))
-                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src.Group.Id));
-            CreateMap<ParticipantCreateDto, Participant>()
-                .ForMember(dest => dest.Booking, opt => opt.Ignore())
-                .ForMember(dest => dest.User, opt => opt.Ignore())
-                .ForMember(dest => dest.UnregUser, opt => opt.Ignore());
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy.Id));
 
             CreateMap<Group, GroupResponseDto>()
-                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.User.Id))
-                .ForMember(dest => dest.GroupMemberIds, opt => opt.MapFrom(src => src.GroupMembers.Select(gm => gm.Id)));
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy.Id));
             CreateMap<GroupCreateDto, Group>();
             CreateMap<GroupUpdateDto, Group>();
-
-            CreateMap<GroupMemberDto, GroupMember>().ReverseMap();
-
         }
     }
 }
