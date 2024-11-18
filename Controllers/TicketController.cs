@@ -160,6 +160,7 @@ namespace Ticketron.Controllers
                     return NotFound("User not found");
 
                 ticketMap.AssignedUser = assignedUser;
+                ticketMap.AssignedUnregUser = null;
             }
 
             if (updatedTicket.AssignedUnregUserId != null)
@@ -169,6 +170,7 @@ namespace Ticketron.Controllers
                     return NotFound("Unregistered user not found");
 
                 ticketMap.AssignedUnregUser = assignedUnregUser;
+                ticketMap.AssignedUser = null;
             }
 
             if (updatedTicket.PurchasedBy != null)
