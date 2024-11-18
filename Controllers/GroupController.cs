@@ -77,6 +77,7 @@ namespace Ticketron.Controllers
 
             var groupMap = _mapper.Map<Group>(newGroup);
             groupMap.CreatedBy = currentUser;
+            groupMap.CreatedById = currentUser.Id;
 
             if (!await _groupRepository.CreateGroupAsync(groupMap))
                 return Problem();

@@ -29,9 +29,6 @@ namespace Ticketron.Controllers
         {
             var users = _mapper.Map<List<UserResponseDto>>(await _userRepository.GetUsersAllAsync());
 
-            if (!ModelState.IsValid)
-                return BadRequest();
-
             return Ok(users);
         }
 

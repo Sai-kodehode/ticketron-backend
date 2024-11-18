@@ -34,7 +34,8 @@ namespace Ticketron.Repository
                 .Include(t => t.PurchasedBy)
                 .Include(t => t.AssignedUser)
                 .Include(t => t.AssignedUnregUser)
-                .FirstOrDefaultAsync(t => t.Id == ticketId); ;
+                .Include(t => t.Booking)
+                .FirstOrDefaultAsync(t => t.Id == ticketId);
         }
 
         public async Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId)

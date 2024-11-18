@@ -35,6 +35,7 @@ namespace Ticketron.Repository
         public async Task<Booking?> GetBookingAsync(Guid bookingId)
         {
             return await _context.Bookings
+                .Include(b => b.CreatedBy)
                 .Include(b => b.Users)
                 .Include(b => b.UnregUsers)
                 .Include(b => b.Tickets)
@@ -45,6 +46,7 @@ namespace Ticketron.Repository
         public async Task<ICollection<Booking>> GetBookingsAsync(Guid userId)
         {
             return await _context.Bookings
+                .Include(b => b.CreatedBy)
                 .Include(b => b.Users)
                 .Include(b => b.UnregUsers)
                 .Include(b => b.Tickets)

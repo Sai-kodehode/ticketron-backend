@@ -109,6 +109,7 @@ namespace Ticketron.Controllers
             var booking = _mapper.Map<Booking>(newBooking);
 
             booking.CreatedBy = currentUser;
+            booking.CreatedById = currentUser.Id;
             booking.Users = await _userRepository.GetUsersByIdsAsync(newBooking.UserIds);
             booking.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(newBooking.UnregUserIds);
             booking.Groups = await _groupRepostitory.GetGroupsByIdsAsync(newBooking.GroupIds);
