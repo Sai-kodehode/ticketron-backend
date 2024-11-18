@@ -50,6 +50,7 @@ namespace Ticketron.Repository
                 .Include(b => b.Users)
                 .Include(b => b.UnregUsers)
                 .Include(b => b.Tickets)
+                .Include(b => b.Groups)
                 .Where(b => b.CreatedBy.Id == userId)
                 .OrderBy(b => b.StartDate)
                 .ToListAsync();

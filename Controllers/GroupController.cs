@@ -86,7 +86,7 @@ namespace Ticketron.Controllers
             if (!await _groupRepository.CreateGroupAsync(groupMap))
                 return Problem();
 
-            return NoContent();
+            return Ok(_mapper.Map<GroupResponseDto>(groupMap));
         }
 
         [HttpPut("update")]
