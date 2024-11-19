@@ -1,426 +1,416 @@
-### API Overview: Ticketron v2.0
+## Ticketron API Documentation
 
-**Base URL:** `/api`
-
----
+### Overview
+- **Title**: Ticketron
+- **Version**: 1.0
 
 ### Endpoints
 
----
-
-#### **Booking Endpoints**
-
----
-
-**1. Get Booking by ID**  
-`GET /Booking/{bookingId}`
-
-- **Description:** Retrieve details of a specific booking.  
-- **Path Parameters:**  
-  - `bookingId` (UUID, required): The unique identifier of the booking.  
-
-- **Responses:**  
-  - **200 OK:** Returns a `BookingResponseDto` object.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the booking is not found.  
-
----
-
-**2. Delete Booking by ID**  
-`DELETE /Booking/{bookingId}`
-
-- **Description:** Deletes a specific booking.  
-- **Path Parameters:**  
-  - `bookingId` (UUID, required): The unique identifier of the booking to delete.  
-
-- **Responses:**  
-  - **204 No Content:** The booking was successfully deleted.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the booking is not found.  
-
----
-
-**3. Get Booking Summary by ID**  
-`GET /Booking/summary/{bookingId}`
-
-- **Description:** Retrieve summary details for a specific booking.  
-- **Path Parameters:**  
-  - `bookingId` (UUID, required): The unique identifier of the booking.  
-
-- **Responses:**  
-  - **200 OK:** Returns a `BookingSummaryResponseDto` object containing summary information.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the booking is not found.  
-
----
-
-**4. Get User Bookings**  
-`GET /Booking/user/{userId}`
-
-- **Description:** Retrieve all bookings for a specific user.  
-- **Path Parameters:**  
-  - `userId` (UUID, required): The unique identifier of the user.  
-
-- **Responses:**  
-  - **200 OK:** Returns an array of `BookingResponseDto` objects.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-
----
-
-**5. Create Booking**  
-`POST /Booking/create`
-
-- **Description:** Creates a new booking.  
-- **Request Body:**  
-  - **Content Types:**  
-    - `application/json`  
-    - `text/json`  
-    - `application/*+json`  
-
-  - **Body Schema:**  
-    - `BookingCreateDto`:  
-      - **title** (string, nullable): The title of the booking.  
-      - **startDate** (date-time, required): The start date and time of the booking.  
-      - **endDate** (date-time, required): The end date and time of the booking.  
-
-- **Responses:**  
-  - **200 OK:** Returns a `BookingResponseDto` object with the created booking's details.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **500 Internal Server Error:** A generic error occurred on the server.  
-
----
-
-**6. Update Booking**  
-`PUT /Booking/update`
-
-- **Description:** Updates an existing booking.  
-- **Request Body:**  
-  - **Content Types:**  
-    - `application/json`  
-    - `text/json`  
-    - `application/*+json`  
-
-  - **Body Schema:**  
-    - `BookingUpdateDto`:  
-      - **id** (UUID, required): The unique identifier of the booking.  
-      - **title** (string, nullable): The title of the booking.  
-      - **startDate** (date-time, nullable): The updated start date and time of the booking.  
-      - **endDate** (date-time, nullable): The updated end date and time of the booking.  
-
-- **Responses:**  
-  - **204 No Content:** The booking was successfully updated.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the booking is not found.  
-  - **500 Internal Server Error:** A generic error occurred on the server.  
-
----
-
-#### **Participant Endpoints**
-
----
-
-**1. Get Participant by ID**  
-`GET /Participant/{participantId}`
-
-- **Description:** Retrieve participant details by their ID.  
-- **Path Parameters:**  
-  - `participantId` (UUID, required): The unique identifier of the participant.  
-
-- **Responses:**  
-  - **200 OK:** Returns a `ParticipantResponseDto` object.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the participant is not found.  
-
----
-
-**2. Delete Participant by ID**  
-`DELETE /Participant/{participantId}`
-
-- **Description:** Deletes a participant by their ID.  
-- **Path Parameters:**  
-  - `participantId` (UUID, required): The unique identifier of the participant to delete.  
-
-- **Responses:**  
-  - **204 No Content:** The participant was successfully deleted.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the participant is not found.  
-
----
-
-**3. Get Participants by Booking ID**  
-`GET /Participant/booking/{bookingId}`
-
-- **Description:** Retrieve all participants associated with a specific booking.  
-- **Path Parameters:**  
-  - `bookingId` (UUID, required): The unique identifier of the booking.  
-
-- **Responses:**  
-  - **200 OK:** Returns an array of `ParticipantResponseDto` objects.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if no participants are found for the given booking.  
-
----
-
-**4. Create Participant**  
-`POST /Participant/create`
-
-- **Description:** Creates a new participant for a booking.  
-- **Request Body:**  
-  - **Content Types:**  
-    - `application/json`  
-    - `text/json`  
-    - `application/*+json`  
-
-  - **Body Schema:**  
-    - `ParticipantCreateDto`:  
-      - **bookingId** (UUID, required): The ID of the associated booking.  
-      - **userId** (UUID, nullable): The ID of the associated user, if any.  
-      - **unregUserId** (UUID, nullable): The ID of the associated unregistered user, if any.  
-
-- **Responses:**  
-  - **201 Created:** The participant was successfully created.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **500 Internal Server Error:** A generic error occurred on the server.  
-
----
-
-#### **Ticket Endpoints**
-
----
-
-**1. Get Ticket by ID**  
-`GET /Ticket/{ticketId}`
-
-- **Description:** Retrieve ticket details by its ID.  
-- **Path Parameters:**  
-  - `ticketId` (UUID, required): The unique identifier of the ticket.  
-
-- **Responses:**  
-  - **200 OK:** Returns a `TicketResponseDto` object.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the ticket is not found.  
-
----
-
-**2. Delete Ticket by ID**  
-`DELETE /Ticket/{ticketId}`
-
-- **Description:** Deletes a ticket by its ID.  
-- **Path Parameters:**  
-  - `ticketId` (UUID, required): The unique identifier of the ticket to delete.  
-
-- **Responses:**  
-  - **204 No Content:** The ticket was successfully deleted.  
-  - **404 Not Found:** Returns a `ProblemDetails` object if the ticket is not found.  
-
----
-
-**3. Get Tickets by Booking ID**  
-`GET /Ticket/booking/{bookingId}`
-
-- **Description:** Retrieve all tickets associated with a specific booking.  
-- **Path Parameters:**  
-  - `bookingId` (UUID, required): The unique identifier of the booking.  
-
-- **Responses:**  
-  - **200 OK:** Returns an array of `TicketResponseDto` objects.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-
----
-
-**4. Create Ticket**  
-`POST /Ticket/create`
-
-- **Description:** Creates a new ticket for a booking.  
-- **Request Body:**  
-  - **Content Types:**  
-    - `application/json`  
-    - `text/json`  
-    - `application/*+json`  
-
-  - **Body Schema:**  
-    - `TicketCreateDto`:  
-      - **title** (string, nullable): The title of the ticket.  
-      - **startDate** (date-time, required): The start date and time of the ticket validity.  
-      - **endDate** (date-time, required): The end date and time of the ticket validity.  
-      - **price** (integer, nullable): The price of the ticket.  
-      - **purchaseDate** (date-time, nullable): The date when the ticket was purchased.  
-      - **category** (string, required): The category of the ticket.  
-      - **imageUrl** (string, nullable): A URL to an image of the ticket.  
-      - **
-
-participantId** (UUID, nullable): The ID of the associated participant.  
-      - **bookingId** (UUID, required): The ID of the associated booking.  
-
-- **Responses:**  
-  - **201 Created:** Returns a `TicketResponseDto` object with the created ticket's details.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-  - **500 Internal Server Error:** A generic error occurred on the server.  
-
----
-
-**5. Update Ticket**  
-`PUT /Ticket/update`
-
-- **Description:** Updates an existing ticket.  
-- **Request Body:**  
-  - **Content Types:**  
-    - `application/json`  
-    - `text/json`  
-    - `application/*+json`  
-
-  - **Body Schema:**  
-    - `TicketUpdateDto`:  
-      - **id** (UUID, required): The unique identifier of the ticket.  
-      - **title** (string, nullable): The title of the ticket.  
-      - **startDate** (date-time, nullable): The updated start date and time.  
-      - **endDate** (date-time, nullable): The updated end date and time.  
-      - **price** (integer, nullable): The updated price of the ticket.  
-      - **purchaseDate** (date-time, nullable): The updated purchase date.  
-      - **category** (string, nullable): The updated category of the ticket.  
-      - **imageUrl** (string, nullable): The updated image URL for the ticket.  
-      - **participantId** (UUID, nullable): The updated participant ID associated with the ticket.  
-
-- **Responses:**  
-  - **204 No Content:** The ticket was successfully updated.  
-  - **400 Bad Request:** Returns a `ProblemDetails` object describing the error.  
-
----
-
-### Models
-
----
-
-#### **Booking Models**
-
----
-
-**1. BookingCreateDto**  
-Used when creating a new booking.  
-- **Properties:**  
-  - `title` (string, nullable): The title of the booking.  
-  - `startDate` (date-time, required): Start date and time of the booking.  
-  - `endDate` (date-time, required): End date and time of the booking.  
-
----
-
-**2. BookingResponseDto**  
-Represents the details of a booking.  
-- **Properties:**  
-  - `id` (UUID, required): The unique identifier of the booking.  
-  - `title` (string, nullable): The title of the booking.  
-  - `startDate` (date-time, required): The start date of the booking.  
-  - `endDate` (date-time, required): The end date of the booking.  
-  - `participantIds` (array of UUIDs, nullable): IDs of participants linked to the booking.  
-  - `tickets` (array of `TicketResponseDto`, nullable): Tickets linked to the booking.  
-
----
-
-**3. BookingSummaryResponseDto**  
-A summary of a booking.  
-- **Properties:**  
-  - `id` (UUID, required): The unique identifier of the booking.  
-  - `title` (string, nullable): The title of the booking.  
-  - `startDate` (date-time, required): Start date of the booking.  
-  - `endDate` (date-time, required): End date of the booking.  
-
----
-
-**4. BookingUpdateDto**  
-Used for updating a booking.  
-- **Properties:**  
-  - `id` (UUID, required): The unique identifier of the booking.  
-  - `title` (string, nullable): The updated title of the booking.  
-  - `startDate` (date-time, nullable): The updated start date and time of the booking.  
-  - `endDate` (date-time, nullable): The updated end date and time of the booking.  
-
----
-
-#### **Participant Models**
-
----
-
-**1. ParticipantCreateDto**  
-Used when creating a new participant.  
-- **Properties:**  
-  - `bookingId` (UUID, required): The ID of the booking the participant is associated with.  
-  - `userId` (UUID, nullable): The ID of the registered user, if applicable.  
-  - `unregUserId` (UUID, nullable): The ID of the unregistered user, if applicable.  
-
----
-
-**2. ParticipantResponseDto**  
-Represents the details of a participant.  
-- **Properties:**  
-  - `id` (UUID, required): The unique identifier of the participant.  
-  - `createdBy` (UUID, required): The ID of the user who created the participant.  
-  - `bookingId` (UUID, required): The ID of the booking the participant belongs to.  
-  - `userId` (UUID, nullable): The ID of the associated user, if applicable.  
-  - `unregUserId` (UUID, nullable): The ID of the associated unregistered user, if applicable.  
-  - `groupId` (UUID, nullable): The ID of the group, if the participant belongs to one.  
-
----
-
-#### **Ticket Models**
-
----
-
-**1. TicketCreateDto**  
-Used when creating a new ticket.  
-- **Properties:**  
-  - `title` (string, nullable): The title of the ticket.  
-  - `startDate` (date-time, required): The start date and time of the ticket validity.  
-  - `endDate` (date-time, required): The end date and time of the ticket validity.  
-  - `price` (integer, nullable): The price of the ticket.  
-  - `purchaseDate` (date-time, nullable): The purchase date of the ticket.  
-  - `category` (string, required): The category of the ticket.  
-  - `imageUrl` (string, nullable): The image URL associated with the ticket.  
-  - `participantId` (UUID, nullable): The ID of the associated participant.  
-  - `bookingId` (UUID, required): The ID of the associated booking.  
-
----
-
-**2. TicketResponseDto**  
-Represents the details of a ticket.  
-- **Properties:**  
-  - `id` (UUID, required): The unique identifier of the ticket.  
-  - `title` (string, nullable): The title of the ticket.  
-  - `startDate` (date-time, required): The start date of the ticket.  
-  - `endDate` (date-time, required): The end date of the ticket.  
-  - `price` (integer, nullable): The price of the ticket.  
-  - `purchaseDate` (date-time, nullable): The purchase date of the ticket.  
-  - `category` (string, required): The category of the ticket.  
-  - `participant` (`ParticipantResponseDto`, required): Details of the participant linked to the ticket.  
-  - `bookingId` (UUID, required): The ID of the associated booking.  
-  - `imageUrl` (string, nullable): The image URL associated with the ticket.  
-
----
-
-**3. TicketUpdateDto**  
-Used for updating a ticket.  
-- **Properties:**  
-  - `id` (UUID, required): The unique identifier of the ticket.  
-  - `title` (string, nullable): The updated title of the ticket.  
-  - `startDate` (date-time, nullable): The updated start date of the ticket.  
-  - `endDate` (date-time, nullable): The updated end date of the ticket.  
-  - `price` (integer, nullable): The updated price of the ticket.  
-  - `purchaseDate` (date-time, nullable): The updated purchase date of the ticket.  
-  - `category` (string, nullable): The updated category of the ticket.  
-  - `imageUrl` (string, nullable): The updated image URL of the ticket.  
-  - `participantId` (UUID, nullable): The updated participant ID associated with the ticket.  
-
----
-
-#### **Error Model**
-
----
-
-**ProblemDetails**  
-Represents error information in a standardized format.  
-- **Properties:**  
-  - `type` (string, nullable): A URI reference to the type of error.  
-  - `title` (string, nullable): A short, human-readable summary of the error.  
-  - `status` (integer, nullable): The HTTP status code for the error.  
-  - `detail` (string, nullable): A detailed description of the error.  
-  - `instance` (string, nullable): A URI reference that identifies the specific occurrence of the problem.  
-
----
+#### Booking
+
+1. **Get Booking by ID**
+   - **Endpoint**: `/api/Booking/{bookingId}`
+   - **Method**: GET
+   - **Description**: Retrieves a booking by its ID.
+   - **Parameters**:
+     - `bookingId` (required): ID of the booking (integer)
+   - **Responses**:
+     - **200**: Success (returns booking details)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (booking not found)
+
+2. **Update Booking by ID**
+   - **Endpoint**: `/api/Booking/{bookingId}`
+   - **Method**: PUT
+   - **Description**: Updates a booking by its ID.
+   - **Parameters**:
+     - `bookingId` (required): ID of the booking (integer)
+   - **Request Body**: Updated booking details (JSON format)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (booking not found)
+     - **500**: Server Error
+
+3. **Delete Booking by ID**
+   - **Endpoint**: `/api/Booking/{bookingId}`
+   - **Method**: DELETE
+   - **Description**: Deletes a booking by its ID.
+   - **Parameters**:
+     - `bookingId` (required): ID of the booking (integer)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (booking not found)
+
+4. **Get Bookings by User ID**
+   - **Endpoint**: `/api/Booking/user/{userId}`
+   - **Method**: GET
+   - **Description**: Retrieves all bookings for a specified user.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Responses**:
+     - **200**: Success (returns an array of bookings)
+     - **400**: Bad Request (invalid input)
+
+5. **Create a New Booking**
+   - **Endpoint**: `/api/Booking/create`
+   - **Method**: POST
+   - **Description**: Creates a new booking.
+   - **Request Body**: Booking details (JSON format)
+   - **Responses**:
+     - **200**: Success (returns booking details)
+     - **400**: Bad Request (invalid input)
+     - **500**: Server Error
+
+#### Group
+
+1. **Get Group by ID**
+   - **Endpoint**: `/api/Group/{groupId}`
+   - **Method**: GET
+   - **Description**: Retrieves a group by its ID.
+   - **Parameters**:
+     - `groupId` (required): ID of the group (integer)
+   - **Responses**:
+     - **200**: Success (returns group details)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (group not found)
+
+2. **Update Group by ID**
+   - **Endpoint**: `/api/Group/{groupId}`
+   - **Method**: PUT
+   - **Description**: Updates a group by its ID.
+   - **Parameters**:
+     - `groupId` (required): ID of the group (integer)
+   - **Request Body**: Updated group details (JSON format)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (group not found)
+     - **500**: Server Error
+
+3. **Delete Group by ID**
+   - **Endpoint**: `/api/Group/{groupId}`
+   - **Method**: DELETE
+   - **Description**: Deletes a group by its ID.
+   - **Parameters**:
+     - `groupId` (required): ID of the group (integer)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **404**: Not Found (group not found)
+     - **500**: Server Error
+
+4. **Get Groups by User ID**
+   - **Endpoint**: `/api/Group/user/{userId}`
+   - **Method**: GET
+   - **Description**: Retrieves all groups for a specified user.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Responses**:
+     - **200**: Success (returns an array of groups)
+     - **400**: Bad Request (invalid input)
+
+5. **Create a New Group**
+   - **Endpoint**: `/api/Group/create`
+   - **Method**: POST
+   - **Description**: Creates a new group.
+   - **Request Body**: Group details (JSON format)
+   - **Responses**:
+     - **201**: Created (success)
+     - **400**: Bad Request (invalid input)
+     - **500**: Server Error
+
+#### Group Member
+
+1. **Get Group Member by ID**
+   - **Endpoint**: `/api/GroupMember/{groupMemberId}`
+   - **Method**: GET
+   - **Description**: Retrieves a group member by their ID.
+   - **Parameters**:
+     - `groupMemberId` (required): ID of the group member (integer)
+   - **Responses**:
+     - **200**: Success (returns group member details)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (group member not found)
+
+2. **Delete Group Member by ID**
+   - **Endpoint**: `/api/GroupMember/{groupMemberId}`
+   - **Method**: DELETE
+   - **Description**: Deletes a group member by their ID.
+   - **Parameters**:
+     - `groupMemberId` (required): ID of the group member (integer)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **404**: Not Found (group member not found)
+     - **500**: Server Error
+
+3. **Get Group Members by Group ID**
+   - **Endpoint**: `/api/GroupMember/group/{groupId}`
+   - **Method**: GET
+   - **Description**: Retrieves all members of a specified group.
+   - **Parameters**:
+     - `groupId` (required): ID of the group (integer)
+   - **Responses**:
+     - **200**: Success (returns an array of group members)
+     - **400**: Bad Request (invalid input)
+
+4. **Add a Group Member to a Group**
+   - **Endpoint**: `/api/GroupMember/group/{groupId}`
+   - **Method**: POST
+   - **Description**: Adds a new member to a group.
+   - **Parameters**:
+     - `groupId` (required): ID of the group (integer)
+   - **Request Body**: Group member details (JSON format)
+   - **Responses**:
+     - **201**: Created (success)
+     - **400**: Bad Request (invalid input)
+     - **500**: Server Error
+
+#### Participant
+
+1. **Get Participant by ID**
+   - **Endpoint**: `/api/Participant/{participantId}`
+   - **Method**: GET
+   - **Description**: Retrieves a participant by their ID.
+   - **Parameters**:
+     - `participantId` (required): ID of the participant (integer)
+   - **Responses**:
+     - **200**: Success (returns participant details)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (participant not found)
+
+2. **Delete Participant by ID**
+   - **Endpoint**: `/api/Participant/{participantId}`
+   - **Method**: DELETE
+   - **Description**: Deletes a participant by their ID.
+   - **Parameters**:
+     - `participantId` (required): ID of the participant (integer)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **404**: Not Found (participant not found)
+     - **500**: Server Error
+
+3. **Get Participants by Booking ID**
+   - **Endpoint**: `/api/Participant/booking/{bookingId}`
+   - **Method**: GET
+   - **Description**: Retrieves all participants for a specified booking.
+   - **Parameters**:
+     - `bookingId` (required): ID of the booking (integer)
+   - **Responses**:
+     - **200**: Success (returns an array of participants)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (booking not found)
+
+4. **Add a Participant to a Booking**
+   - **Endpoint**: `/api/Participant/{bookingId}`
+   - **Method**: POST
+   - **Description**: Adds a new participant to a booking.
+   - **Parameters**:
+     - `bookingId` (required): ID of the booking (integer)
+   - **Request Body**: Participant details (JSON format)
+   - **Responses**:
+     - **201**: Created (success)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (booking not found)
+     - **500**: Server Error
+
+#### Ticket
+
+1. **Get Ticket by ID**
+   - **Endpoint**: `/api/Ticket/{ticketId}`
+  
+
+ - **Method**: GET
+   - **Description**: Retrieves a ticket by its ID.
+   - **Parameters**:
+     - `ticketId` (required): ID of the ticket (integer)
+   - **Responses**:
+     - **200**: Success (returns ticket details)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (ticket not found)
+
+2. **Update Ticket by ID**
+   - **Endpoint**: `/api/Ticket/{ticketId}`
+   - **Method**: PUT
+   - **Description**: Updates a ticket by its ID.
+   - **Parameters**:
+     - `ticketId` (required): ID of the ticket (integer)
+   - **Request Body**: Updated ticket details (JSON format)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (ticket not found)
+     - **500**: Server Error
+
+3. **Delete Ticket by ID**
+   - **Endpoint**: `/api/Ticket/{ticketId}`
+   - **Method**: DELETE
+   - **Description**: Deletes a ticket by its ID.
+   - **Parameters**:
+     - `ticketId` (required): ID of the ticket (integer)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **404**: Not Found (ticket not found)
+     - **500**: Server Error
+
+4. **Get Tickets by Booking ID**
+   - **Endpoint**: `/api/Ticket/booking/{bookingId}`
+   - **Method**: GET
+   - **Description**: Retrieves all tickets for a specified booking.
+   - **Parameters**:
+     - `bookingId` (required): ID of the booking (integer)
+   - **Responses**:
+     - **200**: Success (returns an array of tickets)
+     - **400**: Bad Request (invalid input)
+
+5. **Create a New Ticket**
+   - **Endpoint**: `/api/Ticket/create`
+   - **Method**: POST
+   - **Description**: Creates a new ticket.
+   - **Request Body**: Ticket details (JSON format)
+   - **Responses**:
+     - **201**: Created (success)
+     - **400**: Bad Request (invalid input)
+     - **500**: Server Error
+
+#### Unregistered User (UnregUser)
+
+1. **Get Unregistered User by ID**
+   - **Endpoint**: `/api/UnregUser/{unregUserId}`
+   - **Method**: GET
+   - **Description**: Retrieves an unregistered user by their ID.
+   - **Parameters**:
+     - `unregUserId` (required): ID of the unregistered user (integer)
+   - **Responses**:
+     - **200**: Success (returns user details)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (user not found)
+
+2. **Delete Unregistered User by ID**
+   - **Endpoint**: `/api/UnregUser/{unregUserId}`
+   - **Method**: DELETE
+   - **Description**: Deletes an unregistered user by their ID.
+   - **Parameters**:
+     - `unregUserId` (required): ID of the unregistered user (integer)
+   - **Responses**:
+     - **204**: No Content (success)
+     - **404**: Not Found (user not found)
+     - **500**: Server Error
+
+3. **Get Unregistered Users by User ID**
+   - **Endpoint**: `/api/UnregUser/user/{userId}`
+   - **Method**: GET
+   - **Description**: Retrieves all unregistered users associated with a specified user.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Responses**:
+     - **200**: Success (returns an array of unregistered users)
+     - **400**: Bad Request (invalid input)
+     - **404**: Not Found (user not found)
+
+4. **Create a New Unregistered User**
+   - **Endpoint**: `/api/UnregUser/{userId}`
+   - **Method**: POST
+   - **Description**: Creates a new unregistered user associated with a specified user.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Request Body**: Unregistered user details (JSON format)
+   - **Responses**:
+     - **201**: Created (success)
+     - **400**: Bad Request (invalid input)
+     - **500**: Server Error
+
+#### User
+
+1. **Get All Users**
+   - **Endpoint**: `/api/User`
+   - **Method**: GET
+   - **Description**: Retrieves a list of all users.
+   - **Responses**:
+     - **200**: Success (returns an array of users)
+
+2. **Create a New User**
+   - **Endpoint**: `/api/User`
+   - **Method**: POST
+   - **Description**: Creates a new user.
+   - **Request Body**: User details (JSON format)
+   - **Responses**:
+     - **200**: Success (user created)
+
+3. **Get User by ID**
+   - **Endpoint**: `/api/User/{userId}`
+   - **Method**: GET
+   - **Description**: Retrieves a user by their ID.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Responses**:
+     - **200**: Success (returns user details)
+
+4. **Update User by ID**
+   - **Endpoint**: `/api/User/{userId}`
+   - **Method**: PUT
+   - **Description**: Updates a user by their ID.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Request Body**: Updated user details (JSON format)
+   - **Responses**:
+     - **200**: Success (user updated)
+
+5. **Delete User by ID**
+   - **Endpoint**: `/api/User/{userId}`
+   - **Method**: DELETE
+   - **Description**: Deletes a user by their ID.
+   - **Parameters**:
+     - `userId` (required): ID of the user (integer)
+   - **Responses**:
+     - **200**: Success (user deleted)
+
+### Components (Schemas)
+
+#### Booking
+- **Properties**:
+  - `id` (integer)
+  - `title` (string, nullable)
+  - `startDate` (string, date-time)
+  - `endDate` (string, date-time)
+  - `userId` (integer)
+
+#### Group
+- **Properties**:
+  - `id` (integer)
+  - `name` (string, nullable)
+  - `userId` (integer)
+
+#### Group Member
+- **Properties**:
+  - `id` (integer)
+  - `userId` (integer, nullable)
+  - `unregUserId` (integer, nullable)
+  - `isUser` (boolean)
+
+#### Participant
+- **Properties**:
+  - `id` (integer)
+  - `addedBy` (integer)
+  - `isUser` (boolean)
+
+#### Ticket
+- **Properties**:
+  - `id` (integer)
+  - `title` (string, nullable)
+  - `startDate` (string, date-time)
+  - `endDate` (string, date-time)
+  - `participantId` (integer)
+  - `bookingId` (integer)
+
+#### Unregistered User (UnregUser)
+- **Properties**:
+  - `id` (integer)
+  - `name` (string, nullable)
+
+#### User
+- **Properties**:
+  - `id` (integer)
+  - `name` (string, nullable)
+  - `email` (string, nullable)
+  - `phone` (string, nullable)
