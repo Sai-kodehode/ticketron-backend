@@ -1,416 +1,473 @@
-## Ticketron API Documentation
+### Ticketron API Documentation
 
-### Overview
-- **Title**: Ticketron
-- **Version**: 1.0
+---
 
-### Endpoints
+#### **API Version**: 1.0  
+#### **Title**: Ticketron
 
-#### Booking
+---
 
-1. **Get Booking by ID**
-   - **Endpoint**: `/api/Booking/{bookingId}`
-   - **Method**: GET
-   - **Description**: Retrieves a booking by its ID.
-   - **Parameters**:
-     - `bookingId` (required): ID of the booking (integer)
-   - **Responses**:
-     - **200**: Success (returns booking details)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (booking not found)
+## **Endpoints**
 
-2. **Update Booking by ID**
-   - **Endpoint**: `/api/Booking/{bookingId}`
-   - **Method**: PUT
-   - **Description**: Updates a booking by its ID.
-   - **Parameters**:
-     - `bookingId` (required): ID of the booking (integer)
-   - **Request Body**: Updated booking details (JSON format)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (booking not found)
-     - **500**: Server Error
+### **Blob Management**
 
-3. **Delete Booking by ID**
-   - **Endpoint**: `/api/Booking/{bookingId}`
-   - **Method**: DELETE
-   - **Description**: Deletes a booking by its ID.
-   - **Parameters**:
-     - `bookingId` (required): ID of the booking (integer)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (booking not found)
+---
 
-4. **Get Bookings by User ID**
-   - **Endpoint**: `/api/Booking/user/{userId}`
-   - **Method**: GET
-   - **Description**: Retrieves all bookings for a specified user.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Responses**:
-     - **200**: Success (returns an array of bookings)
-     - **400**: Bad Request (invalid input)
+#### **Upload Blob**
 
-5. **Create a New Booking**
-   - **Endpoint**: `/api/Booking/create`
-   - **Method**: POST
-   - **Description**: Creates a new booking.
-   - **Request Body**: Booking details (JSON format)
-   - **Responses**:
-     - **200**: Success (returns booking details)
-     - **400**: Bad Request (invalid input)
-     - **500**: Server Error
+**Endpoint**: `POST /api/Blob/upload`  
+**Description**: Upload an image blob.
 
-#### Group
+**Request Body**:
+- **Content-Type**: `multipart/form-data`
+  - **image** (binary): The image file to upload.
 
-1. **Get Group by ID**
-   - **Endpoint**: `/api/Group/{groupId}`
-   - **Method**: GET
-   - **Description**: Retrieves a group by its ID.
-   - **Parameters**:
-     - `groupId` (required): ID of the group (integer)
-   - **Responses**:
-     - **200**: Success (returns group details)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (group not found)
+**Responses**:
+- **200 OK**: Upload successful.
 
-2. **Update Group by ID**
-   - **Endpoint**: `/api/Group/{groupId}`
-   - **Method**: PUT
-   - **Description**: Updates a group by its ID.
-   - **Parameters**:
-     - `groupId` (required): ID of the group (integer)
-   - **Request Body**: Updated group details (JSON format)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (group not found)
-     - **500**: Server Error
+---
 
-3. **Delete Group by ID**
-   - **Endpoint**: `/api/Group/{groupId}`
-   - **Method**: DELETE
-   - **Description**: Deletes a group by its ID.
-   - **Parameters**:
-     - `groupId` (required): ID of the group (integer)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **404**: Not Found (group not found)
-     - **500**: Server Error
+#### **Delete Blob**
 
-4. **Get Groups by User ID**
-   - **Endpoint**: `/api/Group/user/{userId}`
-   - **Method**: GET
-   - **Description**: Retrieves all groups for a specified user.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Responses**:
-     - **200**: Success (returns an array of groups)
-     - **400**: Bad Request (invalid input)
+**Endpoint**: `DELETE /api/Blob/delete`  
+**Description**: Delete a blob by URL.
 
-5. **Create a New Group**
-   - **Endpoint**: `/api/Group/create`
-   - **Method**: POST
-   - **Description**: Creates a new group.
-   - **Request Body**: Group details (JSON format)
-   - **Responses**:
-     - **201**: Created (success)
-     - **400**: Bad Request (invalid input)
-     - **500**: Server Error
+**Query Parameters**:
+- **imageUrl** (string): URL of the image to delete.
 
-#### Group Member
+**Responses**:
+- **200 OK**: Deletion successful.
+- **400 Bad Request**: Invalid request.
+- **500 Internal Server Error**: Server error.
 
-1. **Get Group Member by ID**
-   - **Endpoint**: `/api/GroupMember/{groupMemberId}`
-   - **Method**: GET
-   - **Description**: Retrieves a group member by their ID.
-   - **Parameters**:
-     - `groupMemberId` (required): ID of the group member (integer)
-   - **Responses**:
-     - **200**: Success (returns group member details)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (group member not found)
+---
 
-2. **Delete Group Member by ID**
-   - **Endpoint**: `/api/GroupMember/{groupMemberId}`
-   - **Method**: DELETE
-   - **Description**: Deletes a group member by their ID.
-   - **Parameters**:
-     - `groupMemberId` (required): ID of the group member (integer)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **404**: Not Found (group member not found)
-     - **500**: Server Error
+### **Booking Management**
 
-3. **Get Group Members by Group ID**
-   - **Endpoint**: `/api/GroupMember/group/{groupId}`
-   - **Method**: GET
-   - **Description**: Retrieves all members of a specified group.
-   - **Parameters**:
-     - `groupId` (required): ID of the group (integer)
-   - **Responses**:
-     - **200**: Success (returns an array of group members)
-     - **400**: Bad Request (invalid input)
+---
 
-4. **Add a Group Member to a Group**
-   - **Endpoint**: `/api/GroupMember/group/{groupId}`
-   - **Method**: POST
-   - **Description**: Adds a new member to a group.
-   - **Parameters**:
-     - `groupId` (required): ID of the group (integer)
-   - **Request Body**: Group member details (JSON format)
-   - **Responses**:
-     - **201**: Created (success)
-     - **400**: Bad Request (invalid input)
-     - **500**: Server Error
+#### **Get Booking by ID**
 
-#### Participant
+**Endpoint**: `GET /api/Booking/{bookingId}`  
+**Description**: Retrieve booking details.
 
-1. **Get Participant by ID**
-   - **Endpoint**: `/api/Participant/{participantId}`
-   - **Method**: GET
-   - **Description**: Retrieves a participant by their ID.
-   - **Parameters**:
-     - `participantId` (required): ID of the participant (integer)
-   - **Responses**:
-     - **200**: Success (returns participant details)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (participant not found)
+**Path Parameters**:
+- **bookingId** (UUID, required): ID of the booking.
 
-2. **Delete Participant by ID**
-   - **Endpoint**: `/api/Participant/{participantId}`
-   - **Method**: DELETE
-   - **Description**: Deletes a participant by their ID.
-   - **Parameters**:
-     - `participantId` (required): ID of the participant (integer)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **404**: Not Found (participant not found)
-     - **500**: Server Error
+**Responses**:
+- **200 OK**: Returns `BookingResponseDto`.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: Booking not found.
 
-3. **Get Participants by Booking ID**
-   - **Endpoint**: `/api/Participant/booking/{bookingId}`
-   - **Method**: GET
-   - **Description**: Retrieves all participants for a specified booking.
-   - **Parameters**:
-     - `bookingId` (required): ID of the booking (integer)
-   - **Responses**:
-     - **200**: Success (returns an array of participants)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (booking not found)
+---
 
-4. **Add a Participant to a Booking**
-   - **Endpoint**: `/api/Participant/{bookingId}`
-   - **Method**: POST
-   - **Description**: Adds a new participant to a booking.
-   - **Parameters**:
-     - `bookingId` (required): ID of the booking (integer)
-   - **Request Body**: Participant details (JSON format)
-   - **Responses**:
-     - **201**: Created (success)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (booking not found)
-     - **500**: Server Error
+#### **Delete Booking**
 
-#### Ticket
+**Endpoint**: `DELETE /api/Booking/{bookingId}`  
+**Description**: Delete a booking by ID.
 
-1. **Get Ticket by ID**
-   - **Endpoint**: `/api/Ticket/{ticketId}`
-  
+**Path Parameters**:
+- **bookingId** (UUID, required): ID of the booking.
 
- - **Method**: GET
-   - **Description**: Retrieves a ticket by its ID.
-   - **Parameters**:
-     - `ticketId` (required): ID of the ticket (integer)
-   - **Responses**:
-     - **200**: Success (returns ticket details)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (ticket not found)
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: Booking not found.
 
-2. **Update Ticket by ID**
-   - **Endpoint**: `/api/Ticket/{ticketId}`
-   - **Method**: PUT
-   - **Description**: Updates a ticket by its ID.
-   - **Parameters**:
-     - `ticketId` (required): ID of the ticket (integer)
-   - **Request Body**: Updated ticket details (JSON format)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (ticket not found)
-     - **500**: Server Error
+---
 
-3. **Delete Ticket by ID**
-   - **Endpoint**: `/api/Ticket/{ticketId}`
-   - **Method**: DELETE
-   - **Description**: Deletes a ticket by its ID.
-   - **Parameters**:
-     - `ticketId` (required): ID of the ticket (integer)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **404**: Not Found (ticket not found)
-     - **500**: Server Error
+#### **Get Booking Summary**
 
-4. **Get Tickets by Booking ID**
-   - **Endpoint**: `/api/Ticket/booking/{bookingId}`
-   - **Method**: GET
-   - **Description**: Retrieves all tickets for a specified booking.
-   - **Parameters**:
-     - `bookingId` (required): ID of the booking (integer)
-   - **Responses**:
-     - **200**: Success (returns an array of tickets)
-     - **400**: Bad Request (invalid input)
+**Endpoint**: `GET /api/Booking/summary/{bookingId}`  
+**Description**: Retrieve a summary of booking details.
 
-5. **Create a New Ticket**
-   - **Endpoint**: `/api/Ticket/create`
-   - **Method**: POST
-   - **Description**: Creates a new ticket.
-   - **Request Body**: Ticket details (JSON format)
-   - **Responses**:
-     - **201**: Created (success)
-     - **400**: Bad Request (invalid input)
-     - **500**: Server Error
+**Path Parameters**:
+- **bookingId** (UUID, required): ID of the booking.
 
-#### Unregistered User (UnregUser)
+**Responses**:
+- **200 OK**: Returns `BookingSummaryResponseDto`.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: Booking not found.
 
-1. **Get Unregistered User by ID**
-   - **Endpoint**: `/api/UnregUser/{unregUserId}`
-   - **Method**: GET
-   - **Description**: Retrieves an unregistered user by their ID.
-   - **Parameters**:
-     - `unregUserId` (required): ID of the unregistered user (integer)
-   - **Responses**:
-     - **200**: Success (returns user details)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (user not found)
+---
 
-2. **Delete Unregistered User by ID**
-   - **Endpoint**: `/api/UnregUser/{unregUserId}`
-   - **Method**: DELETE
-   - **Description**: Deletes an unregistered user by their ID.
-   - **Parameters**:
-     - `unregUserId` (required): ID of the unregistered user (integer)
-   - **Responses**:
-     - **204**: No Content (success)
-     - **404**: Not Found (user not found)
-     - **500**: Server Error
+#### **Get Bookings by User**
 
-3. **Get Unregistered Users by User ID**
-   - **Endpoint**: `/api/UnregUser/user/{userId}`
-   - **Method**: GET
-   - **Description**: Retrieves all unregistered users associated with a specified user.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Responses**:
-     - **200**: Success (returns an array of unregistered users)
-     - **400**: Bad Request (invalid input)
-     - **404**: Not Found (user not found)
+**Endpoint**: `GET /api/Booking/user/{userId}`  
+**Description**: Retrieve all bookings for a specific user.
 
-4. **Create a New Unregistered User**
-   - **Endpoint**: `/api/UnregUser/{userId}`
-   - **Method**: POST
-   - **Description**: Creates a new unregistered user associated with a specified user.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Request Body**: Unregistered user details (JSON format)
-   - **Responses**:
-     - **201**: Created (success)
-     - **400**: Bad Request (invalid input)
-     - **500**: Server Error
+**Path Parameters**:
+- **userId** (UUID, required): ID of the user.
 
-#### User
+**Responses**:
+- **200 OK**: Returns an array of `BookingResponseDto`.
+- **400 Bad Request**: Invalid request.
 
-1. **Get All Users**
-   - **Endpoint**: `/api/User`
-   - **Method**: GET
-   - **Description**: Retrieves a list of all users.
-   - **Responses**:
-     - **200**: Success (returns an array of users)
+---
 
-2. **Create a New User**
-   - **Endpoint**: `/api/User`
-   - **Method**: POST
-   - **Description**: Creates a new user.
-   - **Request Body**: User details (JSON format)
-   - **Responses**:
-     - **200**: Success (user created)
+#### **Create Booking**
 
-3. **Get User by ID**
-   - **Endpoint**: `/api/User/{userId}`
-   - **Method**: GET
-   - **Description**: Retrieves a user by their ID.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Responses**:
-     - **200**: Success (returns user details)
+**Endpoint**: `POST /api/Booking/create`  
+**Description**: Create a new booking.
 
-4. **Update User by ID**
-   - **Endpoint**: `/api/User/{userId}`
-   - **Method**: PUT
-   - **Description**: Updates a user by their ID.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Request Body**: Updated user details (JSON format)
-   - **Responses**:
-     - **200**: Success (user updated)
+**Request Body**:
+- **BookingCreateDto**: 
+  - **title** (string, required): Title of the booking.
+  - **startDate** (date-time): Start date.
+  - **endDate** (date-time): End date.
+  - **userIds** (array, UUID, nullable): Associated user IDs.
+  - **unregUserIds** (array, UUID, nullable): Associated unregistered user IDs.
+  - **groupIds** (array, UUID, nullable): Associated group IDs.
 
-5. **Delete User by ID**
-   - **Endpoint**: `/api/User/{userId}`
-   - **Method**: DELETE
-   - **Description**: Deletes a user by their ID.
-   - **Parameters**:
-     - `userId` (required): ID of the user (integer)
-   - **Responses**:
-     - **200**: Success (user deleted)
+**Responses**:
+- **200 OK**: Returns `BookingResponseDto`.
+- **400 Bad Request**: Invalid data.
+- **500 Internal Server Error**: Server error.
 
-### Components (Schemas)
+---
 
-#### Booking
-- **Properties**:
-  - `id` (integer)
-  - `title` (string, nullable)
-  - `startDate` (string, date-time)
-  - `endDate` (string, date-time)
-  - `userId` (integer)
+#### **Update Booking**
 
-#### Group
-- **Properties**:
-  - `id` (integer)
-  - `name` (string, nullable)
-  - `userId` (integer)
+**Endpoint**: `PUT /api/Booking/update`  
+**Description**: Update an existing booking.
 
-#### Group Member
-- **Properties**:
-  - `id` (integer)
-  - `userId` (integer, nullable)
-  - `unregUserId` (integer, nullable)
-  - `isUser` (boolean)
+**Request Body**:
+- **BookingUpdateDto**: 
+  - **id** (UUID, required): Booking ID.
+  - **title** (string, nullable): Title.
+  - **startDate** (date-time, nullable): Start date.
+  - **endDate** (date-time, nullable): End date.
+  - **createdBy** (UUID, nullable): User ID of creator. Assigned to current user if not provided.
 
-#### Participant
-- **Properties**:
-  - `id` (integer)
-  - `addedBy` (integer)
-  - `isUser` (boolean)
+**Responses**:
+- **204 No Content**: Update successful.
+- **400 Bad Request**: Invalid data.
+- **404 Not Found**: Booking not found.
+- **500 Internal Server Error**: Server error.
 
-#### Ticket
-- **Properties**:
-  - `id` (integer)
-  - `title` (string, nullable)
-  - `startDate` (string, date-time)
-  - `endDate` (string, date-time)
-  - `participantId` (integer)
-  - `bookingId` (integer)
+---
 
-#### Unregistered User (UnregUser)
-- **Properties**:
-  - `id` (integer)
-  - `name` (string, nullable)
+### **Group Management**
 
-#### User
-- **Properties**:
-  - `id` (integer)
-  - `name` (string, nullable)
-  - `email` (string, nullable)
-  - `phone` (string, nullable)
+---
+
+#### **Get Group by ID**
+
+**Endpoint**: `GET /api/Group/{groupId}`  
+**Description**: Retrieve group details.
+
+**Path Parameters**:
+- **groupId** (UUID, required): ID of the group.
+
+**Responses**:
+- **200 OK**: Returns `GroupResponseDto`.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: Group not found.
+
+---
+
+#### **Delete Group**
+
+**Endpoint**: `DELETE /api/Group/{groupId}`  
+**Description**: Delete a group by ID.
+
+**Path Parameters**:
+- **groupId** (UUID, required): ID of the group.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **404 Not Found**: Group not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
+#### **Get Groups by User**
+
+**Endpoint**: `GET /api/Group/user/{userId}`  
+**Description**: Retrieve all groups associated with a user.
+
+**Path Parameters**:
+- **userId** (UUID, required): User ID.
+
+**Responses**:
+- **200 OK**: Returns an array of `Group`.
+- **400 Bad Request**: Invalid request.
+
+---
+
+#### **Create Group**
+
+**Endpoint**: `POST /api/Group/create`  
+**Description**: Create a new group.
+
+**Request Body**:
+- **GroupCreateDto**: 
+  - **name** (string, required): Name of the group.
+  - **userIds** (array, UUID, nullable): Associated user IDs.
+  - **unregUserIds** (array, UUID, nullable): Associated unregistered user IDs.
+
+**Responses**:
+- **201 Created**: Group created successfully.
+- **400 Bad Request**: Invalid data.
+- **500 Internal Server Error**: Server error.
+
+---
+
+#### **Update Group**
+
+**Endpoint**: `PUT /api/Group/update`  
+**Description**: Update group details.
+
+**Request Body**:
+- **GroupUpdateDto**: 
+  - **id** (UUID, required): Group ID.
+  - **name** (string, nullable): Group name.
+  - **userIds** (array, UUID, nullable): User IDs.
+  - **unregUserIds** (array, UUID, nullable): Unregistered user IDs.
+
+**Responses**:
+- **204 No Content**: Update successful.
+- **400 Bad Request**: Invalid data.
+- **404 Not Found**: Group not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
+### **Ticket Management**
+
+---
+
+#### **Get Ticket by ID**
+
+**Endpoint**: `GET /api/Ticket/{ticketId}`  
+**Description**: Retrieve ticket details.
+
+**Path Parameters**:
+- **ticketId** (UUID, required): Ticket ID.
+
+**Responses**:
+- **200 OK**: Returns `TicketResponseDto`.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: Ticket not found.
+
+---
+
+#### **Delete Ticket**
+
+**Endpoint**: `DELETE /api/Ticket/{ticketId}`  
+**Description**: Delete a ticket by ID.
+
+**Path Parameters**:
+- **ticketId** (UUID, required): Ticket ID.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **404 Not Found**: Ticket not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
+#### **Get Tickets by Booking**
+
+**Endpoint**: `GET /api/Ticket/booking/{bookingId}`  
+**Description**: Retrieve tickets associated with a booking.
+
+**Path Parameters**:
+- **bookingId** (UUID, required): Booking ID.
+
+**Responses**:
+- **200 OK**: Returns an array of `TicketResponseDto`.
+- **400 Bad Request**: Invalid request.
+
+---
+
+#### **Create Ticket**
+
+**Endpoint**: `POST /api/Ticket/create`  
+**Description**: Create a new ticket.
+
+**Request Body**:
+- **TicketCreateDto**: 
+  - **title** (string, required): Title.
+  - **category** (string, required): Category.
+  - **startDate** (date-time): Start date.
+  - **endDate** (date-time): End date.
+  - **price** (integer, nullable): Price.
+  - **imageUrl** (string, nullable): Image URL.
+  - **purchasedBy** (UUID, nullable): User ID of purchaser.
+  - **assignedUserId** (UUID, nullable, required*): User ID of assigned user.
+  - **assignedUnregUserId** (UUID, nullable, required*): Unregistered user ID.
+  - **bookingId** (UUID, required): Associated booking ID.
+
+**NOTE:**
+- Either assignedUserId or assignedUnregUserId must be provided. But never both.
+
+**Responses**:
+- **201 Created**: Returns `TicketResponseDto`.
+- **400 Bad Request**: Invalid data.
+- **500 Internal Server Error**: Server error.
+
+---
+
+#### **Update Ticket**
+
+**Endpoint**: `PUT /api/Ticket/update`  
+**Description**: Update an existing ticket.
+
+**Request Body**:
+- **TicketUpdateDto**: 
+  - **id** (UUID, required): Ticket ID.
+  - **title** (string, nullable): Title.
+  - **category** (string, nullable): Category.
+  - **startDate** (date-time, nullable): Start date.
+  - **endDate** (date-time, nullable): End date.
+  - **purchaseDate** (date-time, nullable): Purchase date. 
+  - **price** (integer, nullable): Price.
+  - **imageUrl** (string, nullable): Image URL.
+  - **purchasedBy** (UUID, nullable): User ID of purchaser.
+  - **assignedUserId** (UUID, nullable): User ID of assigned user.
+  - **assignedUnregUserId** (UUID, nullable): UnregUser ID for assigned unregistered user. 
+
+**NOTE:**
+- If assignedUserId or assignedUnregUserId is provided, only one of them should be present.
+
+**Responses**:
+- **204 No Content**: Update successful.
+- **400 Bad Request**: Invalid data.
+- **404 Not Found**: Ticket not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
+### **User Management**
+
+---
+
+#### **Get All Users**
+
+**Endpoint**: `GET /api/User`  
+**Description**: Retrieve a list of all users.
+
+**Responses**:
+- **200 OK**: Returns an array of `UserResponseDto`.
+- **400 Bad Request**: Invalid request.
+
+---
+
+#### **Get User by ID**
+
+**Endpoint**: `GET /api/User/{userId
+
+}`  
+**Description**: Retrieve user details.
+
+**Path Parameters**:
+- **userId** (UUID, required): User ID.
+
+**Responses**:
+- **200 OK**: Returns `UserResponseDto`.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: User not found.
+
+---
+
+#### **Create User**
+
+**Endpoint**: `POST /api/User/create`  
+**Description**: Create a new user.
+
+**Request Body**:
+- **UserCreateDto**: 
+  - **name** (string, required): Name.
+  - **email** (string, required): Email.
+  - **phone** (string, nullable): Phone.
+
+**NOTE:**
+- Only to be used in a POST call after a new user registers (to Entra ID).
+
+**Responses**:
+- **201 Created**: User created successfully.
+- **400 Bad Request**: Invalid data.
+- **409 Conflict**: User already exists.
+- **500 Internal Server Error**: Server error.
+
+---
+
+#### **Update User**
+
+**Endpoint**: `PUT /api/User/update`  
+**Description**: Update user details. ID is retrieved from the token.
+
+**Request Body**:
+- **UserUpdateDto**: 
+  - **name** (string, nullable): Name.
+  - **phone** (string, nullable): Phone.
+
+**Responses**:
+- **204 No Content**: Update successful.
+- **400 Bad Request**: Invalid data.
+- **404 Not Found**: User not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
+### **Unregistered User Management**
+
+---
+
+#### **Get Unregistered User by ID**
+
+**Endpoint**: `GET /api/UnregUser/{unregUserId}`  
+**Description**: Retrieve details of an unregistered user.
+
+**Path Parameters**:
+- **unregUserId** (UUID, required): Unregistered user ID.
+
+**Responses**:
+- **200 OK**: Returns `UnregUserResponseDto`.
+- **404 Not Found**: Unregistered user not found.
+
+---
+
+#### **Delete Unregistered User**
+
+**Endpoint**: `DELETE /api/UnregUser/{unregUserId}`  
+**Description**: Delete an unregistered user.
+
+**Path Parameters**:
+- **unregUserId** (UUID, required): Unregistered user ID.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **404 Not Found**: Unregistered user not found.
+
+---
+
+#### **Get Unregistered Users by User**
+
+**Endpoint**: `GET /api/UnregUser/user/{userId}`  
+**Description**: Get unregistered users associated with a user.
+
+**Path Parameters**:
+- **userId** (UUID, required): User ID.
+
+**Responses**:
+- **200 OK**: Returns an array of `UnregUserResponseDto`.
+- **404 Not Found**: No unregistered users found.
+
+---
+
+#### **Create Unregistered User**
+
+**Endpoint**: `POST /api/UnregUser/create`  
+**Description**: Create a new unregistered user. Creator ID is retrieved from the token.
+
+**Request Body**:
+- **UnregUserCreateDto**: 
+  - **name** (string, required): Name.
+
+**Responses**:
+- **201 Created**: User created successfully.
+- **500 Internal Server Error**: Server error.
+
+---
