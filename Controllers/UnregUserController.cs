@@ -82,7 +82,7 @@ namespace Ticketron.Controllers
             if (user == null)
                 return Problem();
 
-            unregUserMap.User = user;
+            unregUserMap.CreatedBy = user;
 
             if (!await _unregUserRepository.CreateUnregUserAsync(unregUserMap))
                 return Problem();

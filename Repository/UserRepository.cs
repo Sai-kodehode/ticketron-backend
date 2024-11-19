@@ -25,17 +25,30 @@ namespace Ticketron.Repository
 
         public async Task<User?> GetUserByIdAsync(Guid userId)
         {
-            return await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            return await _context.Users
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<ICollection<User>> GetUsersByIdsAsync(ICollection<Guid> userIds)
+        {
+            return await _context.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToListAsync();
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
+            return await _context.Users
+                .Where(u => u.Email == email)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<User>> GetUsersAsync()
+        public async Task<ICollection<User>> GetUsersAllAsync()
         {
-            return await _context.Users.OrderBy(u => u.Id).ToListAsync();
+            return await _context.Users
+                .OrderBy(u => u.Id)
+                .ToListAsync();
         }
 
         public async Task<bool> SaveAsync()
@@ -46,7 +59,8 @@ namespace Ticketron.Repository
 
         public async Task<bool> UserExistsAsync(Guid userId)
         {
-            return await _context.Users.AnyAsync(x => x.Id == userId);
+            return await _context.Users
+                .AnyAsync(x => x.Id == userId);
         }
     }
 }

@@ -18,18 +18,18 @@ namespace Ticketron.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IUserContextService _userContextService;
         private readonly ILogger<BookingController> _logger;
-        private readonly IParticipantRepository _participantRepository;
         private readonly IUnregUserRepository _unregUserRepository;
+        private readonly IGroupRepository _groupRepostitory;
 
-        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService, ILogger<BookingController> logger, IParticipantRepository participantRepository, IUnregUserRepository unregUserRepository)
+        public BookingController(IBookingRepository bookingRepository, IMapper mapper, IUserRepository userRepository, IUserContextService userContextService, ILogger<BookingController> logger, IUnregUserRepository unregUserRepository, IGroupRepository groupRepostitory)
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _userContextService = userContextService;
             _logger = logger;
-            _participantRepository = participantRepository;
             _unregUserRepository = unregUserRepository;
+            _groupRepostitory = groupRepostitory;
         }
 
         [HttpGet("{bookingId}")]
@@ -101,17 +101,21 @@ namespace Ticketron.Controllers
                 return Unauthorized(ex.Message);
             }
 
-            var user = await _userRepository.GetUserByIdAsync(objectId);
+            var currentUser = await _userRepository.GetUserByIdAsync(objectId);
 
-            if (user == null)
-                return NotFound("User not found");
+            if (currentUser == null)
+                return Problem();
 
             var booking = _mapper.Map<Booking>(newBooking);
 
-            booking.User = user;
+            booking.CreatedBy = currentUser;
+            booking.CreatedById = currentUser.Id;
+            booking.Users = await _userRepository.GetUsersByIdsAsync(newBooking.UserIds);
+            booking.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(newBooking.UnregUserIds);
+            booking.Groups = await _groupRepostitory.GetGroupsByIdsAsync(newBooking.GroupIds);
 
             if (!await _bookingRepository.CreateBookingAsync(booking))
-                return StatusCode(500, "Could not create new booking");
+                return Problem();
 
             var createdBookingDto = _mapper.Map<BookingResponseDto>(booking);
 
@@ -123,19 +127,28 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> UpdateBooking([FromBody] BookingUpdateDto updateBooking)
+        public async Task<IActionResult> UpdateBooking([FromBody] BookingUpdateDto updatedBooking)
         {
-            if (updateBooking == null)
+            if (updatedBooking == null)
                 return BadRequest("Missing data.");
 
             if (!ModelState.IsValid)
                 return BadRequest("Invalid data.");
 
-            var existingBooking = await _bookingRepository.GetBookingAsync(updateBooking.Id);
+            var existingBooking = await _bookingRepository.GetBookingAsync(updatedBooking.Id);
             if (existingBooking == null)
                 return NotFound("Booking not found.");
 
-            var bookingMap = _mapper.Map(updateBooking, existingBooking);
+            var bookingMap = _mapper.Map(updatedBooking, existingBooking);
+
+            if (updatedBooking.CreatedBy != null)
+            {
+                var user = await _userRepository.GetUserByIdAsync(updatedBooking.CreatedBy.Value);
+                if (user == null)
+                    return NotFound("User not found.");
+
+                bookingMap.CreatedBy = user;
+            }
 
             if (!await _bookingRepository.SaveAsync())
                 return Problem("Error updating the booking.");

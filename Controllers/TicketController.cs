@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Ticketron.Dto.TicketDto;
 using Ticketron.Interfaces;
 using Ticketron.Models;
-using Ticketron.Services;
 
 namespace Ticketron.Controllers
 
@@ -16,22 +15,19 @@ namespace Ticketron.Controllers
         private readonly IMapper _mapper;
         private readonly IBookingRepository _bookingRepository;
         private readonly IUserContextService _userContextService;
-        private readonly IParticipantRepository _participantRepository;
+        private readonly IUnregUserRepository _unregUserRepository;
         private readonly IUserRepository _userRepository;
         private readonly IBlobService _blobService;
 
-        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IParticipantRepository participantRepository, IUserRepository userRepository, IBlobService blobService)
+        public TicketController(ITicketRepository ticketRepository, IMapper imapper, IBookingRepository bookingRepository, IUserContextService userContextService, IUserRepository userRepository, IBlobService blobService, IUnregUserRepository unregUserRepository)
         {
             _ticketRepository = ticketRepository;
             _mapper = imapper;
             _bookingRepository = bookingRepository;
             _userContextService = userContextService;
-            _participantRepository = participantRepository;
             _userRepository = userRepository;
             _blobService = blobService;
-
-
-
+            _unregUserRepository = unregUserRepository;
         }
 
         [HttpGet("{ticketId}")]
@@ -72,42 +68,15 @@ namespace Ticketron.Controllers
             if (newTicket == null)
                 return BadRequest();
 
+            if (newTicket.AssignedUserId != null && newTicket.AssignedUnregUserId != null)
+                return BadRequest("Cannot assign ticket to both registered and unregistered user");
+
+            if (newTicket.AssignedUserId == null && newTicket.AssignedUnregUserId == null)
+                return BadRequest("Ticket must be assigned to a user");
+
             var booking = await _bookingRepository.GetBookingAsync(newTicket.BookingId);
             if (booking == null)
                 return NotFound("Booking not found");
-
-            if (newTicket.ParticipantId == null)
-            {
-                Guid currentUserId;
-                try
-                {
-                    currentUserId = _userContextService.GetUserObjectId();
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    return Unauthorized(ex.Message);
-                }
-
-                newTicket.ParticipantId = currentUserId;
-            }
-
-            // Create participant of user if not exists
-
-            var participant = await _participantRepository.GetParticipantAsync(newTicket.ParticipantId.Value);
-
-            if (participant == null)
-            {
-                participant = new Participant
-                {
-                    Id = newTicket.ParticipantId.Value,
-                    CreatedBy = newTicket.ParticipantId.Value,
-                    Booking = booking,
-                    User = await _userRepository.GetUserByIdAsync(newTicket.ParticipantId.Value),
-                    IsUser = true
-                };
-                if (!await _participantRepository.CreateParticipantAsync(participant))
-                    return Problem();
-            }
 
             string? imageUrl = null;
 
@@ -122,16 +91,41 @@ namespace Ticketron.Controllers
             //}
 
             var ticketMap = _mapper.Map<Ticket>(newTicket);
+
+            if (newTicket.AssignedUserId != null)
+            {
+                var assignedUser = await _userRepository.GetUserByIdAsync(newTicket.AssignedUserId.Value);
+                if (assignedUser == null)
+                    return NotFound("User not found");
+
+                ticketMap.AssignedUser = assignedUser;
+            }
+
+            if (newTicket.AssignedUnregUserId != null)
+            {
+                var assignedUnregUser = await _unregUserRepository.GetUnregUserAsync(newTicket.AssignedUnregUserId.Value);
+                if (assignedUnregUser == null)
+                    return NotFound("Unregistered user not found");
+
+                ticketMap.AssignedUnregUser = assignedUnregUser;
+            }
+
+            if (newTicket.PurchasedBy != null)
+            {
+                var purchasedBy = await _userRepository.GetUserByIdAsync(newTicket.PurchasedBy.Value);
+                if (purchasedBy == null)
+                    return NotFound("User not found");
+
+                ticketMap.PurchasedBy = purchasedBy;
+            }
+
             ticketMap.Booking = booking;
-            ticketMap.Participant = participant;
             ticketMap.ImageUrl = imageUrl;
 
             if (!await _ticketRepository.CreateTicketAsync(ticketMap))
-                return StatusCode(500);
+                return Problem();
 
-            var createdTicketDto = _mapper.Map<TicketResponseDto>(ticketMap);
-
-            return Ok(createdTicketDto);
+            return Ok(_mapper.Map<TicketResponseDto>(ticketMap));
         }
 
         [HttpPut("update")]
@@ -141,17 +135,52 @@ namespace Ticketron.Controllers
         [ProducesResponseType(500)]
         public async Task<IActionResult> UpdateTicket([FromBody] TicketUpdateDto updatedTicket)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             if (UpdateTicket == null)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
-                return BadRequest();
+            if (updatedTicket.AssignedUserId != null && updatedTicket.AssignedUnregUserId != null)
+                return BadRequest("Cannot assign ticket to both registered and unregistered user");
+
+            if (updatedTicket.AssignedUserId == null && updatedTicket.AssignedUnregUserId == null)
+                return BadRequest("Ticket must be assigned to a user");
 
             var existingTicket = await _ticketRepository.GetTicketAsync(updatedTicket.Id);
             if (existingTicket == null)
                 return NotFound("Ticket not found");
 
             var ticketMap = _mapper.Map(updatedTicket, existingTicket);
+
+            if (updatedTicket.AssignedUserId != null)
+            {
+                var assignedUser = await _userRepository.GetUserByIdAsync(updatedTicket.AssignedUserId.Value);
+                if (assignedUser == null)
+                    return NotFound("User not found");
+
+                ticketMap.AssignedUser = assignedUser;
+                ticketMap.AssignedUnregUser = null;
+            }
+
+            if (updatedTicket.AssignedUnregUserId != null)
+            {
+                var assignedUnregUser = await _unregUserRepository.GetUnregUserAsync(updatedTicket.AssignedUnregUserId.Value);
+                if (assignedUnregUser == null)
+                    return NotFound("Unregistered user not found");
+
+                ticketMap.AssignedUnregUser = assignedUnregUser;
+                ticketMap.AssignedUser = null;
+            }
+
+            if (updatedTicket.PurchasedBy != null)
+            {
+                var purchasedBy = await _userRepository.GetUserByIdAsync(updatedTicket.PurchasedBy.Value);
+                if (purchasedBy == null)
+                    return NotFound("User not found");
+
+                ticketMap.PurchasedBy = purchasedBy;
+            }
 
             if (!await _ticketRepository.SaveAsync())
                 return Problem("Error updating ticket");
@@ -171,17 +200,11 @@ namespace Ticketron.Controllers
                 return NotFound();
 
             if (!string.IsNullOrEmpty(ticket.ImageUrl))
-            {
-        
-                var blobDeleted = await _blobService.DeleteImage(ticket.ImageUrl);
-                if (!blobDeleted)
-                {
-                    return StatusCode(500);
-                }
-            }
+                if (!await _blobService.DeleteImage(ticket.ImageUrl))
+                    return Problem();
 
             if (!await _ticketRepository.DeleteTicketAsync(ticket))
-                return StatusCode(500);
+                return Problem();
 
             return NoContent();
         }
