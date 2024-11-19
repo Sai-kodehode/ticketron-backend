@@ -469,5 +469,3 @@
 **Responses**:
 - **201 Created**: User created successfully.
 - **500 Internal Server Error**: Server error.
-
----
