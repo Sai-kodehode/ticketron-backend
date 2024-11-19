@@ -1,8 +1,8 @@
-﻿//using AutoMapper;
-//using Microsoft.AspNetCore.Mvc;
-//using Ticketron.Dto.GroupDto.GroupDto;
-//using Ticketron.Interfaces;
-//using Ticketron.Models;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Ticketron.Dto.GroupDto.GroupDto;
+using Ticketron.Interfaces;
+using Ticketron.Models;
 
 namespace Ticketron.Controllers
 {
@@ -25,18 +25,18 @@ namespace Ticketron.Controllers
             _unregUserRepository = unregUserRepository;
         }
 
-//        [HttpGet("{groupId}")]
-//        [ProducesResponseType(200, Type = typeof(GroupResponseDto))]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        public async Task<IActionResult> GetGroup(Guid groupId)
-//        {
-//            var group = await _groupRepository.GetGroupAsync(groupId);
+        [HttpGet("{groupId}")]
+        [ProducesResponseType(200, Type = typeof(GroupResponseDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetGroup(Guid groupId)
+        {
+            var group = await _groupRepository.GetGroupAsync(groupId);
 
-//            if (group == null)
-//                return NotFound();
+            if (group == null)
+                return NotFound();
 
-//            var groupMap = _mapper.Map<GroupResponseDto>(group);
+            var groupMap = _mapper.Map<GroupResponseDto>(group);
 
             return Ok(groupMap);
         }
@@ -48,30 +48,30 @@ namespace Ticketron.Controllers
         {
             var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsByUserIdAsync(userId));
 
-//            return Ok(groupsMap);
-//        }
+            return Ok(groupsMap);
+        }
 
-//        [HttpPost("create")]
-//        [ProducesResponseType(201)]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(500)]
-//        public async Task<IActionResult> CreateGroup([FromBody] GroupCreateDto newGroup)
-//        {
-//            if (newGroup == null)
-//                return BadRequest("Missing data");
+        [HttpPost("create")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CreateGroup([FromBody] GroupCreateDto newGroup)
+        {
+            if (newGroup == null)
+                return BadRequest("Missing data");
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-//            Guid currentUserId;
-//            try
-//            {
-//                currentUserId = _userContextService.GetUserObjectId();
-//            }
-//            catch (UnauthorizedAccessException ex)
-//            {
-//                return Unauthorized(ex.Message);
-//            };
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            };
 
             var currentUser = await _userRepository.GetUserByIdAsync(currentUserId);
             if (currentUser == null)
@@ -89,22 +89,22 @@ namespace Ticketron.Controllers
             return Ok(_mapper.Map<GroupResponseDto>(groupMap));
         }
 
-//        [HttpPut("update")]
-//        [ProducesResponseType(204)]
-//        [ProducesResponseType(400)]
-//        [ProducesResponseType(404)]
-//        [ProducesResponseType(500)]
-//        public async Task<IActionResult> UpdateGroup([FromBody] GroupUpdateDto updatedGroup)
-//        {
-//            if (updatedGroup == null)
-//                return BadRequest();
+        [HttpPut("update")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateGroup([FromBody] GroupUpdateDto updatedGroup)
+        {
+            if (updatedGroup == null)
+                return BadRequest();
 
-//            if (!ModelState.IsValid)
-//                return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-//            var existingGroup = await _groupRepository.GetGroupAsync(updatedGroup.Id);
-//            if (existingGroup == null)
-//                return NotFound();
+            var existingGroup = await _groupRepository.GetGroupAsync(updatedGroup.Id);
+            if (existingGroup == null)
+                return NotFound();
 
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
             groupMap.Users = await _userRepository.GetUsersByIdsAsync(updatedGroup.UserIds);
@@ -129,7 +129,7 @@ namespace Ticketron.Controllers
             if (!await _groupRepository.DeleteGroupAsync(existingGroup))
                 return Problem();
 
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}
