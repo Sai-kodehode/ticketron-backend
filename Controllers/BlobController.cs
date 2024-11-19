@@ -1,51 +1,53 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using Ticketron.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using Ticketron.Interfaces;
 
-//namespace Ticketron.Controllers
-//{
-//    [Route("api/images")]
-//    [ApiController]
-//    public class BlobController : ControllerBase
-//    {
-//        private readonly IBlobService _blobService;
+namespace Ticketron.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BlobController : ControllerBase
+    {
+        private readonly IBlobService _blobService;
 
+        public BlobController(IBlobService blobService)
+        {
+            _blobService = blobService;
+        }
 
-//        public BlobController(IBlobService blobService)
-//        {
-//            _blobService = blobService;
-//        }
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadImage(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest("No image uploaded.");
 
-//        [HttpPost("upload")]
-//        public async Task<IActionResult> UploadImage(IFormFile image, [FromQuery] int ticketId)
-//        {
-//            if (image == null || image.Length == 0)
-//                return BadRequest();
+            var blobName = await _blobService.UploadImage(image);
 
-//            var blobName = await _blobService.UploadImageAsync(image, ticketId);
-//            return Ok(new { BlobName = blobName });
-//        }
+            if (string.IsNullOrEmpty(blobName))
+                return StatusCode(500, "Error uploading the image.");
+            string blobUrl = $"https://ticketron-cdne-h4b2a3ehg4a3c9gx.a02.azurefd.net/images/{blobName}";
 
-//        [HttpDelete("{blobName}")]
-//        public async Task<IActionResult> DeleteImage(string blobName)
-//        {
-//            bool deleted = await _blobService.DeleteImageAsync(blobName);
-//            if (!deleted) return NotFound();
-//            return Ok();
-//        }
+            return Ok(new { blobUrl });
+        }
 
-//        [HttpGet("{blobName}/sas")]
-//        public IActionResult GetImageUriWithSasToken(string blobName, [FromQuery] int validityInHours = 1)
-//        {
-//            try
-//            {
-//                var sasUrl = _blobService.GetImageUriWithSasToken(blobName, validityInHours);
-//                return Ok(new { sasUrl });
-//            }
-//            catch (InvalidOperationException ex)
-//            {
-//                return BadRequest(ex.Message);
-//            }
-//        }
-//    }
+        [HttpDelete("delete")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> DeleteImage([FromQuery] string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return BadRequest();
+            }
+            var blobDeleted = await _blobService.DeleteImage(imageUrl);
 
-//}
+            if (!blobDeleted)
+            {
+                return StatusCode(500);
+            }
+            return Ok();
+        }
+    }
+
+}
+
