@@ -137,7 +137,7 @@
   - **title** (string, nullable): Title.
   - **startDate** (date-time, nullable): Start date.
   - **endDate** (date-time, nullable): End date.
-  - **createdBy** (UUID, nullable): User ID of creator. Assigned to current user if not provided.
+  - **createdBy** (UUID, nullable): User ID of creator. Initially set to the current user creating the booking.
 
 **Responses**:
 - **204 No Content**: Update successful.

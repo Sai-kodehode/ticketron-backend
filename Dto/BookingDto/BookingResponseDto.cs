@@ -11,6 +11,7 @@ namespace Ticketron.Dto.BookingDto.BookingDto
         public required string Title { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }
+        public string? ImageUrl { get; set; }
         public required UserResponseDto CreatedBy { get; set; }
         public ICollection<UserResponseDto> Users { get; set; } = [];
         public ICollection<UnregUserResponseDto> UnregUsers { get; set; } = [];
