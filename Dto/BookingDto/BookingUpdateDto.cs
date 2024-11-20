@@ -6,7 +6,8 @@
         public string? Title { get; set; }
         public DateTimeOffset? StartDate { get; set; }
         public DateTimeOffset? EndDate { get; set; }
-        public Guid? CreatedBy { get; set; }
-
+        public ICollection<Guid>? UserIds { get; set; }
+        public ICollection<Guid>? UnregUserIds { get; set; }
+        public ICollection<Guid>? GroupIds { get; set; }
     }
 }
