@@ -115,6 +115,7 @@
   - **title** (string, required): Title of the booking.
   - **startDate** (date-time): Start date.
   - **endDate** (date-time): End date.
+  - **imageUrl** (string, nullable): Image URL.
   - **userIds** (array, UUID, nullable): Associated user IDs.
   - **unregUserIds** (array, UUID, nullable): Associated unregistered user IDs.
   - **groupIds** (array, UUID, nullable): Associated group IDs.
@@ -137,7 +138,16 @@
   - **title** (string, nullable): Title.
   - **startDate** (date-time, nullable): Start date.
   - **endDate** (date-time, nullable): End date.
-  - **createdBy** (UUID, nullable): User ID of creator. Initially set to the current user creating the booking.
+  - **userIds** (array, UUID, nullable): Associated user IDs.
+  - **unregUserIds** (array, UUID, nullable): Associated unregistered user IDs.
+  - **groupIds** (array, UUID, nullable): Associated group IDs.
+
+**NOTE:**
+- When updating userIds, unregUserIds, or groupIds:   
+  - If the array is empty, all associated entities will be removed.
+  - If the array is not empty, all associated entities will be replaced.
+  - If the field is not provided or null, the associated entities will remain unchanged.
+
 
 **Responses**:
 - **204 No Content**: Update successful.

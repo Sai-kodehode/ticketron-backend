@@ -141,15 +141,6 @@ namespace Ticketron.Controllers
 
             var bookingMap = _mapper.Map(updatedBooking, existingBooking);
 
-            if (updatedBooking.CreatedBy != null)
-            {
-                var user = await _userRepository.GetUserByIdAsync(updatedBooking.CreatedBy.Value);
-                if (user == null)
-                    return NotFound("User not found.");
-
-                bookingMap.CreatedBy = user;
-            }
-
             if (updatedBooking.UserIds != null)
                 bookingMap.Users = await _userRepository.GetUsersByIdsAsync(updatedBooking.UserIds);
 
