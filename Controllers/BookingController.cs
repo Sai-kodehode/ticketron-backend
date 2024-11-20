@@ -150,6 +150,15 @@ namespace Ticketron.Controllers
                 bookingMap.CreatedBy = user;
             }
 
+            if (updatedBooking.UserIds != null)
+                bookingMap.Users = await _userRepository.GetUsersByIdsAsync(updatedBooking.UserIds);
+
+            if (updatedBooking.UnregUserIds != null)
+                bookingMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(updatedBooking.UnregUserIds);
+
+            if (updatedBooking.GroupIds != null)
+                bookingMap.Groups = await _groupRepostitory.GetGroupsByIdsAsync(updatedBooking.GroupIds);
+
             if (!await _bookingRepository.SaveAsync())
                 return Problem("Error updating the booking.");
 
