@@ -107,8 +107,12 @@ namespace Ticketron.Controllers
                 return NotFound();
 
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
-            groupMap.Users = await _userRepository.GetUsersByIdsAsync(updatedGroup.UserIds);
-            groupMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(updatedGroup.UnregUserIds);
+
+            if (updatedGroup.UserIds != null)
+                groupMap.Users = await _userRepository.GetUsersByIdsAsync(updatedGroup.UserIds);
+
+            if (updatedGroup.UnregUserIds != null)
+                groupMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(updatedGroup.UnregUserIds);
 
             if (!await _groupRepository.SaveAsync())
                 return Problem();
