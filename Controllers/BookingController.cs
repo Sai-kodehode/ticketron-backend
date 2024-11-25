@@ -136,6 +136,20 @@ namespace Ticketron.Controllers
             if (existingBooking == null)
                 return NotFound("Booking not found.");
 
+            Guid currentUserId;
+
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (existingBooking.CreatedById != currentUserId)
+                return Unauthorized("You are not authorized to update this booking.");
+
             var bookingMap = _mapper.Map(updatedBooking, existingBooking);
 
             if (updatedBooking.UserIds != null)
@@ -161,8 +175,23 @@ namespace Ticketron.Controllers
         {
             var booking = await _bookingRepository.GetBookingAsync(bookingId);
 
+
             if (booking == null)
                 return NotFound();
+
+            Guid currentUserId;
+
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (booking.CreatedById != currentUserId)
+                return Unauthorized("You are not authorized to delete this booking.");
 
             if (!await _bookingRepository.DeleteBookingAsync(booking))
                 return BadRequest();
