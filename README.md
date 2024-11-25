@@ -91,13 +91,10 @@
 
 ---
 
-#### **Get Bookings by User**
+#### **Get Bookings for Current User**
 
-**Endpoint**: `GET /api/Booking/user/{userId}`  
-**Description**: Retrieve all bookings for a specific user.
-
-**Path Parameters**:
-- **userId** (UUID, required): ID of the user.
+**Endpoint**: `GET /api/Booking`  
+**Description**: Retrieve all bookings for the current user.
 
 **Responses**:
 - **200 OK**: Returns an array of `BookingResponseDto`.

@@ -151,6 +151,20 @@ namespace Ticketron.Controllers
             if (existingTicket == null)
                 return NotFound("Ticket not found");
 
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (existingTicket.Booking.CreatedById != currentUserId &&
+                (existingTicket.AssignedUser != null && existingTicket.AssignedUser.Id != currentUserId))
+                return Unauthorized("You are not authorized to update this ticket");
+
             var ticketMap = _mapper.Map(updatedTicket, existingTicket);
 
             if (updatedTicket.AssignedUserId != null)
@@ -198,6 +212,20 @@ namespace Ticketron.Controllers
 
             if (ticket == null)
                 return NotFound();
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (ticket.Booking.CreatedById != currentUserId &&
+                (ticket.AssignedUser != null && ticket.AssignedUser.Id != currentUserId))
+                return Unauthorized("You are not authorized to delete this ticket");
 
             if (!string.IsNullOrEmpty(ticket.ImageUrl))
                 if (!await _blobService.DeleteImage(ticket.ImageUrl))
