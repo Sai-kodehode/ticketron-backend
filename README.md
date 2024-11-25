@@ -551,6 +551,7 @@
         }
     ]
 }
+```
 
 ---
 
@@ -563,6 +564,7 @@
 	"endDate": "string (DateTimeOffset)",
 	"imageUrl": "string (nullable)"
 }
+```
 
 ---
 
@@ -589,6 +591,7 @@
         }
     ]
 }
+```
 
 ---
 
@@ -624,6 +627,7 @@
     },
     "bookingId": "string (UUID)"
 }
+```
 
 ---
 
@@ -636,6 +640,7 @@
     "phone": "string (nullable)",
     "imageUrl": "string (nullable)"
 }
+```
 
 ---
 
@@ -646,3 +651,4 @@
     "name": "string",
     "createdBy": "string (UUID)"
 }
+```
