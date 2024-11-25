@@ -66,15 +66,12 @@ namespace Ticketron.Controllers
             return Ok(bookingMap);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<BookingResponseDto>))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> GetBookings(Guid userId)
+        public async Task<IActionResult> GetBookings()
         {
-            if (!await _userRepository.UserExistsAsync(userId))
-                return BadRequest("User not found.");
-
-            var bookings = await _bookingRepository.GetBookingsAsync(userId);
+            var bookings = await _bookingRepository.GetBookingsAsync();
 
             return Ok(_mapper.Map<List<BookingResponseDto>>(bookings));
         }

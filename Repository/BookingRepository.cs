@@ -8,9 +8,11 @@ namespace Ticketron.Repository
     public class BookingRepository : IBookingRepository
     {
         private readonly DataContext _context;
-        public BookingRepository(DataContext context)
+        private readonly IUserContextService _userContextService;
+        public BookingRepository(DataContext context, IUserContextService userContextService)
         {
             _context = context;
+            _userContextService = userContextService;
         }
 
         public async Task<bool> BookingExistsAsync(Guid bookingId)
@@ -34,25 +36,37 @@ namespace Ticketron.Repository
 
         public async Task<Booking?> GetBookingAsync(Guid bookingId)
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Bookings
                 .Include(b => b.CreatedBy)
                 .Include(b => b.Users)
                 .Include(b => b.UnregUsers)
                 .Include(b => b.Tickets)
                 .Include(b => b.Groups)
-                .Where(b => b.Id == bookingId)
-                .FirstOrDefaultAsync();
+                    .ThenInclude(g => g.Users)
+                .FirstOrDefaultAsync(b =>
+                b.Id == bookingId &&
+                (b.CreatedById == currentUserId ||
+                 b.Users.Any(u => u.Id == currentUserId) ||
+                 b.Groups.Any(g => g.Users.Any(u => u.Id == currentUserId))));
         }
 
-        public async Task<ICollection<Booking>> GetBookingsAsync(Guid userId)
+        public async Task<ICollection<Booking>> GetBookingsAsync()
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Bookings
                 .Include(b => b.CreatedBy)
                 .Include(b => b.Users)
                 .Include(b => b.UnregUsers)
                 .Include(b => b.Tickets)
                 .Include(b => b.Groups)
-                .Where(b => b.CreatedBy.Id == userId)
+                    .ThenInclude(g => g.Users)
+                .Where(b =>
+                    b.CreatedById == currentUserId ||
+                    b.Users.Any(u => u.Id == currentUserId) ||
+                    b.Groups.Any(g => g.Users.Any(u => u.Id == currentUserId)))
                 .OrderBy(b => b.StartDate)
                 .ToListAsync();
         }
