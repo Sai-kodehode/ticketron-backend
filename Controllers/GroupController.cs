@@ -46,7 +46,7 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetGroups(Guid userId)
         {
-            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsAsync(userId));
+            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsAsync());
 
             return Ok(groupsMap);
         }
