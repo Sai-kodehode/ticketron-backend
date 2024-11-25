@@ -5,7 +5,7 @@ namespace Ticketron.Interfaces
     public interface IUnregUserRepository
     {
         Task<UnregUser?> GetUnregUserAsync(Guid unregUserId);
-        Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync(Guid userId);
+        Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync();
         Task<ICollection<UnregUser>> GetUnregUsersByIdsAsync(ICollection<Guid> unregUserIds);
         Task<bool> UnregUserExistsAsync(Guid unregUserId);
         Task<bool> CreateUnregUserAsync(UnregUser unregUser);

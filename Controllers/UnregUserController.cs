@@ -48,7 +48,7 @@ namespace Ticketron.Controllers
             if (!await _userRepository.UserExistsAsync(userId))
                 return NotFound("User not found");
 
-            var unregUsers = await _unregUserRepository.GetUnregUsersByUserIdAsync(userId);
+            var unregUsers = await _unregUserRepository.GetUnregUsersByUserIdAsync();
 
             return Ok(_mapper.Map<List<UnregUserResponseDto>>(unregUsers));
         }
