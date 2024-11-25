@@ -2,16 +2,21 @@
 using Ticketron.Data;
 using Ticketron.Interfaces;
 using Ticketron.Models;
+using Ticketron.Services;
 
 namespace Ticketron.Repository
 {
     public class UnregUserRepository : IUnregUserRepository
     {
         private readonly DataContext _context;
+        private readonly IUserContextService _userContextService;
 
-        public UnregUserRepository(DataContext context)
+
+        public UnregUserRepository(DataContext context, IUserContextService userContextService)
         {
             _context = context;
+            _userContextService = userContextService;
+
         }
 
         public async Task<bool> CreateUnregUserAsync(UnregUser unregUser)
@@ -40,11 +45,13 @@ namespace Ticketron.Repository
                 .ToListAsync();
         }
 
-        public async Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync(Guid userId)
+        public async Task<ICollection<UnregUser>> GetUnregUsersByUserIdAsync()
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.UnregUsers
                 .Include(u => u.CreatedBy)
-                .Where(x => x.CreatedBy.Id == userId)
+                .Where(x => x.CreatedBy.Id == currentUserId)
                 .ToListAsync();
         }
 
