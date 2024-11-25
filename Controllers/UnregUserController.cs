@@ -33,6 +33,18 @@ namespace Ticketron.Controllers
             var unregUser = await _unregUserRepository.GetUnregUserAsync(unregUserId);
             if (unregUser == null)
                 return NotFound();
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (unregUser.CreatedBy.Id != currentUserId)
+                return Unauthorized("You are not authorized");
 
             var unregUserMap = _mapper.Map<UnregUserResponseDto>(unregUser);
 
