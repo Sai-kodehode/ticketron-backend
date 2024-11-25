@@ -46,7 +46,7 @@ namespace Ticketron.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> GetGroups(Guid userId)
         {
-            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsByUserIdAsync(userId));
+            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsAsync(userId));
 
             return Ok(groupsMap);
         }
@@ -106,6 +106,18 @@ namespace Ticketron.Controllers
             if (existingGroup == null)
                 return NotFound();
 
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            };
+            if (existingGroup.CreatedById == currentUserId)
+                return Unauthorized("You are not authorized to update this group.");
+
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
 
             if (updatedGroup.UserIds != null)
@@ -129,6 +141,18 @@ namespace Ticketron.Controllers
             var existingGroup = await _groupRepository.GetGroupAsync(groupId);
             if (existingGroup == null)
                 return NotFound();
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            };
+            if (existingGroup.CreatedById == currentUserId)
+                return Unauthorized("You are not authorized to delete this group.");
 
             if (!await _groupRepository.DeleteGroupAsync(existingGroup))
                 return Problem();
