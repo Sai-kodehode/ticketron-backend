@@ -115,7 +115,7 @@ namespace Ticketron.Controllers
             {
                 return Unauthorized(ex.Message);
             };
-            if (existingGroup.CreatedById == currentUserId)
+            if (existingGroup.CreatedById != currentUserId)
                 return Unauthorized("You are not authorized to update this group.");
 
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
@@ -151,7 +151,7 @@ namespace Ticketron.Controllers
             {
                 return Unauthorized(ex.Message);
             };
-            if (existingGroup.CreatedById == currentUserId)
+            if (existingGroup.CreatedById != currentUserId)
                 return Unauthorized("You are not authorized to delete this group.");
 
             if (!await _groupRepository.DeleteGroupAsync(existingGroup))
