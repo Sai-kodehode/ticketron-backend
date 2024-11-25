@@ -41,10 +41,10 @@ namespace Ticketron.Controllers
             return Ok(groupMap);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Group>))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> GetGroups(Guid userId)
+        public async Task<IActionResult> GetGroups()
         {
             var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsAsync());
 
