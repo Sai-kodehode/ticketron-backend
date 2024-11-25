@@ -70,15 +70,7 @@
 - **bookingId** (UUID, required): ID of the booking.
 
 **Responses**:
-- **200 OK**: Returns the following object:
-  ```json
-  {
-      "id": "string (UUID)",
-      "title": "string",
-      "startDate": "string (DateTimeOffset)",
-      "endDate": "string (DateTimeOffset)",
-      "imageUrl": "string (nullable)"
-  }
+- **200 OK**: Returns `BookingSummaryResponseDto`.
 - **400 Bad Request**: Invalid request.
 - **404 Not Found**: Booking not found.
 
@@ -190,7 +182,7 @@
 - **userId** (UUID, required): User ID.
 
 **Responses**:
-- **200 OK**: Returns an array of `Group`.
+- **200 OK**: Returns an array of `GroupResponseDto`.
 - **400 Bad Request**: Invalid request.
 
 ---
@@ -484,3 +476,173 @@
 - **404 Not Found**: Unregistered user not found.
 
 ---
+
+### **Response Objects**
+
+---
+
+#### **BookingResponseDto**
+  ```json
+  {
+    "id": "string (UUID)",
+    "title": "string",
+    "startDate": "string (DateTimeOffset)",
+    "endDate": "string (DateTimeOffset)",
+    "imageUrl": "string (nullable)",
+    "createdBy": {
+        "id": "string (UUID)",
+        "name": "string",
+        "email": "string",
+        "phone": "string (nullable)",
+        "imageUrl": "string (nullable)"
+    },
+    "users": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "email": "string",
+            "phone": "string (nullable)",
+            "imageUrl": "string (nullable)"
+        }
+    ],
+    "unregUsers": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "createdBy": "string (UUID)"
+        }
+    ],
+    "groups": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "createdBy": "string (UUID)",
+            "users": [
+                {
+                    "id": "string (UUID)",
+                    "name": "string",
+                    "email": "string",
+                    "phone": "string (nullable)",
+                    "imageUrl": "string (nullable)"
+                }
+            ],
+            "unregUsers": [
+                {
+                    "id": "string (UUID)",
+                    "name": "string",
+                    "createdBy": "string (UUID)"
+                }
+            ]
+        }
+    ],
+    "tickets": [
+        {
+            "id": "string (UUID)",
+            "title": "string",
+            "category": "string",
+            "startDate": "string (DateTimeOffset)",
+            "endDate": "string (DateTimeOffset)",
+            "price": "number (nullable)",
+            "imageUrl": "string (nullable)",
+            "purchasedBy": "string (UUID, nullable)",
+            "assignedUserId": "string (UUID, nullable)",
+            "assignedUnregUserId": "string (UUID, nullable)",
+            "bookingId": "string (UUID)"
+        }
+    ]
+}
+
+---
+
+#### **BookingSummaryDto**
+  ```json
+  {
+	"id": "string (UUID)",
+	"title": "string",
+	"startDate": "string (DateTimeOffset)",
+	"endDate": "string (DateTimeOffset)",
+	"imageUrl": "string (nullable)"
+}
+
+---
+
+#### **GroupResponseDto**
+  ```json
+  {
+    "id": "string (UUID)",
+    "name": "string",
+    "createdBy": "string (UUID)",
+    "users": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "email": "string",
+            "phone": "string (nullable)",
+            "imageUrl": "string (nullable)"
+        }
+    ],
+    "unregUsers": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "createdBy": "string (UUID)"
+        }
+    ]
+}
+
+---
+
+#### **TicketResponseDto**
+  ```json
+{
+    "id": "string (UUID)",
+    "title": "string",
+    "category": "string",
+    "startDate": "string (DateTimeOffset)",
+    "endDate": "string (DateTimeOffset)",
+    "purchaseDate": "string (DateTimeOffset, nullable)",
+    "price": "number (integer, nullable)",
+    "imageUrl": "string (nullable)",
+    "purchasedBy": {
+        "id": "string (UUID)",
+        "name": "string",
+        "email": "string",
+        "phone": "string (nullable)",
+        "imageUrl": "string (nullable)"
+    },
+    "assignedUser": {
+        "id": "string (UUID)",
+        "name": "string",
+        "email": "string",
+        "phone": "string (nullable)",
+        "imageUrl": "string (nullable)"
+    },
+    "assignedUnregUser": {
+        "id": "string (UUID)",
+        "name": "string",
+        "createdBy": "string (UUID)"
+    },
+    "bookingId": "string (UUID)"
+}
+
+---
+
+#### **UserResponseDto**
+  ```json
+{
+    "id": "string (UUID)",
+    "name": "string",
+    "email": "string",
+    "phone": "string (nullable)",
+    "imageUrl": "string (nullable)"
+}
+
+---
+
+#### **UnregUserResponseDto**
+  ```json
+{
+    "id": "string (UUID)",
+    "name": "string",
+    "createdBy": "string (UUID)"
+}
