@@ -5,7 +5,7 @@
 ## Table of Contents
 - [Blob Endpoints](#blob-management)
   - [Upload Blob](#upload-blob)
-  - [Delete Blob](#delete-blob)]
+  - [Delete Blob](#delete-blob)
 
 - [Booking Endpoints](#booking-management)
   - [Get Booking by ID](#get-booking-by-id)
@@ -13,33 +13,33 @@
   - [Get Bookings for Current User](#get-bookings-for-current-user)
   - [Create Booking](#create-booking)
   - [Update Booking](#update-booking)
-  - [Delete Booking](#delete-booking)]
+  - [Delete Booking](#delete-booking)
 
 - [Group Endpoints](#group-management)
   - [Get Group by ID](#get-group-by-id)
   - [Get Groups for Current User](#get-groups-for-current-user)
   - [Create Group](#create-group)
   - [Update Group](#update-group)
-  - [Delete Group](#delete-group)]
+  - [Delete Group](#delete-group)
 
 - [Ticket Endpoints](#ticket-management)
   - [Get Ticket by ID](#get-ticket-by-id)
   - [Get Tickets by Booking](#get-tickets-by-booking)
   - [Create Ticket](#create-ticket)
   - [Update Ticket](#update-ticket)
-  - [Delete Ticket](#delete-ticket)]
+  - [Delete Ticket](#delete-ticket)
 
 - [User Endpoints](#user-management)
   - [Get All Users](#get-all-users)
   - [Get User by ID](#get-user-by-id)
   - [Create User](#create-user)
-  - [Update User](#update-user)]
+  - [Update User](#update-user)
 
 - [Unregistered User Endpoints](#unregistered-user-management)
   - [Get Unregistered User by ID](#get-unregistered-user-by-id)
   - [Get Unregistered Users by User](#get-unregistered-users-by-user)
   - [Create Unregistered User](#create-unregistered-user)
-  - [Delete Unregistered User](#delete-unregistered-user)]
+  - [Delete Unregistered User](#delete-unregistered-user)
 
 - [Response Objects](#response-objects)
 
