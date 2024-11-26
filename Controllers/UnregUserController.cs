@@ -44,11 +44,9 @@ namespace Ticketron.Controllers
             }
 
             if (unregUser.CreatedBy.Id != currentUserId)
-                return Unauthorized("You are not authorized");
+                return Unauthorized();
 
-            var unregUserMap = _mapper.Map<UnregUserResponseDto>(unregUser);
-
-            return Ok(unregUserMap);
+            return Ok(_mapper.Map<UnregUserResponseDto>(unregUser));
         }
 
         [HttpGet("user/{userId}")]
@@ -58,7 +56,7 @@ namespace Ticketron.Controllers
         public async Task<IActionResult> GetUnregUsersByUserId(Guid userId)
         {
             if (!await _userRepository.UserExistsAsync(userId))
-                return NotFound("User not found");
+                return NotFound();
 
             var unregUsers = await _unregUserRepository.GetUnregUsersByUserIdAsync();
 

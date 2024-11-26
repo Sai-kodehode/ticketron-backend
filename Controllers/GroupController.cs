@@ -58,7 +58,7 @@ namespace Ticketron.Controllers
         public async Task<IActionResult> CreateGroup([FromBody] GroupCreateDto newGroup)
         {
             if (newGroup == null)
-                return BadRequest("Missing data");
+                return BadRequest();
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -75,7 +75,7 @@ namespace Ticketron.Controllers
 
             var currentUser = await _userRepository.GetUserByIdAsync(currentUserId);
             if (currentUser == null)
-                return NotFound("User not found");
+                return NotFound();
 
             var groupMap = _mapper.Map<Group>(newGroup);
             groupMap.CreatedBy = currentUser;
@@ -116,7 +116,7 @@ namespace Ticketron.Controllers
                 return Unauthorized(ex.Message);
             };
             if (existingGroup.CreatedById != currentUserId)
-                return Unauthorized("You are not authorized to update this group.");
+                return Unauthorized();
 
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
 
@@ -152,7 +152,7 @@ namespace Ticketron.Controllers
                 return Unauthorized(ex.Message);
             };
             if (existingGroup.CreatedById != currentUserId)
-                return Unauthorized("You are not authorized to delete this group.");
+                return Unauthorized();
 
             if (!await _groupRepository.DeleteGroupAsync(existingGroup))
                 return Problem();
