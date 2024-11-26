@@ -8,10 +8,12 @@ namespace Ticketron.Repository
     public class GroupRepository : IGroupRepository
     {
         private readonly DataContext _context;
+        private readonly IUserContextService _userContextService;
 
-        public GroupRepository(DataContext context)
+        public GroupRepository(DataContext context, IUserContextService userContextService)
         {
             _context = context;
+            _userContextService = userContextService;
         }
 
         public async Task<bool> CreateGroupAsync(Group group)
@@ -28,30 +30,37 @@ namespace Ticketron.Repository
 
         public async Task<Group?> GetGroupAsync(Guid groupId)
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Groups
                 .Include(g => g.CreatedBy)
                 .Include(g => g.Users)
                 .Include(g => g.UnregUsers)
-                .Where(x => x.Id == groupId).FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(g=>g.Id==groupId && g.CreatedById==currentUserId);
         }
 
         public async Task<ICollection<Group>> GetGroupsByIdsAsync(ICollection<Guid> groupIds)
         {
+
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Groups
                 .Include(g => g.CreatedBy)
                 .Include(g => g.Users)
                 .Include(g => g.UnregUsers)
-                .Where(x => groupIds.Contains(x.Id))
+                .Where(x => groupIds.Contains(x.Id) && x.CreatedById==currentUserId)
                 .ToListAsync();
         }
 
-        public async Task<ICollection<Group>> GetGroupsByUserIdAsync(Guid userId)
+        public async Task<ICollection<Group>> GetGroupsAsync()
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Groups
                 .Include(g => g.CreatedBy)
                 .Include(g => g.Users)
                 .Include(g => g.UnregUsers)
-                .Where(x => x.CreatedBy.Id == userId)
+                .Where(x => x.CreatedBy.Id == currentUserId)
                 .ToListAsync();
         }
 

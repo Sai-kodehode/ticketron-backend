@@ -8,10 +8,12 @@ namespace Ticketron.Repository
     public class TicketRepository : ITicketRepository
     {
         private readonly DataContext _context;
+        private readonly IUserContextService _userContextService;
 
-        public TicketRepository(DataContext context)
+        public TicketRepository(DataContext context, IUserContextService userContextService)
         {
             _context = context;
+            _userContextService = userContextService;
         }
 
         public async Task<bool> CreateTicketAsync(Ticket ticket)
@@ -30,22 +32,30 @@ namespace Ticketron.Repository
 
         public async Task<Ticket?> GetTicketAsync(Guid ticketId)
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Tickets
                 .Include(t => t.PurchasedBy)
                 .Include(t => t.AssignedUser)
                 .Include(t => t.AssignedUnregUser)
                 .Include(t => t.Booking)
-                .FirstOrDefaultAsync(t => t.Id == ticketId);
+                .FirstOrDefaultAsync(t => t.Id == ticketId &&
+                ((t.AssignedUser != null && t.AssignedUser.Id == currentUserId) ||
+                t.Booking.CreatedById == currentUserId));
         }
 
         public async Task<ICollection<Ticket>> GetTicketsAsync(Guid bookingId)
         {
+            var currentUserId = _userContextService.GetUserObjectId();
+
             return await _context.Tickets
                 .Include(t => t.PurchasedBy)
                 .Include(t => t.AssignedUser)
                 .Include(t => t.AssignedUnregUser)
                 .Include(t => t.Booking)
-                .Where(x => x.Booking.Id == bookingId)
+                .Where(t => t.Booking.Id == bookingId &&
+                ((t.AssignedUser != null && t.AssignedUser.Id == currentUserId) ||
+                t.Booking.CreatedById == currentUserId))
                 .ToListAsync();
         }
         public async Task<bool> SaveAsync()

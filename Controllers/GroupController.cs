@@ -41,12 +41,12 @@ namespace Ticketron.Controllers
             return Ok(groupMap);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Group>))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> GetGroups(Guid userId)
+        public async Task<IActionResult> GetGroups()
         {
-            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsByUserIdAsync(userId));
+            var groupsMap = _mapper.Map<List<GroupResponseDto>>(await _groupRepository.GetGroupsAsync());
 
             return Ok(groupsMap);
         }
@@ -58,7 +58,7 @@ namespace Ticketron.Controllers
         public async Task<IActionResult> CreateGroup([FromBody] GroupCreateDto newGroup)
         {
             if (newGroup == null)
-                return BadRequest("Missing data");
+                return BadRequest();
 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -75,7 +75,7 @@ namespace Ticketron.Controllers
 
             var currentUser = await _userRepository.GetUserByIdAsync(currentUserId);
             if (currentUser == null)
-                return NotFound("User not found");
+                return NotFound();
 
             var groupMap = _mapper.Map<Group>(newGroup);
             groupMap.CreatedBy = currentUser;
@@ -106,9 +106,25 @@ namespace Ticketron.Controllers
             if (existingGroup == null)
                 return NotFound();
 
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            };
+            if (existingGroup.CreatedById != currentUserId)
+                return Unauthorized();
+
             var groupMap = _mapper.Map(updatedGroup, existingGroup);
-            groupMap.Users = await _userRepository.GetUsersByIdsAsync(updatedGroup.UserIds);
-            groupMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(updatedGroup.UnregUserIds);
+
+            if (updatedGroup.UserIds != null)
+                groupMap.Users = await _userRepository.GetUsersByIdsAsync(updatedGroup.UserIds);
+
+            if (updatedGroup.UnregUserIds != null)
+                groupMap.UnregUsers = await _unregUserRepository.GetUnregUsersByIdsAsync(updatedGroup.UnregUserIds);
 
             if (!await _groupRepository.SaveAsync())
                 return Problem();
@@ -125,6 +141,18 @@ namespace Ticketron.Controllers
             var existingGroup = await _groupRepository.GetGroupAsync(groupId);
             if (existingGroup == null)
                 return NotFound();
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            };
+            if (existingGroup.CreatedById != currentUserId)
+                return Unauthorized();
 
             if (!await _groupRepository.DeleteGroupAsync(existingGroup))
                 return Problem();

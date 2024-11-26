@@ -61,21 +61,6 @@
 
 ---
 
-#### **Delete Booking**
-
-**Endpoint**: `DELETE /api/Booking/{bookingId}`  
-**Description**: Delete a booking by ID.
-
-**Path Parameters**:
-- **bookingId** (UUID, required): ID of the booking.
-
-**Responses**:
-- **204 No Content**: Deletion successful.
-- **400 Bad Request**: Invalid request.
-- **404 Not Found**: Booking not found.
-
----
-
 #### **Get Booking Summary**
 
 **Endpoint**: `GET /api/Booking/summary/{bookingId}`  
@@ -91,13 +76,10 @@
 
 ---
 
-#### **Get Bookings by User**
+#### **Get Bookings for Current User**
 
-**Endpoint**: `GET /api/Booking/user/{userId}`  
-**Description**: Retrieve all bookings for a specific user.
-
-**Path Parameters**:
-- **userId** (UUID, required): ID of the user.
+**Endpoint**: `GET /api/Booking`  
+**Description**: Retrieve all bookings for the current user.
 
 **Responses**:
 - **200 OK**: Returns an array of `BookingResponseDto`.
@@ -157,6 +139,21 @@
 
 ---
 
+#### **Delete Booking**
+
+**Endpoint**: `DELETE /api/Booking/{bookingId}`  
+**Description**: Delete a booking by ID.
+
+**Path Parameters**:
+- **bookingId** (UUID, required): ID of the booking.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **400 Bad Request**: Invalid request.
+- **404 Not Found**: Booking not found.
+
+---
+
 ### **Group Management**
 
 ---
@@ -176,31 +173,16 @@
 
 ---
 
-#### **Delete Group**
+#### **Get Groups for Current User**
 
-**Endpoint**: `DELETE /api/Group/{groupId}`  
-**Description**: Delete a group by ID.
-
-**Path Parameters**:
-- **groupId** (UUID, required): ID of the group.
-
-**Responses**:
-- **204 No Content**: Deletion successful.
-- **404 Not Found**: Group not found.
-- **500 Internal Server Error**: Server error.
-
----
-
-#### **Get Groups by User**
-
-**Endpoint**: `GET /api/Group/user/{userId}`  
-**Description**: Retrieve all groups associated with a user.
+**Endpoint**: `GET /api/Group`  
+**Description**: Retrieve all groups associated with the current user.
 
 **Path Parameters**:
 - **userId** (UUID, required): User ID.
 
 **Responses**:
-- **200 OK**: Returns an array of `Group`.
+- **200 OK**: Returns an array of `GroupResponseDto`.
 - **400 Bad Request**: Invalid request.
 
 ---
@@ -243,6 +225,21 @@
 
 ---
 
+#### **Delete Group**
+
+**Endpoint**: `DELETE /api/Group/{groupId}`  
+**Description**: Delete a group by ID.
+
+**Path Parameters**:
+- **groupId** (UUID, required): ID of the group.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **404 Not Found**: Group not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
 ### **Ticket Management**
 
 ---
@@ -259,21 +256,6 @@
 - **200 OK**: Returns `TicketResponseDto`.
 - **400 Bad Request**: Invalid request.
 - **404 Not Found**: Ticket not found.
-
----
-
-#### **Delete Ticket**
-
-**Endpoint**: `DELETE /api/Ticket/{ticketId}`  
-**Description**: Delete a ticket by ID.
-
-**Path Parameters**:
-- **ticketId** (UUID, required): Ticket ID.
-
-**Responses**:
-- **204 No Content**: Deletion successful.
-- **404 Not Found**: Ticket not found.
-- **500 Internal Server Error**: Server error.
 
 ---
 
@@ -339,11 +321,26 @@
   - **assignedUnregUserId** (UUID, nullable): UnregUser ID for assigned unregistered user. 
 
 **NOTE:**
-- If assignedUserId or assignedUnregUserId is provided, only one of them should be present.
+- Either assignedUserId or assignedUnregUserId can be provided. But never both.
 
 **Responses**:
 - **204 No Content**: Update successful.
 - **400 Bad Request**: Invalid data.
+- **404 Not Found**: Ticket not found.
+- **500 Internal Server Error**: Server error.
+
+---
+
+#### **Delete Ticket**
+
+**Endpoint**: `DELETE /api/Ticket/{ticketId}`  
+**Description**: Delete a ticket by ID.
+
+**Path Parameters**:
+- **ticketId** (UUID, required): Ticket ID.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
 - **404 Not Found**: Ticket not found.
 - **500 Internal Server Error**: Server error.
 
@@ -366,9 +363,7 @@
 
 #### **Get User by ID**
 
-**Endpoint**: `GET /api/User/{userId
-
-}`  
+**Endpoint**: `GET /api/User/{userId}`  
 **Description**: Retrieve user details.
 
 **Path Parameters**:
@@ -439,20 +434,6 @@
 
 ---
 
-#### **Delete Unregistered User**
-
-**Endpoint**: `DELETE /api/UnregUser/{unregUserId}`  
-**Description**: Delete an unregistered user.
-
-**Path Parameters**:
-- **unregUserId** (UUID, required): Unregistered user ID.
-
-**Responses**:
-- **204 No Content**: Deletion successful.
-- **404 Not Found**: Unregistered user not found.
-
----
-
 #### **Get Unregistered Users by User**
 
 **Endpoint**: `GET /api/UnregUser/user/{userId}`  
@@ -479,3 +460,195 @@
 **Responses**:
 - **201 Created**: User created successfully.
 - **500 Internal Server Error**: Server error.
+
+---
+
+#### **Delete Unregistered User**
+
+**Endpoint**: `DELETE /api/UnregUser/{unregUserId}`  
+**Description**: Delete an unregistered user.
+
+**Path Parameters**:
+- **unregUserId** (UUID, required): Unregistered user ID.
+
+**Responses**:
+- **204 No Content**: Deletion successful.
+- **404 Not Found**: Unregistered user not found.
+
+---
+
+### **Response Objects**
+
+---
+
+#### **BookingResponseDto**
+  ```json
+  {
+    "id": "string (UUID)",
+    "title": "string",
+    "startDate": "string (DateTimeOffset)",
+    "endDate": "string (DateTimeOffset)",
+    "imageUrl": "string (nullable)",
+    "createdBy": {
+        "id": "string (UUID)",
+        "name": "string",
+        "email": "string",
+        "phone": "string (nullable)",
+        "imageUrl": "string (nullable)"
+    },
+    "users": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "email": "string",
+            "phone": "string (nullable)",
+            "imageUrl": "string (nullable)"
+        }
+    ],
+    "unregUsers": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "createdBy": "string (UUID)"
+        }
+    ],
+    "groups": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "createdBy": "string (UUID)",
+            "users": [
+                {
+                    "id": "string (UUID)",
+                    "name": "string",
+                    "email": "string",
+                    "phone": "string (nullable)",
+                    "imageUrl": "string (nullable)"
+                }
+            ],
+            "unregUsers": [
+                {
+                    "id": "string (UUID)",
+                    "name": "string",
+                    "createdBy": "string (UUID)"
+                }
+            ]
+        }
+    ],
+    "tickets": [
+        {
+            "id": "string (UUID)",
+            "title": "string",
+            "category": "string",
+            "startDate": "string (DateTimeOffset)",
+            "endDate": "string (DateTimeOffset)",
+            "price": "number (nullable)",
+            "imageUrl": "string (nullable)",
+            "purchasedBy": "string (UUID, nullable)",
+            "assignedUserId": "string (UUID, nullable)",
+            "assignedUnregUserId": "string (UUID, nullable)",
+            "bookingId": "string (UUID)"
+        }
+    ]
+}
+```
+
+---
+
+#### **BookingSummaryDto**
+  ```json
+  {
+	"id": "string (UUID)",
+	"title": "string",
+	"startDate": "string (DateTimeOffset)",
+	"endDate": "string (DateTimeOffset)",
+	"imageUrl": "string (nullable)"
+}
+```
+
+---
+
+#### **GroupResponseDto**
+  ```json
+  {
+    "id": "string (UUID)",
+    "name": "string",
+    "createdBy": "string (UUID)",
+    "users": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "email": "string",
+            "phone": "string (nullable)",
+            "imageUrl": "string (nullable)"
+        }
+    ],
+    "unregUsers": [
+        {
+            "id": "string (UUID)",
+            "name": "string",
+            "createdBy": "string (UUID)"
+        }
+    ]
+}
+```
+
+---
+
+#### **TicketResponseDto**
+  ```json
+{
+    "id": "string (UUID)",
+    "title": "string",
+    "category": "string",
+    "startDate": "string (DateTimeOffset)",
+    "endDate": "string (DateTimeOffset)",
+    "purchaseDate": "string (DateTimeOffset, nullable)",
+    "price": "number (integer, nullable)",
+    "imageUrl": "string (nullable)",
+    "purchasedBy": {
+        "id": "string (UUID)",
+        "name": "string",
+        "email": "string",
+        "phone": "string (nullable)",
+        "imageUrl": "string (nullable)"
+    },
+    "assignedUser": {
+        "id": "string (UUID)",
+        "name": "string",
+        "email": "string",
+        "phone": "string (nullable)",
+        "imageUrl": "string (nullable)"
+    },
+    "assignedUnregUser": {
+        "id": "string (UUID)",
+        "name": "string",
+        "createdBy": "string (UUID)"
+    },
+    "bookingId": "string (UUID)"
+}
+```
+
+---
+
+#### **UserResponseDto**
+  ```json
+{
+    "id": "string (UUID)",
+    "name": "string",
+    "email": "string",
+    "phone": "string (nullable)",
+    "imageUrl": "string (nullable)"
+}
+```
+
+---
+
+#### **UnregUserResponseDto**
+  ```json
+{
+    "id": "string (UUID)",
+    "name": "string",
+    "createdBy": "string (UUID)"
+}
+```

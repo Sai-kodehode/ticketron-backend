@@ -39,15 +39,10 @@ namespace Ticketron.Controllers
 
         public async Task<IActionResult> GetBooking(Guid bookingId)
         {
-            _logger.LogInformation("Getting booking with id: {bookingId}", bookingId);
             var booking = await _bookingRepository.GetBookingAsync(bookingId);
             if (booking == null)
-            {
-                _logger.LogWarning("Booking with id: {bookingId} not found", bookingId);
-                return NotFound("Booking not found");
-            }
+                return NotFound();
 
-            _logger.LogTrace("Returning booking with id: {bookingId}", bookingId);
             return Ok(_mapper.Map<BookingResponseDto>(booking));
         }
 
@@ -59,22 +54,19 @@ namespace Ticketron.Controllers
         {
             var booking = await _bookingRepository.GetBookingAsync(bookingId);
             if (booking == null)
-                return NotFound("Booking not found");
+                return NotFound();
 
             var bookingMap = _mapper.Map<BookingSummaryResponseDto>(booking);
 
             return Ok(bookingMap);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<BookingResponseDto>))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> GetBookings(Guid userId)
+        public async Task<IActionResult> GetBookings()
         {
-            if (!await _userRepository.UserExistsAsync(userId))
-                return BadRequest("User not found.");
-
-            var bookings = await _bookingRepository.GetBookingsAsync(userId);
+            var bookings = await _bookingRepository.GetBookingsAsync();
 
             return Ok(_mapper.Map<List<BookingResponseDto>>(bookings));
         }
@@ -130,14 +122,28 @@ namespace Ticketron.Controllers
         public async Task<IActionResult> UpdateBooking([FromBody] BookingUpdateDto updatedBooking)
         {
             if (updatedBooking == null)
-                return BadRequest("Missing data.");
+                return BadRequest();
 
             if (!ModelState.IsValid)
-                return BadRequest("Invalid data.");
+                return BadRequest();
 
             var existingBooking = await _bookingRepository.GetBookingAsync(updatedBooking.Id);
             if (existingBooking == null)
-                return NotFound("Booking not found.");
+                return NotFound();
+
+            Guid currentUserId;
+
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (existingBooking.CreatedById != currentUserId)
+                return Unauthorized();
 
             var bookingMap = _mapper.Map(updatedBooking, existingBooking);
 
@@ -151,7 +157,7 @@ namespace Ticketron.Controllers
                 bookingMap.Groups = await _groupRepostitory.GetGroupsByIdsAsync(updatedBooking.GroupIds);
 
             if (!await _bookingRepository.SaveAsync())
-                return Problem("Error updating the booking.");
+                return Problem();
 
             return Ok(_mapper.Map<BookingResponseDto>(await _bookingRepository.GetBookingAsync(existingBooking.Id)));
         }
@@ -166,6 +172,20 @@ namespace Ticketron.Controllers
 
             if (booking == null)
                 return NotFound();
+
+            Guid currentUserId;
+
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (booking.CreatedById != currentUserId)
+                return Unauthorized();
 
             if (!await _bookingRepository.DeleteBookingAsync(booking))
                 return BadRequest();

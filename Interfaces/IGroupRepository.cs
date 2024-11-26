@@ -4,7 +4,7 @@ namespace Ticketron.Interfaces
 {
     public interface IGroupRepository
     {
-        Task<ICollection<Group>> GetGroupsByUserIdAsync(Guid userId);
+        Task<ICollection<Group>> GetGroupsAsync();
         Task<Group?> GetGroupAsync(Guid groupId);
         Task<ICollection<Group>> GetGroupsByIdsAsync(ICollection<Guid> groupIds);
         Task<bool> GroupExistsAsync(Guid groupId);

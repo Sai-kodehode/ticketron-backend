@@ -4,7 +4,7 @@
     {
         public required Guid Id { get; set; }
         public string? Name { get; set; }
-        public ICollection<Guid> UserIds { get; set; } = [];
-        public ICollection<Guid> UnregUserIds { get; set; } = [];
+        public ICollection<Guid>? UserIds { get; set; }
+        public ICollection<Guid>? UnregUserIds { get; set; }
     }
 }

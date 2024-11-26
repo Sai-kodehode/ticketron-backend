@@ -39,7 +39,7 @@ namespace Ticketron.Controllers
             var ticket = await _ticketRepository.GetTicketAsync(ticketId);
 
             if (ticket == null)
-                return NotFound("Ticket not found");
+                return NotFound();
 
             return Ok(_mapper.Map<TicketResponseDto>(ticket));
         }
@@ -69,14 +69,14 @@ namespace Ticketron.Controllers
                 return BadRequest();
 
             if (newTicket.AssignedUserId != null && newTicket.AssignedUnregUserId != null)
-                return BadRequest("Cannot assign ticket to both registered and unregistered user");
+                return BadRequest();
 
             if (newTicket.AssignedUserId == null && newTicket.AssignedUnregUserId == null)
-                return BadRequest("Ticket must be assigned to a user");
+                return BadRequest();
 
             var booking = await _bookingRepository.GetBookingAsync(newTicket.BookingId);
             if (booking == null)
-                return NotFound("Booking not found");
+                return NotFound();
 
             string? imageUrl = null;
 
@@ -96,7 +96,7 @@ namespace Ticketron.Controllers
             {
                 var assignedUser = await _userRepository.GetUserByIdAsync(newTicket.AssignedUserId.Value);
                 if (assignedUser == null)
-                    return NotFound("User not found");
+                    return NotFound();
 
                 ticketMap.AssignedUser = assignedUser;
             }
@@ -105,7 +105,7 @@ namespace Ticketron.Controllers
             {
                 var assignedUnregUser = await _unregUserRepository.GetUnregUserAsync(newTicket.AssignedUnregUserId.Value);
                 if (assignedUnregUser == null)
-                    return NotFound("Unregistered user not found");
+                    return NotFound();
 
                 ticketMap.AssignedUnregUser = assignedUnregUser;
             }
@@ -114,7 +114,7 @@ namespace Ticketron.Controllers
             {
                 var purchasedBy = await _userRepository.GetUserByIdAsync(newTicket.PurchasedBy.Value);
                 if (purchasedBy == null)
-                    return NotFound("User not found");
+                    return NotFound();
 
                 ticketMap.PurchasedBy = purchasedBy;
             }
@@ -142,14 +142,28 @@ namespace Ticketron.Controllers
                 return BadRequest();
 
             if (updatedTicket.AssignedUserId != null && updatedTicket.AssignedUnregUserId != null)
-                return BadRequest("Cannot assign ticket to both registered and unregistered user");
+                return BadRequest();
 
             if (updatedTicket.AssignedUserId == null && updatedTicket.AssignedUnregUserId == null)
-                return BadRequest("Ticket must be assigned to a user");
+                return BadRequest();
 
             var existingTicket = await _ticketRepository.GetTicketAsync(updatedTicket.Id);
             if (existingTicket == null)
-                return NotFound("Ticket not found");
+                return NotFound();
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (existingTicket.Booking.CreatedById != currentUserId &&
+                (existingTicket.AssignedUser != null && existingTicket.AssignedUser.Id != currentUserId))
+                return Unauthorized();
 
             var ticketMap = _mapper.Map(updatedTicket, existingTicket);
 
@@ -157,7 +171,7 @@ namespace Ticketron.Controllers
             {
                 var assignedUser = await _userRepository.GetUserByIdAsync(updatedTicket.AssignedUserId.Value);
                 if (assignedUser == null)
-                    return NotFound("User not found");
+                    return NotFound();
 
                 ticketMap.AssignedUser = assignedUser;
                 ticketMap.AssignedUnregUser = null;
@@ -167,7 +181,7 @@ namespace Ticketron.Controllers
             {
                 var assignedUnregUser = await _unregUserRepository.GetUnregUserAsync(updatedTicket.AssignedUnregUserId.Value);
                 if (assignedUnregUser == null)
-                    return NotFound("Unregistered user not found");
+                    return NotFound();
 
                 ticketMap.AssignedUnregUser = assignedUnregUser;
                 ticketMap.AssignedUser = null;
@@ -177,13 +191,13 @@ namespace Ticketron.Controllers
             {
                 var purchasedBy = await _userRepository.GetUserByIdAsync(updatedTicket.PurchasedBy.Value);
                 if (purchasedBy == null)
-                    return NotFound("User not found");
+                    return NotFound();
 
                 ticketMap.PurchasedBy = purchasedBy;
             }
 
             if (!await _ticketRepository.SaveAsync())
-                return Problem("Error updating ticket");
+                return Problem();
 
             return Ok(_mapper.Map<TicketResponseDto>(await _ticketRepository.GetTicketAsync(existingTicket.Id)));
         }
@@ -198,6 +212,20 @@ namespace Ticketron.Controllers
 
             if (ticket == null)
                 return NotFound();
+
+            Guid currentUserId;
+            try
+            {
+                currentUserId = _userContextService.GetUserObjectId();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            if (ticket.Booking.CreatedById != currentUserId &&
+                (ticket.AssignedUser != null && ticket.AssignedUser.Id != currentUserId))
+                return Unauthorized();
 
             if (!string.IsNullOrEmpty(ticket.ImageUrl))
                 if (!await _blobService.DeleteImage(ticket.ImageUrl))
