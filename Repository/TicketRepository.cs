@@ -53,6 +53,7 @@ namespace Ticketron.Repository
                 .Include(t => t.PurchasedBy)
                 .Include(t => t.AssignedUser)
                 .Include(t => t.AssignedUnregUser)
+                    .ThenInclude(x => x.CreatedBy)
                 .Include(t => t.Booking)
                 .Where(t => t.Booking.Id == bookingId &&
                 ((t.AssignedUser != null && t.AssignedUser.Id == currentUserId) ||
