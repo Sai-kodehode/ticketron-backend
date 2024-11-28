@@ -445,6 +445,7 @@
 - **UserUpdateDto**: 
   - **name** (string, nullable): Name.
   - **phone** (string, nullable): Phone.
+  - **imageUrl** (string, nullable): Image URL.
 
 **Responses**:
 - **204 No Content**: Update successful.
