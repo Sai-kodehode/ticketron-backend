@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ticketron.Interfaces;
 
-
 namespace Ticketron.Controllers
 {
     [Route("api/[controller]")]
